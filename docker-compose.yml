@@ -1,0 +1,38 @@
+services:
+  db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-nsstore}
+      POSTGRES_USER: ${POSTGRES_USER:-nsstore}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-nsstore}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-nsstore} -d ${POSTGRES_DB:-nsstore}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  api:
+    build:
+      context: .
+      dockerfile: src/NsStore.Api/Dockerfile
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT:-Development}
+      ASPNETCORE_HTTP_PORTS: 8080
+      ConnectionStrings__Default: "Host=db;Port=5432;Database=${POSTGRES_DB:-nsstore};Username=${POSTGRES_USER:-nsstore};Password=${POSTGRES_PASSWORD:-nsstore}"
+      Jwt__SigningKey: ${JWT_SIGNING_KEY:?set JWT_SIGNING_KEY in .env}
+      Cors__AllowedOrigins__0: ${WEB_ORIGIN:-http://localhost:5173}
+      # First-run admin bootstrap; remove once the account exists.
+      Seed__Admin__Username: ${SEED_ADMIN_USERNAME:-}
+      Seed__Admin__Password: ${SEED_ADMIN_PASSWORD:-}
+    ports:
+      - "${API_PORT:-8080}:8080"
+
+volumes:
+  db-data:

@@ -1,0 +1,12 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/NsStore.Api/NsStore.Api.csproj" />
+    <Project Path="src/NsStore.Application/NsStore.Application.csproj" />
+    <Project Path="src/NsStore.Domain/NsStore.Domain.csproj" />
+    <Project Path="src/NsStore.Infrastructure/NsStore.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/NsStore.Application.Tests/NsStore.Application.Tests.csproj" />
+    <Project Path="tests/NsStore.Domain.Tests/NsStore.Domain.Tests.csproj" />
+  </Folder>
+</Solution>

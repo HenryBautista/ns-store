@@ -1,0 +1,23 @@
+using NsStore.Domain.Common;
+using NsStore.Domain.Enums;
+
+namespace NsStore.Domain.Entities;
+
+public class User : AuditableEntity
+{
+    public string Username { get; set; } = null!;
+    public string PasswordHash { get; set; } = null!;
+    public string FirstName { get; set; } = null!;
+    public string LastName { get; set; } = null!;
+    public string? MotherLastName { get; set; }
+    public UserRole Role { get; set; } = UserRole.Seller;
+
+    /// <summary>Disabled users cannot log in (legacy <c>us_enable</c>).</summary>
+    public bool IsActive { get; set; } = true;
+
+    public List<RefreshToken> RefreshTokens { get; set; } = [];
+
+    public string FullName =>
+        string.Join(' ', new[] { FirstName, LastName, MotherLastName }
+            .Where(p => !string.IsNullOrWhiteSpace(p)));
+}
