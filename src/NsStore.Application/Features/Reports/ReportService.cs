@@ -54,7 +54,12 @@ public class ReportService(
     public async Task<StockReportDto> GetStockReportAsync(string? search, CancellationToken cancellationToken = default)
     {
         var page = await inventory.ListStockAsync(new PageRequest(search, 1, ReportPageSize), cancellationToken);
-        return new StockReportDto(page.Total, page.Items.Sum(i => i.Quantity), page.Items);
+
+        return new StockReportDto(
+            page.Total,
+            page.Items.Sum(i => i.Quantity),
+            page.Items.Sum(i => i.InventoryValue),
+            page.Items);
     }
 
     public async Task<DebtsReportDto> GetDebtsReportAsync(string? search, CancellationToken cancellationToken = default)

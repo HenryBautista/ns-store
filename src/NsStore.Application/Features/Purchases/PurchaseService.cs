@@ -45,6 +45,7 @@ public class PurchaseService(
                 p.Supplier.Name,
                 p.InvoiceType,
                 p.PaymentStatus,
+                p.Items.Count,
                 p.TotalQuantity,
                 p.TotalAmount,
                 db.Users.Where(u => u.Id == p.CreatedBy).Select(u => u.Username).FirstOrDefault()))

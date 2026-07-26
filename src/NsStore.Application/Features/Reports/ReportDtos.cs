@@ -28,7 +28,12 @@ public record PurchasesReportDto(
     decimal TotalAmount,
     IReadOnlyList<PurchaseListItemDto> Purchases);
 
-public record StockReportDto(int ProductCount, int TotalUnits, IReadOnlyList<StockLevelDto> Items);
+/// <summary><paramref name="TotalValue"/> values the inventory at each product's last purchase cost.</summary>
+public record StockReportDto(
+    int ProductCount,
+    int TotalUnits,
+    decimal TotalValue,
+    IReadOnlyList<StockLevelDto> Items);
 
 public record DebtsReportDto(int SaleCount, decimal TotalDebt, IReadOnlyList<SaleListItemDto> Sales);
 

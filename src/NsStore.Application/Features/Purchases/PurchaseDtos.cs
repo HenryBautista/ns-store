@@ -33,6 +33,7 @@ public record PurchaseDto(
     DateTimeOffset CreatedAt,
     IReadOnlyList<PurchaseItemDto> Items);
 
+/// <summary><paramref name="LineCount"/> is the number of distinct products on the purchase.</summary>
 public record PurchaseListItemDto(
     long Id,
     DateOnly PurchaseDate,
@@ -40,6 +41,7 @@ public record PurchaseListItemDto(
     string SupplierName,
     InvoiceType InvoiceType,
     PaymentStatus PaymentStatus,
+    int LineCount,
     int TotalQuantity,
     decimal TotalAmount,
     string? CreatedByName);
