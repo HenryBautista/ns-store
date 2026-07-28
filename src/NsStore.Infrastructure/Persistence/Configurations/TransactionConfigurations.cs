@@ -23,6 +23,11 @@ public class ClientConfiguration : IEntityTypeConfiguration<Client>
         builder.HasIndex(c => c.Name);
         builder.HasIndex(c => c.LastName);
         builder.HasIndex(c => c.Nit);
+
+        // A person's CI is unique, but only among live rows: a soft-deleted client must not
+        // reserve its CI forever. NIT stays non-unique — a person and their company can share one.
+        builder.HasIndex(c => c.Ci).IsUnique().HasFilter("ci IS NOT NULL AND deleted_at IS NULL");
+
         builder.HasQueryFilter(c => c.DeletedAt == null);
     }
 }

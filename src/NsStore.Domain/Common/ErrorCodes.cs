@@ -15,6 +15,7 @@ public static class ErrorCodes
     public const string ConcurrencyConflict = "CONCURRENCY_CONFLICT";
     public const string DuplicateUsername = "DUPLICATE_USERNAME";
     public const string DuplicateName = "DUPLICATE_NAME";
+    public const string DuplicateCi = "DUPLICATE_CI";
     public const string PaymentExceedsBalance = "PAYMENT_EXCEEDS_BALANCE";
     public const string AdvanceExceedsPrice = "ADVANCE_EXCEEDS_PRICE";
     public const string PriceNotSet = "PRICE_NOT_SET";
