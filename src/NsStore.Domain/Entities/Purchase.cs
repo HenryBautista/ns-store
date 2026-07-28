@@ -11,6 +11,12 @@ public class Purchase : AuditableEntity
     public long BranchId { get; set; }
 
     public Branch Branch { get; set; } = null!;
+
+    /// <summary>Per-branch correlative; see <c>Sale.BranchSequence</c>.</summary>
+    public long BranchSequence { get; set; }
+
+    public string Number { get; set; } = null!;
+
     public long SupplierId { get; set; }
     public Supplier Supplier { get; set; } = null!;
     public InvoiceType InvoiceType { get; set; }

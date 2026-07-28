@@ -57,3 +57,23 @@ public interface IStockLockService
 {
     Task LockAsync(IReadOnlyCollection<StockKey> keys, CancellationToken cancellationToken = default);
 }
+
+public enum DocumentKind { Sale, Purchase, Transfer }
+
+/// <summary>
+/// Hands out the next per-branch document number.
+/// </summary>
+/// <remarks>
+/// <para>Backed by a counter column on <c>branches</c>, not a Postgres sequence. Sequences are not
+/// transactional: a sale rolled back by <c>INSUFFICIENT_STOCK</c> would burn its number forever, and
+/// gaps in a series of fiscal documents are the last thing anyone wants. The counter increments
+/// inside the same transaction as the insert, so both revert together.</para>
+/// <para><b>Never cache the number outside the action.</b> <c>ExecuteInTransactionAsync</c> retries
+/// the whole action under the Npgsql execution strategy, and a retry must read a fresh number.</para>
+/// <para>Lock ordering, system-wide: <c>stock_levels</c> first (by branch, product), the branch
+/// counter row last. Taking it last minimises how long a branch's sales serialise behind one row.</para>
+/// </remarks>
+public interface IDocumentNumberService
+{
+    Task<long> NextAsync(long branchId, DocumentKind kind, CancellationToken cancellationToken = default);
+}

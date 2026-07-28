@@ -14,6 +14,7 @@ public class PurchaseService(
     InventoryService inventory,
     BranchService branches,
     IStockLockService stockLock,
+    IDocumentNumberService documentNumbers,
     ICurrentUser currentUser,
     TimeProvider clock)
 {
@@ -53,6 +54,7 @@ public class PurchaseService(
                 p.PurchaseDate,
                 p.BranchId,
                 p.Branch.Code,
+                p.Number,
                 p.SupplierId,
                 p.Supplier.Name,
                 p.InvoiceType,
@@ -72,6 +74,7 @@ public class PurchaseService(
                 p.PurchaseDate,
                 p.BranchId,
                 p.Branch.Code,
+                p.Number,
                 p.SupplierId,
                 p.Supplier.Name,
                 p.InvoiceType,
@@ -133,10 +136,17 @@ public class PurchaseService(
             }
 
             var now = clock.GetUtcNow();
+
+            // Counter after the stock locks; see SaleService for the ordering rule.
+            var branch = await db.Branches.FirstAsync(b => b.Id == branchId, ct);
+            var sequence = await documentNumbers.NextAsync(branchId, DocumentKind.Purchase, ct);
+
             var purchase = new Purchase
             {
                 PurchaseDate = request.PurchaseDate,
                 BranchId = branchId,
+                BranchSequence = sequence,
+                Number = branch.FormatDocumentNumber(sequence),
                 SupplierId = request.SupplierId,
                 InvoiceType = request.InvoiceType,
                 PaymentStatus = request.PaymentStatus

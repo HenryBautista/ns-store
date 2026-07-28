@@ -15,6 +15,7 @@ public class SaleService(
     InventoryService inventory,
     BranchService branches,
     IStockLockService stockLock,
+    IDocumentNumberService documentNumbers,
     ICurrentUser currentUser,
     TimeProvider clock)
 {
@@ -106,6 +107,7 @@ public class SaleService(
             sale.Sale.SaleDate,
             sale.Sale.BranchId,
             sale.BranchCode,
+            sale.Sale.Number,
             sale.Sale.ClientId,
             sale.Client.FullName,
             sale.Client.Nit,
@@ -189,10 +191,19 @@ public class SaleService(
             }
 
             var now = clock.GetUtcNow();
+
+            // After the stock locks, never before: the branch counter is the second lockable
+            // resource, and taking it last keeps a branch's sales from serialising any longer than
+            // they must. Read inside the action so a retry gets a fresh number.
+            var branch = await db.Branches.FirstAsync(b => b.Id == branchId, ct);
+            var sequence = await documentNumbers.NextAsync(branchId, DocumentKind.Sale, ct);
+
             var sale = new Sale
             {
                 SaleDate = request.SaleDate,
                 BranchId = branchId,
+                BranchSequence = sequence,
+                Number = branch.FormatDocumentNumber(sequence),
                 ClientId = request.ClientId,
                 InvoiceType = request.InvoiceType,
                 PaymentStatus = request.PaymentStatus
@@ -347,6 +358,7 @@ public class SaleService(
             s.SaleDate,
             s.BranchId,
             s.Branch.Code,
+            s.Number,
             s.ClientId,
             s.Client.Type == ClientType.Company
                 ? s.Client.Name

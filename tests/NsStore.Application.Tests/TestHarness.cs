@@ -43,8 +43,11 @@ public sealed class TestHarness : IDisposable
         Branches = new BranchService(Db, Clock);
         Products = new ProductService(Db, Settings, CurrentUser, Clock);
         Inventory = new InventoryService(Db, CurrentUser, StockLock, Clock);
-        Purchases = new PurchaseService(Db, Inventory, Branches, StockLock, CurrentUser, Clock);
-        Sales = new SaleService(Db, Inventory, Branches, StockLock, CurrentUser, Clock);
+        // The real numbering service, not a fake: it detects the provider, and numbering is the
+        // piece most likely to carry an off-by-one.
+        DocumentNumbers = new DocumentNumberService(Db);
+        Purchases = new PurchaseService(Db, Inventory, Branches, StockLock, DocumentNumbers, CurrentUser, Clock);
+        Sales = new SaleService(Db, Inventory, Branches, StockLock, DocumentNumbers, CurrentUser, Clock);
         Clients = new ClientService(Db, Clock);
 
         Seed();
@@ -59,6 +62,7 @@ public sealed class TestHarness : IDisposable
     public FakeCurrentUser CurrentUser { get; }
     public FakeTimeProvider Clock { get; }
     public IStockLockService StockLock { get; } = new NoOpStockLock();
+    public IDocumentNumberService DocumentNumbers { get; }
     public SettingsService Settings { get; }
     public BranchService Branches { get; }
     public ProductService Products { get; }

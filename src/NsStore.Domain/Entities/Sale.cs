@@ -11,6 +11,16 @@ public class Sale : AuditableEntity
     public long BranchId { get; set; }
 
     public Branch Branch { get; set; } = null!;
+
+    /// <summary>Per-branch correlative — the numeric invariant behind <see cref="Number"/>.</summary>
+    public long BranchSequence { get; set; }
+
+    /// <summary>
+    /// The rendered folio, e.g. <c>MAIN-000123</c>. Stored rather than derived so that renaming a
+    /// branch code later does not rewrite the number already printed on the customer's copy.
+    /// </summary>
+    public string Number { get; set; } = null!;
+
     public long ClientId { get; set; }
     public Client Client { get; set; } = null!;
 

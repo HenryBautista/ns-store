@@ -53,8 +53,12 @@ public class PurchaseConfiguration : IEntityTypeConfiguration<Purchase>
             .HasForeignKey(i => i.PurchaseId)
             .OnDelete(DeleteBehavior.Cascade);
 
+        builder.Property(p => p.Number).HasMaxLength(24).IsRequired();
+
         builder.HasIndex(p => p.PurchaseDate);
         builder.HasIndex(p => new { p.BranchId, p.PurchaseDate });
+        builder.HasIndex(p => new { p.BranchId, p.BranchSequence }).IsUnique();
+        builder.HasIndex(p => p.Number).IsUnique();
 
         builder.ToTable(t =>
         {
@@ -116,9 +120,15 @@ public class SaleConfiguration : IEntityTypeConfiguration<Sale>
             .HasForeignKey(p => p.SaleId)
             .OnDelete(DeleteBehavior.Cascade);
 
+        builder.Property(s => s.Number).HasMaxLength(24).IsRequired();
+
         builder.HasIndex(s => s.SaleDate);
         builder.HasIndex(s => new { s.PaymentStatus, s.SaleDate });
         builder.HasIndex(s => new { s.BranchId, s.SaleDate });
+
+        // Belt and braces against a counter bug; the folio is globally unique because its prefix is.
+        builder.HasIndex(s => new { s.BranchId, s.BranchSequence }).IsUnique();
+        builder.HasIndex(s => s.Number).IsUnique();
 
         builder.ToTable(t =>
         {
