@@ -9,16 +9,48 @@ namespace NsStore.Application.Features.Inventory;
 
 public class InventoryService(IAppDbContext db, ICurrentUser currentUser, IStockLockService stockLock, TimeProvider clock)
 {
-    public async Task<PagedResult<StockLevelDto>> ListStockAsync(PageRequest request, CancellationToken cancellationToken = default)
+    public async Task<PagedResult<StockLevelDto>> ListStockAsync(StockQuery query, CancellationToken cancellationToken = default)
     {
-        var branchId = currentUser.RequireBranch();
-        var query = db.Products.AsNoTracking().AsQueryable();
+        var branchId = currentUser.ResolveReadableBranch(query.BranchId);
+        var request = query.ToPageRequest();
+
+        var products = db.Products.AsNoTracking().AsQueryable();
         if (request.TrimmedSearch is { } search)
         {
-            query = query.Where(p => EF.Functions.Like(p.Name.ToLower(), $"%{search.ToLower()}%"));
+            products = products.Where(p => EF.Functions.Like(p.Name.ToLower(), $"%{search.ToLower()}%"));
         }
 
-        return await ProjectStockAsync(query.OrderBy(p => p.Name), branchId, request, cancellationToken);
+        return await ProjectStockAsync(products.OrderBy(p => p.Name), branchId, request, cancellationToken);
+    }
+
+    /// <summary>
+    /// Where a product sits across every active branch. No branch guard and no paging: the number
+    /// of branches is small, and this is the read the cross-branch use case is built on.
+    /// </summary>
+    public async Task<IReadOnlyList<BranchAvailabilityDto>> GetAvailabilityAsync(
+        long productId,
+        CancellationToken cancellationToken = default)
+    {
+        if (!await db.Products.AnyAsync(p => p.Id == productId, cancellationToken))
+        {
+            throw new NotFoundException(nameof(Product), productId);
+        }
+
+        return await db.Branches.AsNoTracking()
+            .Where(b => b.IsActive)
+            .OrderBy(b => b.Code)
+            .Select(b => new BranchAvailabilityDto(
+                b.Id,
+                b.Code,
+                b.Name,
+                db.StockLevels
+                    .Where(s => s.BranchId == b.Id && s.ProductId == productId)
+                    .Sum(s => (int?)s.Quantity) ?? 0,
+                db.StockLevels
+                    .Where(s => s.BranchId == b.Id && s.ProductId == productId)
+                    .Select(s => (DateTimeOffset?)s.UpdatedAt)
+                    .FirstOrDefault() ?? b.CreatedAt))
+            .ToListAsync(cancellationToken);
     }
 
     /// <summary>
@@ -82,6 +114,7 @@ public class InventoryService(IAppDbContext db, ICurrentUser currentUser, IStock
     public async Task<PagedResult<InventoryMovementDto>> ListMovementsAsync(
         long productId,
         PageRequest request,
+        long? branchIdFilter = null,
         CancellationToken cancellationToken = default)
     {
         if (!await db.Products.AnyAsync(p => p.Id == productId, cancellationToken))
@@ -89,7 +122,7 @@ public class InventoryService(IAppDbContext db, ICurrentUser currentUser, IStock
             throw new NotFoundException(nameof(Product), productId);
         }
 
-        var branchId = currentUser.RequireBranch();
+        var branchId = currentUser.ResolveReadableBranch(branchIdFilter);
 
         return await db.InventoryMovements.AsNoTracking()
             .Where(m => m.ProductId == productId && m.BranchId == branchId)
@@ -118,7 +151,7 @@ public class InventoryService(IAppDbContext db, ICurrentUser currentUser, IStock
             throw new BadRequestException("Quantity delta must not be zero");
         }
 
-        var branchId = currentUser.RequireWritableBranch();
+        var branchId = currentUser.RequireWritableBranch(request.BranchId);
 
         return await db.ExecuteInTransactionAsync(async ct =>
         {
@@ -155,16 +188,18 @@ public class InventoryService(IAppDbContext db, ICurrentUser currentUser, IStock
         }, cancellationToken);
     }
 
-    public async Task<PagedResult<KardexRowDto>> GetKardexAsync(PageRequest request, CancellationToken cancellationToken = default)
+    public async Task<PagedResult<KardexRowDto>> GetKardexAsync(KardexQuery query, CancellationToken cancellationToken = default)
     {
-        var branchId = currentUser.RequireBranch();
-        var query = db.Products.AsNoTracking().AsQueryable();
+        var branchId = currentUser.ResolveReadableBranch(query.BranchId);
+        var request = query.ToPageRequest();
+
+        var products = db.Products.AsNoTracking().AsQueryable();
         if (request.TrimmedSearch is { } search)
         {
-            query = query.Where(p => EF.Functions.Like(p.Name.ToLower(), $"%{search.ToLower()}%"));
+            products = products.Where(p => EF.Functions.Like(p.Name.ToLower(), $"%{search.ToLower()}%"));
         }
 
-        return await query
+        return await products
             .OrderBy(p => p.Name)
             .Select(p => new KardexRowDto(
                 p.Id,

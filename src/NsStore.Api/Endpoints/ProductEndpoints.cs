@@ -15,11 +15,12 @@ public static class ProductEndpoints
             .WithTags("Products")
             .RequireAuthorization(AuthPolicies.Authenticated);
 
-        group.MapGet("/", async (string? search, int? page, int? pageSize, ProductService products, CancellationToken ct) =>
-            Results.Ok(await products.ListAsync(new PageRequest(search, page ?? 1, pageSize ?? 25), ct)));
+        // branchId is a read hint only: any authenticated caller may ask about any branch's stock.
+        group.MapGet("/", async (string? search, int? page, int? pageSize, long? branchId, ProductService products, CancellationToken ct) =>
+            Results.Ok(await products.ListAsync(new PageRequest(search, page ?? 1, pageSize ?? 25), branchId, ct)));
 
-        group.MapGet("/{id:long}", async (long id, ProductService products, CancellationToken ct) =>
-            Results.Ok(await products.GetAsync(id, ct)));
+        group.MapGet("/{id:long}", async (long id, long? branchId, ProductService products, CancellationToken ct) =>
+            Results.Ok(await products.GetAsync(id, branchId, ct)));
 
         group.MapPost("/", async (ProductRequest request, ProductService products, CancellationToken ct) =>
             {
@@ -51,9 +52,10 @@ public static class ProductEndpoints
                 long id,
                 int? page,
                 int? pageSize,
+                long? branchId,
                 InventoryService inventory,
                 CancellationToken ct) =>
-            Results.Ok(await inventory.ListMovementsAsync(id, new PageRequest(null, page ?? 1, pageSize ?? 25), ct)));
+            Results.Ok(await inventory.ListMovementsAsync(id, new PageRequest(null, page ?? 1, pageSize ?? 25), branchId, ct)));
 
         return app;
     }
@@ -67,16 +69,21 @@ public static class InventoryEndpoints
             .WithTags("Inventory")
             .RequireAuthorization(AuthPolicies.Authenticated);
 
-        stock.MapGet("/", async (string? search, int? page, int? pageSize, InventoryService inventory, CancellationToken ct) =>
-            Results.Ok(await inventory.ListStockAsync(new PageRequest(search, page ?? 1, pageSize ?? 25), ct)));
+        stock.MapGet("/", async (string? search, int? page, int? pageSize, long? branchId, InventoryService inventory, CancellationToken ct) =>
+            Results.Ok(await inventory.ListStockAsync(new StockQuery(search, branchId, page ?? 1, pageSize ?? 25), ct)));
+
+        // No branch guard by design: this is the read the whole feature exists for.
+        stock.MapGet("/availability", async (long productId, InventoryService inventory, CancellationToken ct) =>
+                Results.Ok(await inventory.GetAvailabilityAsync(productId, ct)))
+            .WithSummary("Where a product sits across every active branch");
 
         stock.MapPost("/adjustments", async (StockAdjustmentRequest request, InventoryService inventory, CancellationToken ct) =>
                 Results.Ok(await inventory.AdjustAsync(request, ct)))
             .RequireAuthorization(AuthPolicies.AdminOnly)
             .WithValidation<StockAdjustmentRequest>();
 
-        app.MapGet("/kardex", async (string? search, int? page, int? pageSize, InventoryService inventory, CancellationToken ct) =>
-                Results.Ok(await inventory.GetKardexAsync(new PageRequest(search, page ?? 1, pageSize ?? 25), ct)))
+        app.MapGet("/kardex", async (string? search, int? page, int? pageSize, long? branchId, InventoryService inventory, CancellationToken ct) =>
+                Results.Ok(await inventory.GetKardexAsync(new KardexQuery(search, branchId, page ?? 1, pageSize ?? 25), ct)))
             .WithTags("Inventory")
             .RequireAuthorization(AuthPolicies.Authenticated);
 

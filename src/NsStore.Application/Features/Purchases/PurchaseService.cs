@@ -19,8 +19,16 @@ public class PurchaseService(
 {
     public async Task<PagedResult<PurchaseListItemDto>> ListAsync(PurchaseQuery query, CancellationToken cancellationToken = default)
     {
+        // Same policy as sales: a seller sees only their own branch's buying.
+        var branchId = currentUser.ResolveScopedBranch(query.BranchId);
+
         var request = new PageRequest(query.Search, query.Page, query.PageSize);
         var purchases = db.Purchases.AsNoTracking().AsQueryable();
+
+        if (branchId is { } scoped)
+        {
+            purchases = purchases.Where(p => p.BranchId == scoped);
+        }
 
         if (request.TrimmedSearch is { } search)
         {

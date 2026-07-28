@@ -1,5 +1,10 @@
 namespace NsStore.Application.Features.Products;
 
+/// <summary>
+/// <paramref name="AvailableQuantity"/> is the active branch's holding; <paramref name="QuantityAllBranches"/>
+/// is the system-wide total. That single extra field is what lets the POS show "in stock elsewhere"
+/// straight from the search results, with no second request.
+/// </summary>
 public record ProductDto(
     long Id,
     string Name,
@@ -14,7 +19,8 @@ public record ProductDto(
     string? WarrantyTermDescription,
     decimal PriceWithInvoice,
     decimal PriceWithoutInvoice,
-    int AvailableQuantity);
+    int AvailableQuantity,
+    int QuantityAllBranches);
 
 public record ProductRequest(
     string Name,

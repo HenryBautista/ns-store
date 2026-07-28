@@ -218,7 +218,7 @@ public class SaleServiceTests
             harness.Today, 1, InvoiceType.WithoutInvoice, PaymentStatus.Paid, null,
             [new SaleItemRequest(productId, 4)]));
 
-        var kardex = await harness.Inventory.GetKardexAsync(new Common.Models.PageRequest());
+        var kardex = await harness.Inventory.GetKardexAsync(new Features.Inventory.KardexQuery(null));
         var row = kardex.Items.Single(r => r.ProductId == productId);
 
         Assert.Equal(10, row.TotalPurchased);

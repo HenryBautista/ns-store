@@ -50,4 +50,11 @@ public record PurchaseListItemDto(
     decimal TotalAmount,
     string? CreatedByName);
 
-public record PurchaseQuery(string? Search, DateOnly? From, DateOnly? To, int Page = 1, int PageSize = 25);
+/// <summary>See <c>SaleQuery</c> for why <paramref name="BranchId"/> is last and nullable.</summary>
+public record PurchaseQuery(
+    string? Search,
+    DateOnly? From,
+    DateOnly? To,
+    int Page = 1,
+    int PageSize = 25,
+    long? BranchId = null);

@@ -73,10 +73,15 @@ public record SaleListItemDto(
     decimal Balance,
     string? CreatedByName);
 
+/// <summary>
+/// <paramref name="BranchId"/> is last with a default so existing positional callers keep compiling.
+/// Null means "the caller's scope": their own branch for a seller, all branches for an admin.
+/// </summary>
 public record SaleQuery(
     string? Search,
     DateOnly? From,
     DateOnly? To,
     PaymentStatus? Status,
     int Page = 1,
-    int PageSize = 25);
+    int PageSize = 25,
+    long? BranchId = null);

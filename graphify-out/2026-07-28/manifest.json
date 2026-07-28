@@ -45,9 +45,9 @@
     "semantic_hash": "0ad77482ee0c3f32d8bda15f414cf075"
   },
   "src/NsStore.Api/Endpoints/UserEndpoints.cs": {
-    "mtime": 1785002129.7733212,
-    "ast_hash": "541cab3a3c4550e4d194170cfb520bd1",
-    "semantic_hash": "541cab3a3c4550e4d194170cfb520bd1"
+    "mtime": 1785252934.7235272,
+    "ast_hash": "f40cd45b9dbc0c56072c88ddb3b94313",
+    "semantic_hash": ""
   },
   "src/NsStore.Api/Middleware/AppExceptionHandler.cs": {
     "mtime": 1785002129.7733212,
@@ -70,9 +70,9 @@
     "semantic_hash": ""
   },
   "src/NsStore.Api/Program.cs": {
-    "mtime": 1785002129.7780037,
-    "ast_hash": "bb3d9eb640404eacb9833778660c1a8b",
-    "semantic_hash": "bb3d9eb640404eacb9833778660c1a8b"
+    "mtime": 1785252935.8907533,
+    "ast_hash": "90be9d7c1831f60fad56155c83b2209c",
+    "semantic_hash": ""
   },
   "src/NsStore.Api/Properties/launchSettings.json": {
     "mtime": 1785002129.781947,
@@ -85,9 +85,9 @@
     "semantic_hash": "c06d5e3e87142e98102fb607cfd62cce"
   },
   "src/NsStore.Api/Security/CurrentUser.cs": {
-    "mtime": 1785002129.7839575,
-    "ast_hash": "3252900f95bbf6046b632c570b5faad2",
-    "semantic_hash": "3252900f95bbf6046b632c570b5faad2"
+    "mtime": 1785252625.4576051,
+    "ast_hash": "d06df323520dc84759aa442b363251ba",
+    "semantic_hash": ""
   },
   "src/NsStore.Api/appsettings.Development.json": {
     "mtime": 1785002129.7839575,
@@ -100,19 +100,19 @@
     "semantic_hash": "ef01d7ffa7d3a48f49afb9f39020ca95"
   },
   "src/NsStore.Application/Common/Exceptions.cs": {
-    "mtime": 1785002129.787256,
-    "ast_hash": "1da3a79c93c3da65a3ffba5e6bdb3be2",
-    "semantic_hash": "1da3a79c93c3da65a3ffba5e6bdb3be2"
+    "mtime": 1785252482.3698745,
+    "ast_hash": "fbc63f3651a6aa532066f178ed11f97c",
+    "semantic_hash": ""
   },
   "src/NsStore.Application/Common/Interfaces/IAppDbContext.cs": {
-    "mtime": 1785002129.787256,
-    "ast_hash": "e27795754e8fa0436a021d4e702810e9",
-    "semantic_hash": "e27795754e8fa0436a021d4e702810e9"
+    "mtime": 1785252531.2736595,
+    "ast_hash": "a25d81e28f42ed8b96dfe294411f5c07",
+    "semantic_hash": ""
   },
   "src/NsStore.Application/Common/Interfaces/Ports.cs": {
-    "mtime": 1785002129.7891665,
-    "ast_hash": "adc004a0ede0a43a6f2b60bb8771c12c",
-    "semantic_hash": "adc004a0ede0a43a6f2b60bb8771c12c"
+    "mtime": 1785252477.5867229,
+    "ast_hash": "533ee7aa5453bebe2c8b0106af2af7ef",
+    "semantic_hash": ""
   },
   "src/NsStore.Application/Common/Models/Paging.cs": {
     "mtime": 1785002129.7891665,
@@ -120,9 +120,9 @@
     "semantic_hash": "7d4ff76e6f3210d09378190438fc09a3"
   },
   "src/NsStore.Application/DependencyInjection.cs": {
-    "mtime": 1785002129.7891665,
-    "ast_hash": "edd41b1d0a325bbb014eda4fea9f1624",
-    "semantic_hash": "edd41b1d0a325bbb014eda4fea9f1624"
+    "mtime": 1785252919.353965,
+    "ast_hash": "f6101c272e93a324104bda46caaf0777",
+    "semantic_hash": ""
   },
   "src/NsStore.Application/Features/Auth/AuthDtos.cs": {
     "mtime": 1785002129.7921734,
@@ -170,13 +170,13 @@
     "semantic_hash": "043687d9da18ecf678cc51e193118f59"
   },
   "src/NsStore.Application/Features/Inventory/InventoryDtos.cs": {
-    "mtime": 1785163596.4891481,
-    "ast_hash": "e93f5d82ccd8b347959ea37c8bfdbcd5",
+    "mtime": 1785254799.4126582,
+    "ast_hash": "d54e2cda8f835201cb623f0f3a0223c7",
     "semantic_hash": ""
   },
   "src/NsStore.Application/Features/Inventory/InventoryService.cs": {
-    "mtime": 1785252211.4731083,
-    "ast_hash": "8879797632ccc27497d4e0866d8d1cb8",
+    "mtime": 1785253192.1732624,
+    "ast_hash": "060ff9d696f27d98489f9860c23aa97e",
     "semantic_hash": ""
   },
   "src/NsStore.Application/Features/Inventory/InventoryValidators.cs": {
@@ -190,9 +190,9 @@
     "semantic_hash": "601b8c8315439390a840d0e1c81470fd"
   },
   "src/NsStore.Application/Features/Orders/OrderService.cs": {
-    "mtime": 1785002129.8046744,
-    "ast_hash": "58490284af09fe4a3ff9293d43b36b7e",
-    "semantic_hash": "58490284af09fe4a3ff9293d43b36b7e"
+    "mtime": 1785252914.3771877,
+    "ast_hash": "533cb3ba3c797bfefd137a50f100ed57",
+    "semantic_hash": ""
   },
   "src/NsStore.Application/Features/Orders/OrderValidators.cs": {
     "mtime": 1785002129.8046744,
@@ -205,9 +205,9 @@
     "semantic_hash": "0fee75f9e2686dd86ec89ce8894d9488"
   },
   "src/NsStore.Application/Features/Products/ProductService.cs": {
-    "mtime": 1785002129.8066912,
-    "ast_hash": "a76caa9746a0176ce3919fcd224e5088",
-    "semantic_hash": "a76caa9746a0176ce3919fcd224e5088"
+    "mtime": 1785252652.8510287,
+    "ast_hash": "61450089ad9df48f1330ed6801778bfc",
+    "semantic_hash": ""
   },
   "src/NsStore.Application/Features/Products/ProductValidators.cs": {
     "mtime": 1785002129.8087082,
@@ -215,13 +215,13 @@
     "semantic_hash": "a44dff1c84540818f76cc4406587f524"
   },
   "src/NsStore.Application/Features/Purchases/PurchaseDtos.cs": {
-    "mtime": 1785163596.492666,
-    "ast_hash": "92c4dfe02b6eeeafd734f2a95721d547",
+    "mtime": 1785252830.2235167,
+    "ast_hash": "0df61c69222e1611de1d12d87feb2cd6",
     "semantic_hash": ""
   },
   "src/NsStore.Application/Features/Purchases/PurchaseService.cs": {
-    "mtime": 1785252213.3398645,
-    "ast_hash": "ed567de588a671f680fcb7f5d89c0bae",
+    "mtime": 1785252823.5734062,
+    "ast_hash": "8204b3bcb414202979e64da4bff9970d",
     "semantic_hash": ""
   },
   "src/NsStore.Application/Features/Purchases/PurchaseValidators.cs": {
@@ -230,28 +230,28 @@
     "semantic_hash": "ec2af9527616f6ced12f31dcada43f31"
   },
   "src/NsStore.Application/Features/Quotes/QuoteService.cs": {
-    "mtime": 1785002129.8128467,
-    "ast_hash": "2fd4b9bb5d97891311efdf0cfac18fb2",
-    "semantic_hash": "2fd4b9bb5d97891311efdf0cfac18fb2"
+    "mtime": 1785252916.302258,
+    "ast_hash": "5856b667d46bc958f5340d6e51de90e3",
+    "semantic_hash": ""
   },
   "src/NsStore.Application/Features/Reports/ReportDtos.cs": {
-    "mtime": 1785163596.4946783,
-    "ast_hash": "5c189090aa321b4719db50ffc4408e68",
+    "mtime": 1785252863.7062647,
+    "ast_hash": "2bd9a48200e8f5091530158e2135b680",
     "semantic_hash": ""
   },
   "src/NsStore.Application/Features/Reports/ReportService.cs": {
-    "mtime": 1785163596.4966872,
-    "ast_hash": "3f983f6a9a4cb5455490a9a42fa639b4",
+    "mtime": 1785252860.0632272,
+    "ast_hash": "c557805c93fd7c6ac7fd5a38b7a936e6",
     "semantic_hash": ""
   },
   "src/NsStore.Application/Features/Sales/SaleDtos.cs": {
-    "mtime": 1785002129.816153,
-    "ast_hash": "73a02af1f76986fa340f8ebacc4c36e4",
-    "semantic_hash": "73a02af1f76986fa340f8ebacc4c36e4"
+    "mtime": 1785252791.3037589,
+    "ast_hash": "a3fed0973a50c93414c671a75e63b2dc",
+    "semantic_hash": ""
   },
   "src/NsStore.Application/Features/Sales/SaleService.cs": {
-    "mtime": 1785252114.9568322,
-    "ast_hash": "d3ee11b86465adcd18308ae266a7168d",
+    "mtime": 1785252794.9495096,
+    "ast_hash": "099b9eb85fc0425810c3da6b348b5898",
     "semantic_hash": ""
   },
   "src/NsStore.Application/Features/Sales/SaleValidators.cs": {
@@ -270,19 +270,19 @@
     "semantic_hash": "fcf854bafca573e7b3e1e188f6162c52"
   },
   "src/NsStore.Application/Features/Users/UserDtos.cs": {
-    "mtime": 1785002129.821316,
-    "ast_hash": "8a03539bc7fbc912d14c25ed77a47429",
-    "semantic_hash": "8a03539bc7fbc912d14c25ed77a47429"
+    "mtime": 1785252869.6829805,
+    "ast_hash": "4959b83a3660f1c673c4bcac58f5c9ce",
+    "semantic_hash": ""
   },
   "src/NsStore.Application/Features/Users/UserService.cs": {
-    "mtime": 1785002129.821316,
-    "ast_hash": "d9e85c1f4aa8fe57ef7db19045646176",
-    "semantic_hash": "d9e85c1f4aa8fe57ef7db19045646176"
+    "mtime": 1785252899.4865947,
+    "ast_hash": "da8c89cbf3538e45549310be56a96566",
+    "semantic_hash": ""
   },
   "src/NsStore.Application/Features/Users/UserValidators.cs": {
-    "mtime": 1785002129.821316,
-    "ast_hash": "d9149103b892773caedd94ee7f465378",
-    "semantic_hash": "d9149103b892773caedd94ee7f465378"
+    "mtime": 1785252902.881802,
+    "ast_hash": "3515256ed2a99ebfb7a803291a7ff1c7",
+    "semantic_hash": ""
   },
   "src/NsStore.Application/NsStore.Application.csproj": {
     "mtime": 1785002129.8233364,
@@ -300,8 +300,8 @@
     "semantic_hash": "198d2420979174852e87e74ae639b8c0"
   },
   "src/NsStore.Domain/Common/ErrorCodes.cs": {
-    "mtime": 1785209939.0482094,
-    "ast_hash": "83e92026b2f5b3c76913c72c5629f0e2",
+    "mtime": 1785252417.4028046,
+    "ast_hash": "aa2ad87528a2efb9df0eab8bd4d0fe30",
     "semantic_hash": ""
   },
   "src/NsStore.Domain/Entities/AppSetting.cs": {
@@ -320,24 +320,24 @@
     "semantic_hash": "e7e60fbe73a97b6787e9989c37d218f1"
   },
   "src/NsStore.Domain/Entities/Inventory.cs": {
-    "mtime": 1785252092.9458573,
-    "ast_hash": "0d3d52a85c5503ceb319b55dffd8ff20",
+    "mtime": 1785252437.5016854,
+    "ast_hash": "f19aece2bcbcb0c991e427d5972e2cc6",
     "semantic_hash": ""
   },
   "src/NsStore.Domain/Entities/OrderQuote.cs": {
-    "mtime": 1785002129.8309157,
-    "ast_hash": "672ae0146dcdb4baa347b6ec6ab349ef",
-    "semantic_hash": "672ae0146dcdb4baa347b6ec6ab349ef"
+    "mtime": 1785252462.933176,
+    "ast_hash": "112da23b3f6668f31927c0add72d8a65",
+    "semantic_hash": ""
   },
   "src/NsStore.Domain/Entities/Product.cs": {
-    "mtime": 1785002129.8332267,
-    "ast_hash": "a3be286a9c55d7872ce0b42fe0b5345b",
-    "semantic_hash": "a3be286a9c55d7872ce0b42fe0b5345b"
+    "mtime": 1785252439.6118598,
+    "ast_hash": "cd2f54fd69556f3ff5b832fab7a5d873",
+    "semantic_hash": ""
   },
   "src/NsStore.Domain/Entities/Purchase.cs": {
-    "mtime": 1785002129.8342721,
-    "ast_hash": "d2cb3b239fc0a17d8c0305681b0449ea",
-    "semantic_hash": "d2cb3b239fc0a17d8c0305681b0449ea"
+    "mtime": 1785252458.9019184,
+    "ast_hash": "64b71e48a220936ef6e08cbea71f0d90",
+    "semantic_hash": ""
   },
   "src/NsStore.Domain/Entities/RefreshToken.cs": {
     "mtime": 1785002129.835239,
@@ -345,14 +345,14 @@
     "semantic_hash": "e45cffa852e64fc5b042f9d49528130b"
   },
   "src/NsStore.Domain/Entities/Sale.cs": {
-    "mtime": 1785002129.8359747,
-    "ast_hash": "7934de20ea6ddf3e5524ff4b31f1a877",
-    "semantic_hash": "7934de20ea6ddf3e5524ff4b31f1a877"
+    "mtime": 1785252454.073192,
+    "ast_hash": "83cf2bf43af7b4bf3ba0b96081393ab6",
+    "semantic_hash": ""
   },
   "src/NsStore.Domain/Entities/User.cs": {
-    "mtime": 1785002129.8359747,
-    "ast_hash": "4baa667dc7aba5751adeea21b597f107",
-    "semantic_hash": "4baa667dc7aba5751adeea21b597f107"
+    "mtime": 1785252420.0943754,
+    "ast_hash": "9a896d07913635c34f6cacd6331aded8",
+    "semantic_hash": ""
   },
   "src/NsStore.Domain/Enums/Enums.cs": {
     "mtime": 1785002129.8379939,
@@ -375,9 +375,9 @@
     "semantic_hash": ""
   },
   "src/NsStore.Infrastructure/Persistence/AppDbContext.cs": {
-    "mtime": 1785002129.8379939,
-    "ast_hash": "bf641e4594757125e419a7975af08237",
-    "semantic_hash": "bf641e4594757125e419a7975af08237"
+    "mtime": 1785252532.9082768,
+    "ast_hash": "30a028dfec7a56b608900d78a86f5c77",
+    "semantic_hash": ""
   },
   "src/NsStore.Infrastructure/Persistence/AuditInterceptor.cs": {
     "mtime": 1785252102.564573,
@@ -390,24 +390,24 @@
     "semantic_hash": "52c3d4de833599cd51a76a84fcb96a75"
   },
   "src/NsStore.Infrastructure/Persistence/Configurations/IdentityConfigurations.cs": {
-    "mtime": 1785002129.8453014,
-    "ast_hash": "86e7c3377ad0b9d2a0430a6694b1a8d4",
-    "semantic_hash": "86e7c3377ad0b9d2a0430a6694b1a8d4"
+    "mtime": 1785252568.4360032,
+    "ast_hash": "cf2f55b1dab59f28cb508cf79cacf992",
+    "semantic_hash": ""
   },
   "src/NsStore.Infrastructure/Persistence/Configurations/ProductConfigurations.cs": {
-    "mtime": 1785002129.8453014,
-    "ast_hash": "17602362c069108abb7db2a40a22ed27",
-    "semantic_hash": "17602362c069108abb7db2a40a22ed27"
+    "mtime": 1785252562.2231512,
+    "ast_hash": "4ef9057b3979765dd63ec8e5bf21a159",
+    "semantic_hash": ""
   },
   "src/NsStore.Infrastructure/Persistence/Configurations/TransactionConfigurations.cs": {
-    "mtime": 1785209947.8292677,
-    "ast_hash": "6df2d8690737610de1a1ba5e4d14c153",
+    "mtime": 1785252595.03189,
+    "ast_hash": "6b84462a972497297a37b99a0b4120ef",
     "semantic_hash": ""
   },
   "src/NsStore.Infrastructure/Persistence/DatabaseInitializer.cs": {
-    "mtime": 1785002129.8453014,
-    "ast_hash": "fc7c63c7aa54ed90d1ce6be8745fdddd",
-    "semantic_hash": "fc7c63c7aa54ed90d1ce6be8745fdddd"
+    "mtime": 1785252951.875211,
+    "ast_hash": "6cff1406f4b3b73db6582be6f00723a4",
+    "semantic_hash": ""
   },
   "src/NsStore.Infrastructure/Persistence/DesignTimeDbContextFactory.cs": {
     "mtime": 1785002129.847748,
@@ -425,14 +425,14 @@
     "semantic_hash": ""
   },
   "src/NsStore.Infrastructure/Persistence/Migrations/AppDbContextModelSnapshot.cs": {
-    "mtime": 1785211361.3833015,
-    "ast_hash": "1d19f1a621ccba50a7d86a2f7ba0867f",
+    "mtime": 1785253244.4198687,
+    "ast_hash": "11c073d18b4b0476e630ad64124bea14",
     "semantic_hash": ""
   },
   "src/NsStore.Infrastructure/Persistence/StockLockService.cs": {
-    "mtime": 1785002129.84967,
-    "ast_hash": "cf38f517318afa105bad402455855fa7",
-    "semantic_hash": "cf38f517318afa105bad402455855fa7"
+    "mtime": 1785252604.5781283,
+    "ast_hash": "7153548dd895f1f5f0905afbd3183648",
+    "semantic_hash": ""
   },
   "src/NsStore.Infrastructure/Security/JwtOptions.cs": {
     "mtime": 1785002129.8525846,
@@ -445,9 +445,9 @@
     "semantic_hash": "432e423746c5543936097f1491105641"
   },
   "src/NsStore.Infrastructure/Security/TokenService.cs": {
-    "mtime": 1785002129.8525846,
-    "ast_hash": "628884eb247eaf63344ac8fd92ff6838",
-    "semantic_hash": "628884eb247eaf63344ac8fd92ff6838"
+    "mtime": 1785252608.5536535,
+    "ast_hash": "a5192db248f7a3ebe3d22ed47d9cf853",
+    "semantic_hash": ""
   },
   "tests/NsStore.Application.Tests/NsStore.Application.Tests.csproj": {
     "mtime": 1785002129.8525846,
@@ -455,18 +455,18 @@
     "semantic_hash": ""
   },
   "tests/NsStore.Application.Tests/PurchaseAndPricingTests.cs": {
-    "mtime": 1785002129.8525846,
-    "ast_hash": "fa4a4809c58b8a44097bb2ba80d29546",
-    "semantic_hash": "fa4a4809c58b8a44097bb2ba80d29546"
+    "mtime": 1785253101.3114898,
+    "ast_hash": "715903c2936331262de70757404222ff",
+    "semantic_hash": ""
   },
   "tests/NsStore.Application.Tests/SaleServiceTests.cs": {
-    "mtime": 1785002129.8578184,
-    "ast_hash": "98bc7847bb8ed57da80786cf9b484aba",
-    "semantic_hash": "98bc7847bb8ed57da80786cf9b484aba"
+    "mtime": 1785253105.8761148,
+    "ast_hash": "dd83459439209e551035c8d485792047",
+    "semantic_hash": ""
   },
   "tests/NsStore.Application.Tests/TestHarness.cs": {
-    "mtime": 1785252215.1846848,
-    "ast_hash": "f5cc8384c67ad4482c1f862b67033038",
+    "mtime": 1785253752.4739583,
+    "ast_hash": "5fc9b1c00a470cdd49faf5a07b568818",
     "semantic_hash": ""
   },
   "tests/NsStore.Domain.Tests/NsStore.Domain.Tests.csproj": {
@@ -475,9 +475,9 @@
     "semantic_hash": ""
   },
   "tests/NsStore.Domain.Tests/SaleTests.cs": {
-    "mtime": 1785002129.8578184,
-    "ast_hash": "a4f42673e1839eebb068783ef72acf6c",
-    "semantic_hash": "a4f42673e1839eebb068783ef72acf6c"
+    "mtime": 1785253027.0461862,
+    "ast_hash": "1ebb8bcb5a547670437a059d60dd8eaf",
+    "semantic_hash": ""
   },
   "tests/NsStore.Domain.Tests/StockLevelTests.cs": {
     "mtime": 1785002129.861217,
@@ -532,6 +532,66 @@
   "src/NsStore.Domain/Common/IHasCreationAudit.cs": {
     "mtime": 1785252087.630102,
     "ast_hash": "c3d110b5a66b0f3b0dd03331ae3d12a1",
+    "semantic_hash": ""
+  },
+  "src/NsStore.Api/Endpoints/BranchEndpoints.cs": {
+    "mtime": 1785252930.7473078,
+    "ast_hash": "f47fc70887bb34f7ed465ec2079f65f1",
+    "semantic_hash": ""
+  },
+  "src/NsStore.Application/Common/BranchScope.cs": {
+    "mtime": 1785252489.431961,
+    "ast_hash": "27215c7a687462b39fd309ae5576674b",
+    "semantic_hash": ""
+  },
+  "src/NsStore.Application/Features/Branches/BranchDtos.cs": {
+    "mtime": 1785252494.0693555,
+    "ast_hash": "415facf4113fdbddb4b513741d97fc17",
+    "semantic_hash": ""
+  },
+  "src/NsStore.Application/Features/Branches/BranchService.cs": {
+    "mtime": 1785252523.610356,
+    "ast_hash": "9cdd326aa882af16ad5deb4c7c4a6438",
+    "semantic_hash": ""
+  },
+  "src/NsStore.Application/Features/Branches/BranchValidators.cs": {
+    "mtime": 1785252496.4313502,
+    "ast_hash": "f593346ca9baed6ee882f4e084baedce",
+    "semantic_hash": ""
+  },
+  "src/NsStore.Domain/Common/AppClaimTypes.cs": {
+    "mtime": 1785252412.9141245,
+    "ast_hash": "8aff5bbe03655799bbd43b3b7dbb700a",
+    "semantic_hash": ""
+  },
+  "src/NsStore.Domain/Entities/Branch.cs": {
+    "mtime": 1785252410.0633414,
+    "ast_hash": "91144cf8720bbbc289f7f60e309d0c37",
+    "semantic_hash": ""
+  },
+  "src/NsStore.Infrastructure/Persistence/Configurations/BranchConfigurations.cs": {
+    "mtime": 1785252549.798158,
+    "ast_hash": "1af320f655c9c68a453a0e7ec496974a",
+    "semantic_hash": ""
+  },
+  "src/NsStore.Infrastructure/Persistence/Migrations/20260728154044_AddBranches.Designer.cs": {
+    "mtime": 1785253244.4159024,
+    "ast_hash": "89d0d3e125717be782e8d9822d4b53c8",
+    "semantic_hash": ""
+  },
+  "src/NsStore.Infrastructure/Persistence/Migrations/20260728154044_AddBranches.cs": {
+    "mtime": 1785253294.6865277,
+    "ast_hash": "14191d0434001cbf0098ec3cd20c682f",
+    "semantic_hash": ""
+  },
+  "tests/NsStore.Application.Tests/BranchScopingTests.cs": {
+    "mtime": 1785253756.778322,
+    "ast_hash": "baebb3677822e19929f6631cf5c0bd7b",
+    "semantic_hash": ""
+  },
+  "tests/NsStore.Application.Tests/BranchServiceTests.cs": {
+    "mtime": 1785253375.0750158,
+    "ast_hash": "318c5580968c9679e32fd254823c6696",
     "semantic_hash": ""
   }
 }

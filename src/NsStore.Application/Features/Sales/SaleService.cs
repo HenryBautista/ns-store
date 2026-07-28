@@ -20,6 +20,9 @@ public class SaleService(
 {
     public async Task<PagedResult<SaleListItemDto>> ListAsync(SaleQuery query, CancellationToken cancellationToken = default)
     {
+        // Billing is not readable across branches: a seller is pinned to their own whatever they ask.
+        query = query with { BranchId = currentUser.ResolveScopedBranch(query.BranchId) };
+
         var request = new PageRequest(query.Search, query.Page, query.PageSize);
         var sales = Filter(db.Sales.AsNoTracking(), query, request);
 
@@ -33,6 +36,8 @@ public class SaleService(
     /// <summary>Credit sales with an outstanding balance (legacy "No pagadas").</summary>
     public async Task<PagedResult<SaleListItemDto>> ListDebtsAsync(SaleQuery query, CancellationToken cancellationToken = default)
     {
+        query = query with { BranchId = currentUser.ResolveScopedBranch(query.BranchId) };
+
         var request = new PageRequest(query.Search, query.Page, query.PageSize);
         var sales = Filter(db.Sales.AsNoTracking(), query with { Status = null }, request)
             .Where(s => s.PaymentStatus == PaymentStatus.Credit && s.TotalPaid < s.TotalAmount);
@@ -51,8 +56,10 @@ public class SaleService(
             throw new NotFoundException(nameof(Client), clientId);
         }
 
+        var branchId = currentUser.ResolveScopedBranch();
+
         return await db.Sales.AsNoTracking()
-            .Where(s => s.ClientId == clientId)
+            .Where(s => s.ClientId == clientId && (branchId == null || s.BranchId == branchId))
             .OrderByDescending(s => s.SaleDate)
             .ThenByDescending(s => s.Id)
             .Select(ProjectToListItem)
@@ -324,6 +331,11 @@ public class SaleService(
         if (query.Status is { } status)
         {
             sales = sales.Where(s => s.PaymentStatus == status);
+        }
+
+        if (query.BranchId is { } branchId)
+        {
+            sales = sales.Where(s => s.BranchId == branchId);
         }
 
         return sales;

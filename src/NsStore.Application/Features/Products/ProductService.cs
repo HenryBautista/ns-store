@@ -1,4 +1,4 @@
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using NsStore.Application.Common;
 using NsStore.Application.Common.Interfaces;
 using NsStore.Application.Common.Models;
@@ -11,9 +11,12 @@ namespace NsStore.Application.Features.Products;
 
 public class ProductService(IAppDbContext db, SettingsService settingsService, ICurrentUser currentUser, TimeProvider clock)
 {
-    public async Task<PagedResult<ProductDto>> ListAsync(PageRequest request, CancellationToken cancellationToken = default)
+    public async Task<PagedResult<ProductDto>> ListAsync(
+        PageRequest request,
+        long? branchId = null,
+        CancellationToken cancellationToken = default)
     {
-        var branchId = currentUser.RequireBranch();
+        var scope = currentUser.ResolveReadableBranch(branchId);
         var query = db.Products.AsNoTracking().AsQueryable();
         if (request.TrimmedSearch is { } search)
         {
@@ -25,12 +28,14 @@ public class ProductService(IAppDbContext db, SettingsService settingsService, I
 
         return await query
             .OrderBy(p => p.Name)
-            .Select(ProjectToDto(branchId))
+            .Select(ProjectToDto(scope))
             .ToPagedResultAsync(request, cancellationToken);
     }
 
-    public async Task<ProductDto> GetAsync(long id, CancellationToken cancellationToken = default) =>
-        await db.Products.AsNoTracking().Where(p => p.Id == id).Select(ProjectToDto(currentUser.RequireBranch()))
+    public async Task<ProductDto> GetAsync(long id, long? branchId = null, CancellationToken cancellationToken = default) =>
+        await db.Products.AsNoTracking()
+            .Where(p => p.Id == id)
+            .Select(ProjectToDto(currentUser.ResolveReadableBranch(branchId)))
             .FirstOrDefaultAsync(cancellationToken)
         ?? throw new NotFoundException(nameof(Product), id);
 
@@ -63,7 +68,7 @@ public class ProductService(IAppDbContext db, SettingsService settingsService, I
 
         db.Products.Add(product);
         await db.SaveChangesAsync(cancellationToken);
-        return await GetAsync(product.Id, cancellationToken);
+        return await GetAsync(product.Id, cancellationToken: cancellationToken);
     }
 
     public async Task<ProductDto> UpdateAsync(long id, ProductRequest request, CancellationToken cancellationToken = default)
@@ -80,7 +85,7 @@ public class ProductService(IAppDbContext db, SettingsService settingsService, I
         product.WarrantyTermId = request.WarrantyTermId;
 
         await db.SaveChangesAsync(cancellationToken);
-        return await GetAsync(product.Id, cancellationToken);
+        return await GetAsync(product.Id, cancellationToken: cancellationToken);
     }
 
     public async Task DeleteAsync(long id, CancellationToken cancellationToken = default)
@@ -97,7 +102,7 @@ public class ProductService(IAppDbContext db, SettingsService settingsService, I
         product.PriceWithoutInvoice = decimal.Round(request.PriceWithoutInvoice, 2, MidpointRounding.AwayFromZero);
 
         await db.SaveChangesAsync(cancellationToken);
-        return await GetAsync(product.Id, cancellationToken);
+        return await GetAsync(product.Id, cancellationToken: cancellationToken);
     }
 
     /// <summary>
@@ -183,5 +188,6 @@ public class ProductService(IAppDbContext db, SettingsService settingsService, I
             p.WarrantyTerm != null ? p.WarrantyTerm.Description : null,
             p.PriceWithInvoice,
             p.PriceWithoutInvoice,
-            p.StockLevels.Where(s => s.BranchId == branchId).Sum(s => (int?)s.Quantity) ?? 0);
+            p.StockLevels.Where(s => s.BranchId == branchId).Sum(s => (int?)s.Quantity) ?? 0,
+            p.StockLevels.Sum(s => (int?)s.Quantity) ?? 0);
 }
