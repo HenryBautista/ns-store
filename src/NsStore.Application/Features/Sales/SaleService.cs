@@ -217,9 +217,7 @@ public class SaleService(
                     MovementType = MovementType.Sale,
                     QuantityDelta = -quantity,
                     ReferenceType = "sale",
-                    ReferenceId = sale.Id,
-                    CreatedBy = currentUser.UserId,
-                    CreatedAt = now
+                    ReferenceId = sale.Id
                 });
             }
 

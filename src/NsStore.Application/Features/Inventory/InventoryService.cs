@@ -7,7 +7,7 @@ using NsStore.Domain.Enums;
 
 namespace NsStore.Application.Features.Inventory;
 
-public class InventoryService(IAppDbContext db, ICurrentUser currentUser, IStockLockService stockLock, TimeProvider clock)
+public class InventoryService(IAppDbContext db, IStockLockService stockLock, TimeProvider clock)
 {
     public async Task<PagedResult<StockLevelDto>> ListStockAsync(PageRequest request, CancellationToken cancellationToken = default)
     {
@@ -116,9 +116,7 @@ public class InventoryService(IAppDbContext db, ICurrentUser currentUser, IStock
                 MovementType = MovementType.Adjustment,
                 QuantityDelta = request.QuantityDelta,
                 ReferenceType = "manual",
-                Notes = request.Notes?.Trim(),
-                CreatedBy = currentUser.UserId,
-                CreatedAt = now
+                Notes = request.Notes?.Trim()
             });
 
             await db.SaveChangesAsync(ct);

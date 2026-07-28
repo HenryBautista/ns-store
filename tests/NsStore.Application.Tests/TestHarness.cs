@@ -40,8 +40,8 @@ public sealed class TestHarness : IDisposable
 
         Settings = new SettingsService(Db, CurrentUser, Clock);
         Products = new ProductService(Db, Settings, Clock);
-        Inventory = new InventoryService(Db, CurrentUser, StockLock, Clock);
-        Purchases = new PurchaseService(Db, Inventory, StockLock, CurrentUser, Clock);
+        Inventory = new InventoryService(Db, StockLock, Clock);
+        Purchases = new PurchaseService(Db, Inventory, StockLock, Clock);
         Sales = new SaleService(Db, Inventory, StockLock, CurrentUser, Clock);
         Clients = new ClientService(Db, Clock);
 

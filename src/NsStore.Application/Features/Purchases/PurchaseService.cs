@@ -12,7 +12,6 @@ public class PurchaseService(
     IAppDbContext db,
     InventoryService inventory,
     IStockLockService stockLock,
-    ICurrentUser currentUser,
     TimeProvider clock)
 {
     public async Task<PagedResult<PurchaseListItemDto>> ListAsync(PurchaseQuery query, CancellationToken cancellationToken = default)
@@ -156,9 +155,7 @@ public class PurchaseService(
                         QuantityDelta = item.Quantity,
                         UnitCost = decimal.Round(item.UnitPrice, 2, MidpointRounding.AwayFromZero),
                         ReferenceType = "purchase",
-                        ReferenceId = purchase.Id,
-                        CreatedBy = currentUser.UserId,
-                        CreatedAt = now
+                        ReferenceId = purchase.Id
                     });
                 }
             }

@@ -34,7 +34,7 @@ public class StockLevel
 }
 
 /// <summary>Immutable inventory ledger entry. Feeds the kardex and the price suggestion.</summary>
-public class InventoryMovement
+public class InventoryMovement : IHasCreationAudit
 {
     public long Id { get; set; }
     public long ProductId { get; set; }

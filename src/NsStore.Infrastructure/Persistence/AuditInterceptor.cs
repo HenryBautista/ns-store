@@ -33,17 +33,17 @@ public class AuditInterceptor(ICurrentUser currentUser, TimeProvider clock) : Sa
         var now = clock.GetUtcNow();
         var userId = currentUser.UserId;
 
-        foreach (var entry in context.ChangeTracker.Entries<AuditableEntity>())
+        // Covers AuditableEntity and write-once entities such as InventoryMovement.
+        foreach (var entry in context.ChangeTracker.Entries<IHasCreationAudit>())
         {
-            switch (entry.State)
+            if (entry.State is EntityState.Added)
             {
-                case EntityState.Added:
-                    entry.Entity.CreatedAt = now;
-                    entry.Entity.CreatedBy ??= userId;
-                    break;
-                case EntityState.Modified:
-                    entry.Entity.UpdatedAt = now;
-                    break;
+                entry.Entity.CreatedAt = now;
+                entry.Entity.CreatedBy ??= userId;
+            }
+            else if (entry.State is EntityState.Modified && entry.Entity is AuditableEntity auditable)
+            {
+                auditable.UpdatedAt = now;
             }
         }
     }
