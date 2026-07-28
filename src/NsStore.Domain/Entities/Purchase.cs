@@ -6,6 +6,11 @@ namespace NsStore.Domain.Entities;
 public class Purchase : AuditableEntity
 {
     public DateOnly PurchaseDate { get; set; }
+
+    /// <summary>The branch the goods entered. Stamped from the caller's active branch.</summary>
+    public long BranchId { get; set; }
+
+    public Branch Branch { get; set; } = null!;
     public long SupplierId { get; set; }
     public Supplier Supplier { get; set; } = null!;
     public InvoiceType InvoiceType { get; set; }

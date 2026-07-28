@@ -5,6 +5,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
 using NsStore.Application.Common.Interfaces;
+using NsStore.Domain.Common;
 using NsStore.Domain.Entities;
 
 namespace NsStore.Infrastructure.Security;
@@ -32,7 +33,8 @@ public class TokenService(IOptions<JwtOptions> options, TimeProvider clock) : IT
                 [JwtRegisteredClaimNames.Sub] = user.Id.ToString(),
                 [JwtRegisteredClaimNames.Jti] = Guid.NewGuid().ToString("N"),
                 [ClaimTypes.Name] = user.Username,
-                [ClaimTypes.Role] = user.Role.ToString().ToLowerInvariant()
+                [ClaimTypes.Role] = user.Role.ToString().ToLowerInvariant(),
+                [AppClaimTypes.Branch] = user.BranchId.ToString()
             }
         };
 

@@ -7,25 +7,29 @@ using NsStore.Domain.Enums;
 
 namespace NsStore.Application.Features.Inventory;
 
-public class InventoryService(IAppDbContext db, IStockLockService stockLock, TimeProvider clock)
+public class InventoryService(IAppDbContext db, ICurrentUser currentUser, IStockLockService stockLock, TimeProvider clock)
 {
     public async Task<PagedResult<StockLevelDto>> ListStockAsync(PageRequest request, CancellationToken cancellationToken = default)
     {
+        var branchId = currentUser.RequireBranch();
         var query = db.Products.AsNoTracking().AsQueryable();
         if (request.TrimmedSearch is { } search)
         {
             query = query.Where(p => EF.Functions.Like(p.Name.ToLower(), $"%{search.ToLower()}%"));
         }
 
-        return await ProjectStockAsync(query.OrderBy(p => p.Name), request, cancellationToken);
+        return await ProjectStockAsync(query.OrderBy(p => p.Name), branchId, request, cancellationToken);
     }
 
     /// <summary>
-    /// Shared stock projection. The last purchase cost is a correlated subquery so the page costs
-    /// one round trip; the valuation is rounded once the rows are materialised.
+    /// Shared stock projection, scoped to one branch. The last purchase cost stays global — the
+    /// price list is global, so a single valuation rule is less confusing than per-branch costs on
+    /// an item with one sale price. It is a correlated subquery so the page costs one round trip;
+    /// the valuation is rounded once the rows are materialised.
     /// </summary>
     private async Task<PagedResult<StockLevelDto>> ProjectStockAsync(
         IQueryable<Product> products,
+        long branchId,
         PageRequest request,
         CancellationToken cancellationToken)
     {
@@ -37,8 +41,11 @@ public class InventoryService(IAppDbContext db, IStockLockService stockLock, Tim
                 p.PartNumber,
                 TrademarkName = p.Trademark != null ? p.Trademark.Name : null,
                 CategoryName = p.Category != null ? p.Category.Name : null,
-                Quantity = p.StockLevel != null ? p.StockLevel.Quantity : 0,
-                UpdatedAt = p.StockLevel != null ? p.StockLevel.UpdatedAt : p.CreatedAt,
+                Quantity = p.StockLevels.Where(s => s.BranchId == branchId).Sum(s => (int?)s.Quantity) ?? 0,
+                // FirstOrDefault rather than Max: the pair is unique so it is the same value, and
+                // SQLite refuses to aggregate DateTimeOffset, which would break the test suite.
+                UpdatedAt = p.StockLevels.Where(s => s.BranchId == branchId)
+                    .Select(s => (DateTimeOffset?)s.UpdatedAt).FirstOrDefault() ?? p.CreatedAt,
                 LastCost = db.InventoryMovements
                     .Where(m => m.ProductId == p.Id && m.MovementType == MovementType.Purchase && m.UnitCost != null)
                     // Ledger ids are monotonic: the highest id is the most recent purchase cost.
@@ -48,6 +55,12 @@ public class InventoryService(IAppDbContext db, IStockLockService stockLock, Tim
             })
             .ToPagedResultAsync(request, cancellationToken);
 
+        // One lookup for the whole page: the code is constant across it.
+        var branchCode = await db.Branches.AsNoTracking()
+            .Where(b => b.Id == branchId)
+            .Select(b => b.Code)
+            .FirstOrDefaultAsync(cancellationToken) ?? string.Empty;
+
         var items = page.Items
             .Select(r => new StockLevelDto(
                 r.Id,
@@ -55,6 +68,8 @@ public class InventoryService(IAppDbContext db, IStockLockService stockLock, Tim
                 r.PartNumber,
                 r.TrademarkName,
                 r.CategoryName,
+                branchId,
+                branchCode,
                 r.Quantity,
                 r.LastCost,
                 decimal.Round(r.Quantity * (r.LastCost ?? 0m), 2, MidpointRounding.AwayFromZero),
@@ -74,13 +89,17 @@ public class InventoryService(IAppDbContext db, IStockLockService stockLock, Tim
             throw new NotFoundException(nameof(Product), productId);
         }
 
+        var branchId = currentUser.RequireBranch();
+
         return await db.InventoryMovements.AsNoTracking()
-            .Where(m => m.ProductId == productId)
+            .Where(m => m.ProductId == productId && m.BranchId == branchId)
             .OrderByDescending(m => m.Id)
             .Select(m => new InventoryMovementDto(
                 m.Id,
                 m.ProductId,
                 m.Product.Name,
+                m.BranchId,
+                m.Branch.Code,
                 m.MovementType,
                 m.QuantityDelta,
                 m.UnitCost,
@@ -99,19 +118,22 @@ public class InventoryService(IAppDbContext db, IStockLockService stockLock, Tim
             throw new BadRequestException("Quantity delta must not be zero");
         }
 
+        var branchId = currentUser.RequireWritableBranch();
+
         return await db.ExecuteInTransactionAsync(async ct =>
         {
-            await stockLock.LockAsync([request.ProductId], ct);
+            await stockLock.LockAsync([new StockKey(branchId, request.ProductId)], ct);
 
             var product = await db.Products.FirstOrDefaultAsync(p => p.Id == request.ProductId, ct)
                 ?? throw new NotFoundException(nameof(Product), request.ProductId);
 
             var now = clock.GetUtcNow();
-            var stock = await GetOrCreateStockLevelAsync(product.Id, now, ct);
+            var stock = await GetOrCreateStockLevelAsync(branchId, product.Id, now, ct);
             stock.Apply(request.QuantityDelta, now);
 
             db.InventoryMovements.Add(new InventoryMovement
             {
+                BranchId = branchId,
                 ProductId = product.Id,
                 MovementType = MovementType.Adjustment,
                 QuantityDelta = request.QuantityDelta,
@@ -125,6 +147,7 @@ public class InventoryService(IAppDbContext db, IStockLockService stockLock, Tim
             // revalued at the product's last purchase cost.
             var page = await ProjectStockAsync(
                 db.Products.AsNoTracking().Where(p => p.Id == product.Id),
+                branchId,
                 new PageRequest(null, 1, 1),
                 ct);
 
@@ -134,6 +157,7 @@ public class InventoryService(IAppDbContext db, IStockLockService stockLock, Tim
 
     public async Task<PagedResult<KardexRowDto>> GetKardexAsync(PageRequest request, CancellationToken cancellationToken = default)
     {
+        var branchId = currentUser.RequireBranch();
         var query = db.Products.AsNoTracking().AsQueryable();
         if (request.TrimmedSearch is { } search)
         {
@@ -147,37 +171,48 @@ public class InventoryService(IAppDbContext db, IStockLockService stockLock, Tim
                 p.Name,
                 p.PartNumber,
                 p.Trademark != null ? p.Trademark.Name : null,
+                branchId,
                 db.InventoryMovements
-                    .Where(m => m.ProductId == p.Id && m.MovementType == MovementType.Purchase)
+                    .Where(m => m.ProductId == p.Id && m.BranchId == branchId && m.MovementType == MovementType.Purchase)
                     .Sum(m => (int?)m.QuantityDelta) ?? 0,
                 -(db.InventoryMovements
-                    .Where(m => m.ProductId == p.Id && m.MovementType == MovementType.Sale)
+                    .Where(m => m.ProductId == p.Id && m.BranchId == branchId && m.MovementType == MovementType.Sale)
                     .Sum(m => (int?)m.QuantityDelta) ?? 0),
                 db.InventoryMovements
-                    .Where(m => m.ProductId == p.Id && m.MovementType == MovementType.Adjustment)
+                    .Where(m => m.ProductId == p.Id && m.BranchId == branchId && m.MovementType == MovementType.Adjustment)
                     .Sum(m => (int?)m.QuantityDelta) ?? 0,
                 // Through Sales so the soft-delete filter applies; SaleItem carries none of its own.
+                // The branch filter goes on the sale, not the line.
                 db.Sales
+                    .Where(s => s.BranchId == branchId)
                     .SelectMany(s => s.Items)
                     .Where(i => i.ProductId == p.Id)
                     .Sum(i => (decimal?)i.Subtotal) ?? 0m,
-                p.StockLevel != null ? p.StockLevel.Quantity : 0))
+                p.StockLevels.Where(s => s.BranchId == branchId).Sum(s => (int?)s.Quantity) ?? 0))
             .ToPagedResultAsync(request, cancellationToken);
     }
 
     /// <summary>
-    /// Products created before this module existed (or seeded data) may lack a stock row;
-    /// create it lazily so quantities always have a home.
+    /// Safety net for a (branch, product) pair that somehow has no row. With the grid kept dense by
+    /// product creation, branch creation and the backfill this is effectively dead code — and it has
+    /// to stay that way, because a row created here was never locked, so it cannot protect against
+    /// oversell. The <c>ck_stock_levels_quantity_non_negative</c> check is the real last line.
     /// </summary>
-    internal async Task<StockLevel> GetOrCreateStockLevelAsync(long productId, DateTimeOffset now, CancellationToken cancellationToken)
+    internal async Task<StockLevel> GetOrCreateStockLevelAsync(
+        long branchId,
+        long productId,
+        DateTimeOffset now,
+        CancellationToken cancellationToken)
     {
-        var stock = await db.StockLevels.FirstOrDefaultAsync(s => s.ProductId == productId, cancellationToken);
+        var stock = await db.StockLevels
+            .FirstOrDefaultAsync(s => s.BranchId == branchId && s.ProductId == productId, cancellationToken);
+
         if (stock is not null)
         {
             return stock;
         }
 
-        stock = new StockLevel { ProductId = productId, Quantity = 0, UpdatedAt = now };
+        stock = new StockLevel { BranchId = branchId, ProductId = productId, Quantity = 0, UpdatedAt = now };
         db.StockLevels.Add(stock);
         return stock;
     }

@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using NsStore.Application.Common;
 using NsStore.Application.Common.Interfaces;
 using NsStore.Application.Common.Models;
+using NsStore.Application.Features.Branches;
 using NsStore.Application.Features.Inventory;
 using NsStore.Domain.Common;
 using NsStore.Domain.Entities;
@@ -12,6 +13,7 @@ namespace NsStore.Application.Features.Sales;
 public class SaleService(
     IAppDbContext db,
     InventoryService inventory,
+    BranchService branches,
     IStockLockService stockLock,
     ICurrentUser currentUser,
     TimeProvider clock)
@@ -65,6 +67,7 @@ public class SaleService(
             {
                 Sale = s,
                 s.Client,
+                BranchCode = s.Branch.Code,
                 CreatedByName = db.Users.Where(u => u.Id == s.CreatedBy).Select(u => u.Username).FirstOrDefault(),
                 Items = s.Items.Select(i => new SaleItemDto(
                     i.Id,
@@ -81,6 +84,7 @@ public class SaleService(
                     .Select(p => new PaymentDto(
                         p.Id,
                         p.SaleId,
+                        p.BranchId,
                         p.Amount,
                         p.PaymentDate,
                         p.CreatedAt,
@@ -93,6 +97,8 @@ public class SaleService(
         return new SaleDto(
             sale.Sale.Id,
             sale.Sale.SaleDate,
+            sale.Sale.BranchId,
+            sale.BranchCode,
             sale.Sale.ClientId,
             sale.Client.FullName,
             sale.Client.Nit,
@@ -144,8 +150,14 @@ public class SaleService(
             throw new BadRequestException("A sale requires at least one item");
         }
 
+        // The active branch is the only source of truth for a write; the request body carries none,
+        // so body and header can never contradict each other.
+        var branchId = currentUser.RequireWritableBranch();
+
         var saleId = await db.ExecuteInTransactionAsync(async ct =>
         {
+            await branches.EnsureWritableAsync(branchId, ct);
+
             if (!await db.Clients.AnyAsync(c => c.Id == request.ClientId, ct))
             {
                 throw new NotFoundException(nameof(Client), request.ClientId);
@@ -157,7 +169,7 @@ public class SaleService(
                 .ToDictionary(g => g.Key, g => g.Sum(i => i.Quantity));
 
             var productIds = quantities.Keys.ToList();
-            await stockLock.LockAsync(productIds, ct);
+            await stockLock.LockAsync([.. productIds.Select(id => new StockKey(branchId, id))], ct);
 
             var products = await db.Products
                 .Where(p => productIds.Contains(p.Id))
@@ -173,6 +185,7 @@ public class SaleService(
             var sale = new Sale
             {
                 SaleDate = request.SaleDate,
+                BranchId = branchId,
                 ClientId = request.ClientId,
                 InvoiceType = request.InvoiceType,
                 PaymentStatus = request.PaymentStatus
@@ -207,12 +220,13 @@ public class SaleService(
 
             foreach (var (productId, quantity) in quantities)
             {
-                var stock = await inventory.GetOrCreateStockLevelAsync(productId, now, ct);
+                var stock = await inventory.GetOrCreateStockLevelAsync(branchId, productId, now, ct);
                 // Throws INSUFFICIENT_STOCK if the sale would drive the level below zero.
                 stock.Apply(-quantity, now);
 
                 db.InventoryMovements.Add(new InventoryMovement
                 {
+                    BranchId = branchId,
                     ProductId = productId,
                     MovementType = MovementType.Sale,
                     QuantityDelta = -quantity,
@@ -224,7 +238,7 @@ public class SaleService(
             var initialPaid = ResolveInitialPaid(request, sale.TotalAmount);
             if (initialPaid > 0)
             {
-                var payment = sale.RegisterPayment(initialPaid, request.SaleDate, currentUser.UserId, now);
+                var payment = sale.RegisterPayment(initialPaid, request.SaleDate, branchId, currentUser.UserId, now);
                 db.Payments.Add(payment);
             }
 
@@ -237,8 +251,14 @@ public class SaleService(
 
     public async Task<SaleDto> RegisterPaymentAsync(long saleId, RegisterPaymentRequest request, CancellationToken cancellationToken = default)
     {
+        // The collecting branch, which is not necessarily the branch that made the sale — a credit
+        // can be settled anywhere, and the till that has to balance is the one that took the money.
+        var branchId = currentUser.RequireWritableBranch();
+
         await db.ExecuteInTransactionAsync(async ct =>
         {
+            await branches.EnsureWritableAsync(branchId, ct);
+
             var sale = await db.Sales
                 .Include(s => s.Payments)
                 .FirstOrDefaultAsync(s => s.Id == saleId, ct)
@@ -248,7 +268,7 @@ public class SaleService(
             var amount = decimal.Round(request.Amount, 2, MidpointRounding.AwayFromZero);
             var paymentDate = request.PaymentDate ?? DateOnly.FromDateTime(now.UtcDateTime);
 
-            var payment = sale.RegisterPayment(amount, paymentDate, currentUser.UserId, now);
+            var payment = sale.RegisterPayment(amount, paymentDate, branchId, currentUser.UserId, now);
             db.Payments.Add(payment);
 
             await db.SaveChangesAsync(ct);
@@ -313,6 +333,8 @@ public class SaleService(
         s => new SaleListItemDto(
             s.Id,
             s.SaleDate,
+            s.BranchId,
+            s.Branch.Code,
             s.ClientId,
             s.Client.Type == ClientType.Company
                 ? s.Client.Name

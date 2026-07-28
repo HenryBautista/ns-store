@@ -11,7 +11,9 @@ public record UserDto(
     string? MotherLastName,
     string FullName,
     UserRole Role,
-    bool IsActive);
+    bool IsActive,
+    long BranchId,
+    string? BranchCode);
 
 public record CreateUserRequest(
     string Username,
@@ -19,7 +21,10 @@ public record CreateUserRequest(
     string FirstName,
     string LastName,
     string? MotherLastName,
-    UserRole? Role);
+    UserRole? Role,
+    long BranchId);
+
+public record UpdateUserBranchRequest(long BranchId);
 
 public record UpdateUserRequest(
     string Username,
@@ -42,5 +47,8 @@ public static class UserMapping
         user.MotherLastName,
         user.FullName,
         user.Role,
-        user.IsActive);
+        user.IsActive,
+        user.BranchId,
+        // Null when the caller did not include the navigation; the id is always present.
+        user.Branch?.Code);
 }

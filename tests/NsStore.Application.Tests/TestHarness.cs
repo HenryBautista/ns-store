@@ -1,6 +1,7 @@
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using NsStore.Application.Common.Interfaces;
+using NsStore.Application.Features.Branches;
 using NsStore.Application.Features.Clients;
 using NsStore.Application.Features.Inventory;
 using NsStore.Application.Features.Products;
@@ -21,9 +22,9 @@ public sealed class TestHarness : IDisposable
 {
     private readonly SqliteConnection _connection;
 
-    public TestHarness(long userId = 1, UserRole role = UserRole.Admin)
+    public TestHarness(long userId = 1, UserRole role = UserRole.Admin, long branchId = MainBranchId)
     {
-        CurrentUser = new FakeCurrentUser(userId, role);
+        CurrentUser = new FakeCurrentUser(userId, role, branchId);
         Clock = new FakeTimeProvider(new DateTimeOffset(2026, 7, 24, 12, 0, 0, TimeSpan.Zero));
 
         _connection = new SqliteConnection("DataSource=:memory:");
@@ -39,20 +40,27 @@ public sealed class TestHarness : IDisposable
         Db.Database.EnsureCreated();
 
         Settings = new SettingsService(Db, CurrentUser, Clock);
-        Products = new ProductService(Db, Settings, Clock);
-        Inventory = new InventoryService(Db, StockLock, Clock);
-        Purchases = new PurchaseService(Db, Inventory, StockLock, Clock);
-        Sales = new SaleService(Db, Inventory, StockLock, CurrentUser, Clock);
+        Branches = new BranchService(Db, Clock);
+        Products = new ProductService(Db, Settings, CurrentUser, Clock);
+        Inventory = new InventoryService(Db, CurrentUser, StockLock, Clock);
+        Purchases = new PurchaseService(Db, Inventory, Branches, StockLock, CurrentUser, Clock);
+        Sales = new SaleService(Db, Inventory, Branches, StockLock, CurrentUser, Clock);
         Clients = new ClientService(Db, Clock);
 
         Seed();
     }
+
+    /// <summary>Seeded branches. A second one exists from the start: every cross-branch test needs a target.</summary>
+    public const long MainBranchId = 1;
+
+    public const long SouthBranchId = 2;
 
     public AppDbContext Db { get; }
     public FakeCurrentUser CurrentUser { get; }
     public FakeTimeProvider Clock { get; }
     public IStockLockService StockLock { get; } = new NoOpStockLock();
     public SettingsService Settings { get; }
+    public BranchService Branches { get; }
     public ProductService Products { get; }
     public InventoryService Inventory { get; }
     public PurchaseService Purchases { get; }
@@ -63,6 +71,12 @@ public sealed class TestHarness : IDisposable
 
     private void Seed()
     {
+        // Branches first: User.BranchId is NOT NULL with an FK and SQLite enforces foreign keys.
+        Db.Branches.AddRange(
+            new Branch { Id = MainBranchId, Code = "MAIN", Name = "Casa Matriz" },
+            new Branch { Id = SouthBranchId, Code = "SUR", Name = "Sucursal Sur" });
+        Db.SaveChanges();
+
         Db.Users.Add(new User
         {
             Id = 1,
@@ -70,7 +84,8 @@ public sealed class TestHarness : IDisposable
             PasswordHash = "x",
             FirstName = "Ada",
             LastName = "Admin",
-            Role = UserRole.Admin
+            Role = UserRole.Admin,
+            BranchId = MainBranchId
         });
 
         Db.AppSettings.AddRange(
@@ -96,13 +111,17 @@ public sealed class TestHarness : IDisposable
     }
 }
 
-public class FakeCurrentUser(long? userId, UserRole role) : ICurrentUser
+public class FakeCurrentUser(long? userId, UserRole role, long branchId) : ICurrentUser
 {
     public long? UserId { get; set; } = userId;
     public string? Username => "admin";
     public UserRole? Role { get; set; } = role;
     public bool IsAuthenticated => UserId is not null;
     public bool IsAdmin => Role == UserRole.Admin;
+
+    // Settable so a test can move an admin between branches, the same way it flips the role.
+    public long? HomeBranchId { get; set; } = branchId;
+    public long? ActiveBranchId { get; set; } = branchId;
 }
 
 public class FakeTimeProvider(DateTimeOffset now) : TimeProvider
@@ -114,6 +133,6 @@ public class FakeTimeProvider(DateTimeOffset now) : TimeProvider
 
 public class NoOpStockLock : IStockLockService
 {
-    public Task LockAsync(IReadOnlyCollection<long> productIds, CancellationToken cancellationToken = default) =>
+    public Task LockAsync(IReadOnlyCollection<StockKey> keys, CancellationToken cancellationToken = default) =>
         Task.CompletedTask;
 }

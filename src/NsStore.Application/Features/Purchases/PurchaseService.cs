@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using NsStore.Application.Common;
 using NsStore.Application.Common.Interfaces;
 using NsStore.Application.Common.Models;
+using NsStore.Application.Features.Branches;
 using NsStore.Application.Features.Inventory;
 using NsStore.Domain.Entities;
 using NsStore.Domain.Enums;
@@ -11,7 +12,9 @@ namespace NsStore.Application.Features.Purchases;
 public class PurchaseService(
     IAppDbContext db,
     InventoryService inventory,
+    BranchService branches,
     IStockLockService stockLock,
+    ICurrentUser currentUser,
     TimeProvider clock)
 {
     public async Task<PagedResult<PurchaseListItemDto>> ListAsync(PurchaseQuery query, CancellationToken cancellationToken = default)
@@ -40,6 +43,8 @@ public class PurchaseService(
             .Select(p => new PurchaseListItemDto(
                 p.Id,
                 p.PurchaseDate,
+                p.BranchId,
+                p.Branch.Code,
                 p.SupplierId,
                 p.Supplier.Name,
                 p.InvoiceType,
@@ -57,6 +62,8 @@ public class PurchaseService(
             .Select(p => new PurchaseDto(
                 p.Id,
                 p.PurchaseDate,
+                p.BranchId,
+                p.Branch.Code,
                 p.SupplierId,
                 p.Supplier.Name,
                 p.InvoiceType,
@@ -87,8 +94,12 @@ public class PurchaseService(
             throw new BadRequestException("A purchase requires at least one item");
         }
 
+        var branchId = currentUser.RequireWritableBranch();
+
         var purchaseId = await db.ExecuteInTransactionAsync(async ct =>
         {
+            await branches.EnsureWritableAsync(branchId, ct);
+
             if (!await db.Suppliers.AnyAsync(s => s.Id == request.SupplierId, ct))
             {
                 throw new NotFoundException(nameof(Supplier), request.SupplierId);
@@ -101,7 +112,7 @@ public class PurchaseService(
                 .ToList();
 
             var productIds = lines.Select(l => l.ProductId).ToList();
-            await stockLock.LockAsync(productIds, ct);
+            await stockLock.LockAsync([.. productIds.Select(id => new StockKey(branchId, id))], ct);
 
             var products = await db.Products
                 .Where(p => productIds.Contains(p.Id))
@@ -117,6 +128,7 @@ public class PurchaseService(
             var purchase = new Purchase
             {
                 PurchaseDate = request.PurchaseDate,
+                BranchId = branchId,
                 SupplierId = request.SupplierId,
                 InvoiceType = request.InvoiceType,
                 PaymentStatus = request.PaymentStatus
@@ -142,7 +154,7 @@ public class PurchaseService(
             foreach (var line in lines)
             {
                 var quantity = line.Items.Sum(i => i.Quantity);
-                var stock = await inventory.GetOrCreateStockLevelAsync(line.ProductId, now, ct);
+                var stock = await inventory.GetOrCreateStockLevelAsync(branchId, line.ProductId, now, ct);
                 stock.Apply(quantity, now);
 
                 // One movement per input line keeps the per-unit cost that feeds price suggestions.
@@ -150,6 +162,7 @@ public class PurchaseService(
                 {
                     db.InventoryMovements.Add(new InventoryMovement
                     {
+                        BranchId = branchId,
                         ProductId = line.ProductId,
                         MovementType = MovementType.Purchase,
                         QuantityDelta = item.Quantity,

@@ -76,7 +76,8 @@ public class QuoteService(IAppDbContext db, ICurrentUser currentUser, TimeProvid
         var ownerId = currentUser.UserId
             ?? throw new UnauthorizedException(ErrorCodes.Unauthorized, "No authenticated user");
 
-        var quote = new Quote { OwnerId = ownerId };
+        // Stamped so the column can carry history; quotes are not branch-filtered yet.
+        var quote = new Quote { OwnerId = ownerId, BranchId = currentUser.RequireWritableBranch() };
         Apply(quote, request);
 
         db.Quotes.Add(quote);

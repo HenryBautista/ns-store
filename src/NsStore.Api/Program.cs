@@ -129,6 +129,7 @@ if (app.Environment.IsDevelopment())
 
 var api = app.MapGroup("/api/v1");
 api.MapAuthEndpoints();
+api.MapBranchEndpoints();
 api.MapUserEndpoints();
 api.MapCatalogEndpoints();
 api.MapProductEndpoints();

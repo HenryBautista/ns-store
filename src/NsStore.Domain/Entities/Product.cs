@@ -23,7 +23,8 @@ public class Product : AuditableEntity
     /// <summary>Sale price used when the sale is issued without an invoice.</summary>
     public decimal PriceWithoutInvoice { get; set; }
 
-    public StockLevel? StockLevel { get; set; }
+    /// <summary>One row per branch. A projection that reads a quantity must say which branch.</summary>
+    public List<StockLevel> StockLevels { get; set; } = [];
 
     public decimal PriceFor(InvoiceType invoiceType) =>
         invoiceType == InvoiceType.WithInvoice ? PriceWithInvoice : PriceWithoutInvoice;

@@ -21,5 +21,8 @@ public static class ErrorCodes
     public const string PriceNotSet = "PRICE_NOT_SET";
     public const string NoPurchaseHistory = "NO_PURCHASE_HISTORY";
     public const string InvalidRefreshToken = "INVALID_REFRESH_TOKEN";
+    public const string BranchNotAllowed = "BRANCH_NOT_ALLOWED";
+    public const string BranchInactive = "BRANCH_INACTIVE";
+    public const string DuplicateBranchCode = "DUPLICATE_BRANCH_CODE";
     public const string InternalError = "INTERNAL_ERROR";
 }

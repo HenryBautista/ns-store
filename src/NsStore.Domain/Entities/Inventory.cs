@@ -4,11 +4,18 @@ using NsStore.Domain.Enums;
 namespace NsStore.Domain.Entities;
 
 /// <summary>
-/// Current quantity cache: exactly one row per product, never deleted (may sit at 0).
+/// Current quantity cache: exactly one row per (branch, product), never deleted (may sit at 0).
 /// The ledger (<see cref="InventoryMovement"/>) is the source of truth.
 /// </summary>
+/// <remarks>
+/// The grid must stay dense — every (active branch × live product) pair owns a row — because
+/// <c>SELECT … FOR UPDATE</c> only locks rows that exist. A missing row turns the pessimistic
+/// lock into a no-op and oversell becomes possible again.
+/// </remarks>
 public class StockLevel
 {
+    public long BranchId { get; set; }
+    public Branch Branch { get; set; } = null!;
     public long ProductId { get; set; }
     public Product Product { get; set; } = null!;
     public int Quantity { get; set; }
@@ -24,7 +31,7 @@ public class StockLevel
         {
             throw new DomainRuleException(
                 ErrorCodes.InsufficientStock,
-                $"Product {ProductId} requested {-quantityDelta}, available {Quantity}");
+                $"Product {ProductId} in branch {BranchId} requested {-quantityDelta}, available {Quantity}");
         }
 
         Quantity = result;
@@ -37,6 +44,11 @@ public class StockLevel
 public class InventoryMovement : IHasCreationAudit
 {
     public long Id { get; set; }
+
+    /// <summary>Which branch's stock moved.</summary>
+    public long BranchId { get; set; }
+
+    public Branch Branch { get; set; } = null!;
     public long ProductId { get; set; }
     public Product Product { get; set; } = null!;
     public MovementType MovementType { get; set; }

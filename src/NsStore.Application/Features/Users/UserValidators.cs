@@ -11,7 +11,13 @@ public class CreateUserRequestValidator : AbstractValidator<CreateUserRequest>
         RuleFor(x => x.FirstName).NotEmpty().MaximumLength(80);
         RuleFor(x => x.LastName).NotEmpty().MaximumLength(80);
         RuleFor(x => x.MotherLastName).MaximumLength(80);
+        RuleFor(x => x.BranchId).GreaterThan(0);
     }
+}
+
+public class UpdateUserBranchRequestValidator : AbstractValidator<UpdateUserBranchRequest>
+{
+    public UpdateUserBranchRequestValidator() => RuleFor(x => x.BranchId).GreaterThan(0);
 }
 
 public class UpdateUserRequestValidator : AbstractValidator<UpdateUserRequest>

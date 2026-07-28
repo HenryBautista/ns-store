@@ -50,7 +50,8 @@ public class SaleServiceTests
         Assert.Equal(PaymentStatus.Paid, sale.PaymentStatus);
         Assert.Single(sale.Payments);
 
-        var stock = await harness.Db.StockLevels.SingleAsync(s => s.ProductId == productId);
+        var stock = await harness.Db.StockLevels
+            .SingleAsync(s => s.ProductId == productId && s.BranchId == TestHarness.MainBranchId);
         Assert.Equal(8, stock.Quantity);
 
         var movement = await harness.Db.InventoryMovements
@@ -139,7 +140,8 @@ public class SaleServiceTests
         Assert.Equal(ErrorCodes.InsufficientStock, exception.ErrorCode);
 
         harness.Db.ChangeTracker.Clear();
-        var stock = await harness.Db.StockLevels.SingleAsync(s => s.ProductId == productId);
+        var stock = await harness.Db.StockLevels
+            .SingleAsync(s => s.ProductId == productId && s.BranchId == TestHarness.MainBranchId);
         Assert.Equal(3, stock.Quantity);
         Assert.Empty(await harness.Db.Sales.ToListAsync());
     }

@@ -18,6 +18,8 @@ public class DatabaseInitializer(
     ILogger<DatabaseInitializer> logger,
     TimeProvider clock)
 {
+    private const string DefaultBranchCode = "MAIN";
+
     public async Task MigrateAsync(CancellationToken cancellationToken = default)
     {
         await db.Database.MigrateAsync(cancellationToken);
@@ -26,8 +28,36 @@ public class DatabaseInitializer(
     public async Task SeedAsync(CancellationToken cancellationToken = default)
     {
         await SeedSettingsAsync(cancellationToken);
+
+        // Must come before the admin: User.BranchId is NOT NULL with an FK, and its own SaveChanges
+        // is what gives the admin a branch id to point at.
+        await SeedDefaultBranchAsync(cancellationToken);
+
         await SeedAdminAsync(cancellationToken);
         await db.SaveChangesAsync(cancellationToken);
+    }
+
+    /// <summary>
+    /// A fresh install still needs the branch the AddBranches migration seeds on an existing one.
+    /// Idempotent, same shape as <see cref="SeedSettingsAsync"/>.
+    /// </summary>
+    private async Task SeedDefaultBranchAsync(CancellationToken cancellationToken)
+    {
+        if (await db.Branches.AnyAsync(cancellationToken))
+        {
+            return;
+        }
+
+        db.Branches.Add(new Branch
+        {
+            Code = DefaultBranchCode,
+            Name = "Casa Matriz",
+            IsActive = true,
+            CreatedAt = clock.GetUtcNow()
+        });
+
+        await db.SaveChangesAsync(cancellationToken);
+        logger.LogInformation("Seeded default branch {Code}", DefaultBranchCode);
     }
 
     private async Task SeedSettingsAsync(CancellationToken cancellationToken)
@@ -60,6 +90,13 @@ public class DatabaseInitializer(
             return;
         }
 
+        var branchId = await db.Branches.OrderBy(b => b.Id).Select(b => b.Id).FirstOrDefaultAsync(cancellationToken);
+        if (branchId == 0)
+        {
+            logger.LogWarning("No branch exists; skipping admin seed");
+            return;
+        }
+
         var username = configuration["Seed:Admin:Username"];
         var password = configuration["Seed:Admin:Password"];
 
@@ -78,6 +115,7 @@ public class DatabaseInitializer(
             LastName = configuration["Seed:Admin:LastName"] ?? "NS Store",
             Role = UserRole.Admin,
             IsActive = true,
+            BranchId = branchId,
             CreatedAt = clock.GetUtcNow()
         });
 

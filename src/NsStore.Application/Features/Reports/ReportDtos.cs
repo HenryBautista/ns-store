@@ -53,6 +53,7 @@ public record PriceListReportDto(string Currency, IReadOnlyList<PriceListRowDto>
 public record WarrantyNoteDto(string NoteType, SaleDto Sale);
 
 public record DashboardDto(
+    long BranchId,
     DateOnly Date,
     decimal SalesTodayAmount,
     int SalesTodayCount,

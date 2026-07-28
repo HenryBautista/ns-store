@@ -36,6 +36,11 @@ public static class UserEndpoints
         group.MapPatch("/{id:long}/role", async (long id, UpdateUserRoleRequest request, UserService users, CancellationToken ct) =>
             Results.Ok(await users.SetRoleAsync(id, request.Role, ct)));
 
+        group.MapPut("/{id:long}/branch", async (long id, UpdateUserBranchRequest request, UserService users, CancellationToken ct) =>
+                Results.Ok(await users.SetBranchAsync(id, request.BranchId, ct)))
+            .WithValidation<UpdateUserBranchRequest>()
+            .WithSummary("Reassign a user's home branch; revokes their refresh tokens");
+
         return app;
     }
 }

@@ -8,6 +8,7 @@ namespace NsStore.Application.Common.Interfaces;
 /// </summary>
 public interface IAppDbContext
 {
+    DbSet<Branch> Branches { get; }
     DbSet<User> Users { get; }
     DbSet<RefreshToken> RefreshTokens { get; }
     DbSet<Trademark> Trademarks { get; }

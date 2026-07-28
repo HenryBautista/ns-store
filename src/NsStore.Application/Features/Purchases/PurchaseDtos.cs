@@ -22,6 +22,8 @@ public record PurchaseItemDto(
 public record PurchaseDto(
     long Id,
     DateOnly PurchaseDate,
+    long BranchId,
+    string BranchCode,
     long SupplierId,
     string SupplierName,
     InvoiceType InvoiceType,
@@ -37,6 +39,8 @@ public record PurchaseDto(
 public record PurchaseListItemDto(
     long Id,
     DateOnly PurchaseDate,
+    long BranchId,
+    string BranchCode,
     long SupplierId,
     string SupplierName,
     InvoiceType InvoiceType,

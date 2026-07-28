@@ -21,8 +21,10 @@ public sealed class ConflictException(string errorCode, string message)
     public override int StatusCode => 409;
 }
 
-public sealed class ForbiddenException(string message = "Not allowed to perform this operation")
-    : AppException(ErrorCodes.Forbidden, message)
+public sealed class ForbiddenException(
+    string message = "Not allowed to perform this operation",
+    string errorCode = ErrorCodes.Forbidden)
+    : AppException(errorCode, message)
 {
     public override int StatusCode => 403;
 }

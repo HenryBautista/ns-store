@@ -11,6 +11,16 @@ public interface ICurrentUser
     UserRole? Role { get; }
     bool IsAuthenticated { get; }
     bool IsAdmin { get; }
+
+    /// <summary>The caller's home branch, read from the <c>branch</c> claim.</summary>
+    long? HomeBranchId { get; }
+
+    /// <summary>
+    /// The branch this request operates on: the home branch, or the <c>X-Branch-Id</c> override.
+    /// Only an admin may override; a mismatched header is rejected rather than ignored, so a stale
+    /// SPA cannot silently write into the wrong branch.
+    /// </summary>
+    long? ActiveBranchId { get; }
 }
 
 public interface IPasswordHasher
@@ -30,11 +40,20 @@ public interface ITokenService
     string HashRefreshToken(string rawToken);
 }
 
+/// <summary>Identifies one <c>stock_levels</c> row — the unit of locking.</summary>
+public readonly record struct StockKey(long BranchId, long ProductId);
+
 /// <summary>
 /// Pessimistic lock on stock rows (<c>SELECT ... FOR UPDATE</c>) so concurrent sales of the
 /// same product serialize instead of overselling. No-op on providers without row locking.
 /// </summary>
+/// <remarks>
+/// Takes pairs rather than a branch plus product ids on purpose: a two-branch operation such as a
+/// transfer would otherwise need two calls, making the order between them a caller decision — and
+/// that is exactly what deadlocks an A→B transfer against a concurrent B→A. One pair-based
+/// signature means one ordering rule, applied in one place.
+/// </remarks>
 public interface IStockLockService
 {
-    Task LockAsync(IReadOnlyCollection<long> productIds, CancellationToken cancellationToken = default);
+    Task LockAsync(IReadOnlyCollection<StockKey> keys, CancellationToken cancellationToken = default);
 }

@@ -38,6 +38,11 @@ public class PurchaseConfiguration : IEntityTypeConfiguration<Purchase>
     {
         builder.Property(p => p.TotalAmount).HasPrecision(12, 2);
 
+        builder.HasOne(p => p.Branch)
+            .WithMany()
+            .HasForeignKey(p => p.BranchId)
+            .OnDelete(DeleteBehavior.Restrict);
+
         builder.HasOne(p => p.Supplier)
             .WithMany()
             .HasForeignKey(p => p.SupplierId)
@@ -49,6 +54,7 @@ public class PurchaseConfiguration : IEntityTypeConfiguration<Purchase>
             .OnDelete(DeleteBehavior.Cascade);
 
         builder.HasIndex(p => p.PurchaseDate);
+        builder.HasIndex(p => new { p.BranchId, p.PurchaseDate });
 
         builder.ToTable(t =>
         {
@@ -90,6 +96,11 @@ public class SaleConfiguration : IEntityTypeConfiguration<Sale>
         builder.Property(s => s.TotalPaid).HasPrecision(12, 2);
         builder.Ignore(s => s.Balance);
 
+        builder.HasOne(s => s.Branch)
+            .WithMany()
+            .HasForeignKey(s => s.BranchId)
+            .OnDelete(DeleteBehavior.Restrict);
+
         builder.HasOne(s => s.Client)
             .WithMany()
             .HasForeignKey(s => s.ClientId)
@@ -107,6 +118,7 @@ public class SaleConfiguration : IEntityTypeConfiguration<Sale>
 
         builder.HasIndex(s => s.SaleDate);
         builder.HasIndex(s => new { s.PaymentStatus, s.SaleDate });
+        builder.HasIndex(s => new { s.BranchId, s.SaleDate });
 
         builder.ToTable(t =>
         {
@@ -147,6 +159,12 @@ public class PaymentConfiguration : IEntityTypeConfiguration<Payment>
     public void Configure(EntityTypeBuilder<Payment> builder)
     {
         builder.Property(p => p.Amount).HasPrecision(12, 2);
+
+        builder.HasOne(p => p.Branch)
+            .WithMany()
+            .HasForeignKey(p => p.BranchId)
+            .OnDelete(DeleteBehavior.Restrict);
+
         builder.HasIndex(p => new { p.SaleId, p.PaymentDate });
         builder.ToTable(t => t.HasCheckConstraint("ck_payments_amount_positive", "amount > 0"));
     }
@@ -163,6 +181,11 @@ public class OrderConfiguration : IEntityTypeConfiguration<Order>
         builder.Property(o => o.Price).HasPrecision(12, 2);
         builder.Property(o => o.AdvanceAmount).HasPrecision(12, 2);
         builder.Ignore(o => o.Balance);
+
+        builder.HasOne(o => o.Branch)
+            .WithMany()
+            .HasForeignKey(o => o.BranchId)
+            .OnDelete(DeleteBehavior.Restrict);
 
         builder.HasOne(o => o.Owner)
             .WithMany()
@@ -192,6 +215,11 @@ public class QuoteConfiguration : IEntityTypeConfiguration<Quote>
         builder.Property(q => q.Detail).HasMaxLength(1000).IsRequired();
         builder.Property(q => q.SupplierName).HasMaxLength(160);
         builder.Property(q => q.Price).HasPrecision(12, 2);
+
+        builder.HasOne(q => q.Branch)
+            .WithMany()
+            .HasForeignKey(q => q.BranchId)
+            .OnDelete(DeleteBehavior.Restrict);
 
         builder.HasOne(q => q.Owner)
             .WithMany()

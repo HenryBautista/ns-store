@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using NsStore.Application.Common;
 using NsStore.Application.Common.Interfaces;
 using NsStore.Application.Common.Models;
 using NsStore.Application.Features.Inventory;
@@ -15,6 +16,7 @@ public class ReportService(
     PurchaseService purchases,
     InventoryService inventory,
     SettingsService settings,
+    ICurrentUser currentUser,
     TimeProvider clock)
 {
     private const int ReportPageSize = PageRequest.MaxPageSize;
@@ -71,8 +73,10 @@ public class ReportService(
         return new DebtsReportDto(page.Total, page.Items.Sum(s => s.Balance), page.Items);
     }
 
+    /// <summary>Prices are global; only the quantity column is branch-specific.</summary>
     public async Task<PriceListReportDto> GetPriceListAsync(string? search, CancellationToken cancellationToken = default)
     {
+        var branchId = currentUser.RequireBranch();
         var query = db.Products.AsNoTracking().AsQueryable();
         if (!string.IsNullOrWhiteSpace(search))
         {
@@ -89,7 +93,7 @@ public class ReportService(
                 p.Category != null ? p.Category.Name : null,
                 p.PriceWithInvoice,
                 p.PriceWithoutInvoice,
-                p.StockLevel != null ? p.StockLevel.Quantity : 0))
+                p.StockLevels.Where(s => s.BranchId == branchId).Sum(s => (int?)s.Quantity) ?? 0))
             .ToListAsync(cancellationToken);
 
         var appSettings = await settings.GetAsync(cancellationToken);
@@ -103,41 +107,48 @@ public class ReportService(
         return new WarrantyNoteDto(noteType, sale);
     }
 
+    /// <summary>Every figure is for the active branch; the catalog counts stay global.</summary>
     public async Task<DashboardDto> GetDashboardAsync(CancellationToken cancellationToken = default)
     {
+        var branchId = currentUser.RequireBranch();
         var today = DateOnly.FromDateTime(clock.GetUtcNow().UtcDateTime);
         var monthStart = new DateOnly(today.Year, today.Month, 1);
 
         var salesToday = await db.Sales.AsNoTracking()
-            .Where(s => s.SaleDate == today)
+            .Where(s => s.BranchId == branchId && s.SaleDate == today)
             .GroupBy(_ => 1)
             .Select(g => new { Count = g.Count(), Amount = g.Sum(s => s.TotalAmount) })
             .FirstOrDefaultAsync(cancellationToken);
 
         var salesMonth = await db.Sales.AsNoTracking()
-            .Where(s => s.SaleDate >= monthStart && s.SaleDate <= today)
+            .Where(s => s.BranchId == branchId && s.SaleDate >= monthStart && s.SaleDate <= today)
             .GroupBy(_ => 1)
             .Select(g => new { Count = g.Count(), Amount = g.Sum(s => s.TotalAmount) })
             .FirstOrDefaultAsync(cancellationToken);
 
         var purchasesMonth = await db.Purchases.AsNoTracking()
-            .Where(p => p.PurchaseDate >= monthStart && p.PurchaseDate <= today)
+            .Where(p => p.BranchId == branchId && p.PurchaseDate >= monthStart && p.PurchaseDate <= today)
             .SumAsync(p => (decimal?)p.TotalAmount, cancellationToken) ?? 0m;
 
         var debts = await db.Sales.AsNoTracking()
-            .Where(s => s.PaymentStatus == PaymentStatus.Credit && s.TotalPaid < s.TotalAmount)
+            .Where(s => s.BranchId == branchId && s.PaymentStatus == PaymentStatus.Credit && s.TotalPaid < s.TotalAmount)
             .GroupBy(_ => 1)
             .Select(g => new { Count = g.Count(), Amount = g.Sum(s => s.TotalAmount - s.TotalPaid) })
             .FirstOrDefaultAsync(cancellationToken);
 
         var productCount = await db.Products.AsNoTracking().CountAsync(cancellationToken);
-        var stockUnits = await db.StockLevels.AsNoTracking().SumAsync(s => (int?)s.Quantity, cancellationToken) ?? 0;
+        var stockUnits = await db.StockLevels.AsNoTracking()
+            .Where(s => s.BranchId == branchId)
+            .SumAsync(s => (int?)s.Quantity, cancellationToken) ?? 0;
+
+        // !Any(...) preserves the old semantics exactly: a product with no stock row counts as out.
         var outOfStock = await db.Products.AsNoTracking()
-            .CountAsync(p => p.StockLevel == null || p.StockLevel.Quantity == 0, cancellationToken);
+            .CountAsync(p => !p.StockLevels.Any(s => s.BranchId == branchId && s.Quantity > 0), cancellationToken);
         var pendingOrders = await db.Orders.AsNoTracking().CountAsync(o => o.Status == OrderStatus.Pending, cancellationToken);
         var quoteCount = await db.Quotes.AsNoTracking().CountAsync(cancellationToken);
 
         return new DashboardDto(
+            branchId,
             today,
             salesToday?.Amount ?? 0m,
             salesToday?.Count ?? 0,

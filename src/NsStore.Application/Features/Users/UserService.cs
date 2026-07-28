@@ -12,7 +12,7 @@ public class UserService(IAppDbContext db, IPasswordHasher passwordHasher, ICurr
 {
     public async Task<PagedResult<UserDto>> ListAsync(PageRequest request, CancellationToken cancellationToken = default)
     {
-        var query = db.Users.AsNoTracking().AsQueryable();
+        var query = db.Users.AsNoTracking().Include(u => u.Branch).AsQueryable();
         var search = request.TrimmedSearch;
         if (search is not null)
         {
@@ -44,6 +44,7 @@ public class UserService(IAppDbContext db, IPasswordHasher passwordHasher, ICurr
     {
         var username = request.Username.Trim();
         await EnsureUsernameAvailableAsync(username, null, cancellationToken);
+        await EnsureBranchUsableAsync(request.BranchId, cancellationToken);
 
         var user = new User
         {
@@ -53,12 +54,29 @@ public class UserService(IAppDbContext db, IPasswordHasher passwordHasher, ICurr
             LastName = request.LastName.Trim(),
             MotherLastName = request.MotherLastName?.Trim(),
             Role = request.Role ?? UserRole.Seller,
-            IsActive = true
+            IsActive = true,
+            BranchId = request.BranchId
         };
 
         db.Users.Add(user);
         await db.SaveChangesAsync(cancellationToken);
-        return user.ToDto();
+        return await GetAsync(user.Id, cancellationToken);
+    }
+
+    /// <summary>
+    /// Reassigning a user must revoke their refresh tokens: the <c>branch</c> claim is baked into
+    /// the access token, so without this the stale branch survives for a whole token lifetime.
+    /// </summary>
+    public async Task<UserDto> SetBranchAsync(long id, long branchId, CancellationToken cancellationToken = default)
+    {
+        var user = await FindAsync(id, cancellationToken);
+        await EnsureBranchUsableAsync(branchId, cancellationToken);
+
+        user.BranchId = branchId;
+        await RevokeAllTokensAsync(user.Id, cancellationToken);
+
+        await db.SaveChangesAsync(cancellationToken);
+        return await GetAsync(user.Id, cancellationToken);
     }
 
     public async Task<UserDto> UpdateAsync(long id, UpdateUserRequest request, CancellationToken cancellationToken = default)
@@ -115,8 +133,22 @@ public class UserService(IAppDbContext db, IPasswordHasher passwordHasher, ICurr
     }
 
     private async Task<User> FindAsync(long id, CancellationToken cancellationToken) =>
-        await db.Users.FirstOrDefaultAsync(u => u.Id == id, cancellationToken)
+        await db.Users.Include(u => u.Branch).FirstOrDefaultAsync(u => u.Id == id, cancellationToken)
         ?? throw new NotFoundException(nameof(User), id);
+
+    private async Task EnsureBranchUsableAsync(long branchId, CancellationToken cancellationToken)
+    {
+        var isActive = await db.Branches.AsNoTracking()
+            .Where(b => b.Id == branchId)
+            .Select(b => (bool?)b.IsActive)
+            .FirstOrDefaultAsync(cancellationToken)
+            ?? throw new NotFoundException(nameof(Branch), branchId);
+
+        if (!isActive)
+        {
+            throw new ConflictException(ErrorCodes.BranchInactive, $"Branch {branchId} is inactive");
+        }
+    }
 
     private async Task EnsureUsernameAvailableAsync(string username, long? excludeId, CancellationToken cancellationToken)
     {

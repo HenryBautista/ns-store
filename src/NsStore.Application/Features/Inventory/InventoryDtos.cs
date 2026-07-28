@@ -14,6 +14,8 @@ public record StockLevelDto(
     string? PartNumber,
     string? TrademarkName,
     string? CategoryName,
+    long BranchId,
+    string BranchCode,
     int Quantity,
     decimal? LastCost,
     decimal InventoryValue,
@@ -23,6 +25,8 @@ public record InventoryMovementDto(
     long Id,
     long ProductId,
     string ProductName,
+    long BranchId,
+    string BranchCode,
     MovementType MovementType,
     int QuantityDelta,
     decimal? UnitCost,
@@ -34,16 +38,17 @@ public record InventoryMovementDto(
 public record StockAdjustmentRequest(long ProductId, int QuantityDelta, string? Notes);
 
 /// <summary>
-/// Per-product ledger summary. <paramref name="TotalAdjusted"/> is the signed sum of manual
-/// adjustments, so <c>Available = TotalPurchased − TotalSold + TotalAdjusted</c> holds without the
-/// client inferring it. <paramref name="TotalSoldAmount"/> is the money actually invoiced for the
-/// product (sum of sale line subtotals), not units revalued at today's price.
+/// Per-product ledger summary for one branch. <paramref name="TotalAdjusted"/> is the signed sum of
+/// manual adjustments, so <c>Available = TotalPurchased − TotalSold + TotalAdjusted</c> holds
+/// without the client inferring it. <paramref name="TotalSoldAmount"/> is the money actually
+/// invoiced for the product (sum of sale line subtotals), not units revalued at today's price.
 /// </summary>
 public record KardexRowDto(
     long ProductId,
     string Name,
     string? PartNumber,
     string? TrademarkName,
+    long BranchId,
     int TotalPurchased,
     int TotalSold,
     int TotalAdjusted,
