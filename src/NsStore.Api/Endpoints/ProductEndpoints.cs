@@ -82,6 +82,27 @@ public static class InventoryEndpoints
             .RequireAuthorization(AuthPolicies.AdminOnly)
             .WithValidation<StockAdjustmentRequest>();
 
+        stock.MapGet("/transfers", async (
+                DateOnly? from,
+                DateOnly? to,
+                long? branchId,
+                int? page,
+                int? pageSize,
+                TransferService transfers,
+                CancellationToken ct) =>
+            Results.Ok(await transfers.ListAsync(new TransferQuery(from, to, branchId, page ?? 1, pageSize ?? 25), ct)));
+
+        stock.MapGet("/transfers/{id:long}", async (long id, TransferService transfers, CancellationToken ct) =>
+            Results.Ok(await transfers.GetAsync(id, ct)));
+
+        stock.MapPost("/transfers", async (CreateTransferRequest request, TransferService transfers, CancellationToken ct) =>
+            {
+                var created = await transfers.CreateAsync(request, ct);
+                return Results.Created($"/api/v1/stock/transfers/{created.Id}", created);
+            })
+            .WithValidation<CreateTransferRequest>()
+            .WithSummary("Move stock between branches. Immutable like a sale — correct a mistake with a reverse transfer, there is no PUT or DELETE");
+
         app.MapGet("/kardex", async (string? search, int? page, int? pageSize, long? branchId, InventoryService inventory, CancellationToken ct) =>
                 Results.Ok(await inventory.GetKardexAsync(new KardexQuery(search, branchId, page ?? 1, pageSize ?? 25), ct)))
             .WithTags("Inventory")

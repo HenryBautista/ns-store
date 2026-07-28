@@ -59,6 +59,7 @@ public class InventoryMovement : IHasCreationAudit
     /// <summary>Unit cost for purchases; feeds the sale-price suggestion.</summary>
     public decimal? UnitCost { get; set; }
 
+    /// <summary>One of <c>"sale"</c>, <c>"purchase"</c>, <c>"manual"</c> or <c>"transfer"</c>.</summary>
     public string? ReferenceType { get; set; }
     public long? ReferenceId { get; set; }
     public string? Notes { get; set; }

@@ -66,9 +66,10 @@ public record KardexQuery(string? Search, long? BranchId = null, int Page = 1, i
 }
 
 /// <summary>
-/// Per-product ledger summary for one branch. <paramref name="TotalAdjusted"/> is the signed sum of
-/// manual adjustments, so <c>Available = TotalPurchased − TotalSold + TotalAdjusted</c> holds
-/// without the client inferring it. <paramref name="TotalSoldAmount"/> is the money actually
+/// Per-product ledger summary for one branch. The identity the client can rely on is
+/// <c>Available = TotalPurchased − TotalSold + TotalAdjusted + TotalTransferredIn − TotalTransferredOut</c>.
+/// Transfers contribute two separate figures because dispatching and receiving are distinct
+/// physical events at distinct counters. <paramref name="TotalSoldAmount"/> is the money actually
 /// invoiced for the product (sum of sale line subtotals), not units revalued at today's price.
 /// </summary>
 public record KardexRowDto(
@@ -80,5 +81,7 @@ public record KardexRowDto(
     int TotalPurchased,
     int TotalSold,
     int TotalAdjusted,
+    int TotalTransferredIn,
+    int TotalTransferredOut,
     decimal TotalSoldAmount,
     int Available);

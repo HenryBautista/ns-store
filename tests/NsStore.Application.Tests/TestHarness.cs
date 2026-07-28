@@ -48,6 +48,7 @@ public sealed class TestHarness : IDisposable
         DocumentNumbers = new DocumentNumberService(Db);
         Purchases = new PurchaseService(Db, Inventory, Branches, StockLock, DocumentNumbers, CurrentUser, Clock);
         Sales = new SaleService(Db, Inventory, Branches, StockLock, DocumentNumbers, CurrentUser, Clock);
+        Transfers = new TransferService(Db, Inventory, Branches, StockLock, DocumentNumbers, CurrentUser, Clock);
         Clients = new ClientService(Db, Clock);
 
         Seed();
@@ -69,6 +70,7 @@ public sealed class TestHarness : IDisposable
     public InventoryService Inventory { get; }
     public PurchaseService Purchases { get; }
     public SaleService Sales { get; }
+    public TransferService Transfers { get; }
     public ClientService Clients { get; }
 
     public DateOnly Today => DateOnly.FromDateTime(Clock.GetUtcNow().UtcDateTime);

@@ -216,6 +216,12 @@ public class InventoryService(IAppDbContext db, ICurrentUser currentUser, IStock
                 db.InventoryMovements
                     .Where(m => m.ProductId == p.Id && m.BranchId == branchId && m.MovementType == MovementType.Adjustment)
                     .Sum(m => (int?)m.QuantityDelta) ?? 0,
+                db.InventoryMovements
+                    .Where(m => m.ProductId == p.Id && m.BranchId == branchId && m.MovementType == MovementType.TransferIn)
+                    .Sum(m => (int?)m.QuantityDelta) ?? 0,
+                -(db.InventoryMovements
+                    .Where(m => m.ProductId == p.Id && m.BranchId == branchId && m.MovementType == MovementType.TransferOut)
+                    .Sum(m => (int?)m.QuantityDelta) ?? 0),
                 // Through Sales so the soft-delete filter applies; SaleItem carries none of its own.
                 // The branch filter goes on the sale, not the line.
                 db.Sales
