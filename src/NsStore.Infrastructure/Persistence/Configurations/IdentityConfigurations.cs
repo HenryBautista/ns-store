@@ -17,7 +17,13 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
 
         // Case-insensitive uniqueness is enforced by a lower(username) partial unique index
         // created in the initial migration; this index serves lookups.
+        builder.HasOne(u => u.Branch)
+            .WithMany()
+            .HasForeignKey(u => u.BranchId)
+            .OnDelete(DeleteBehavior.Restrict);
+
         builder.HasIndex(u => u.Username);
+        builder.HasIndex(u => u.BranchId);
         builder.HasQueryFilter(u => u.DeletedAt == null);
     }
 }

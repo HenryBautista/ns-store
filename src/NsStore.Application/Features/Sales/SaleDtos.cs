@@ -26,11 +26,22 @@ public record SaleItemDto(
     decimal UnitPrice,
     decimal Subtotal);
 
-public record PaymentDto(long Id, long SaleId, decimal Amount, DateOnly PaymentDate, DateTimeOffset CreatedAt, string? CreatedByName);
+/// <summary><paramref name="BranchId"/> is the branch that received the money, not the one that sold.</summary>
+public record PaymentDto(
+    long Id,
+    long SaleId,
+    long BranchId,
+    decimal Amount,
+    DateOnly PaymentDate,
+    DateTimeOffset CreatedAt,
+    string? CreatedByName);
 
 public record SaleDto(
     long Id,
     DateOnly SaleDate,
+    long BranchId,
+    string BranchCode,
+    string Number,
     long ClientId,
     string ClientName,
     string? ClientNit,
@@ -51,6 +62,9 @@ public record SaleDto(
 public record SaleListItemDto(
     long Id,
     DateOnly SaleDate,
+    long BranchId,
+    string BranchCode,
+    string Number,
     long ClientId,
     string ClientName,
     InvoiceType InvoiceType,
@@ -61,10 +75,15 @@ public record SaleListItemDto(
     decimal Balance,
     string? CreatedByName);
 
+/// <summary>
+/// <paramref name="BranchId"/> is last with a default so existing positional callers keep compiling.
+/// Null means "the caller's scope": their own branch for a seller, all branches for an admin.
+/// </summary>
 public record SaleQuery(
     string? Search,
     DateOnly? From,
     DateOnly? To,
     PaymentStatus? Status,
     int Page = 1,
-    int PageSize = 25);
+    int PageSize = 25,
+    long? BranchId = null);

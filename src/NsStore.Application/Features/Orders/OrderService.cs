@@ -45,7 +45,8 @@ public class OrderService(IAppDbContext db, ICurrentUser currentUser, TimeProvid
         var ownerId = currentUser.UserId
             ?? throw new UnauthorizedException(ErrorCodes.Unauthorized, "No authenticated user");
 
-        var order = new Order { OwnerId = ownerId };
+        // Stamped so the column can carry history; orders are not branch-filtered yet.
+        var order = new Order { OwnerId = ownerId, BranchId = currentUser.RequireWritableBranch() };
         Apply(order, request);
         order.EnsureAdvanceWithinPrice();
 

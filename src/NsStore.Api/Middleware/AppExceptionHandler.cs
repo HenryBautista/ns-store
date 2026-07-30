@@ -71,6 +71,7 @@ public class AppExceptionHandler(IProblemDetailsService problemDetailsService, I
         ErrorCodes.InsufficientStock or
         ErrorCodes.PaymentExceedsBalance or
         ErrorCodes.AdvanceExceedsPrice or
+        ErrorCodes.SameBranchTransfer or
         ErrorCodes.Conflict => StatusCodes.Status409Conflict,
         _ => StatusCodes.Status400BadRequest
     };

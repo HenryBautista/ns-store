@@ -37,23 +37,25 @@ public static class ReportEndpoints
             .WithTags("Reports")
             .RequireAuthorization(AuthPolicies.Authenticated);
 
-        group.MapGet("/dashboard", async (ReportService reports, CancellationToken ct) =>
-            Results.Ok(await reports.GetDashboardAsync(ct)));
+        // branchId is honoured for an admin and ignored for a seller, who is always pinned to
+        // their own branch — see BranchScope.ResolveScopedBranch.
+        group.MapGet("/dashboard", async (long? branchId, ReportService reports, CancellationToken ct) =>
+            Results.Ok(await reports.GetDashboardAsync(branchId, ct)));
 
-        group.MapGet("/sales", async (DateOnly? from, DateOnly? to, string? search, ReportService reports, CancellationToken ct) =>
-            Results.Ok(await reports.GetSalesReportAsync(new ReportRange(from, to), search, ct)));
+        group.MapGet("/sales", async (DateOnly? from, DateOnly? to, string? search, long? branchId, ReportService reports, CancellationToken ct) =>
+            Results.Ok(await reports.GetSalesReportAsync(new ReportRange(from, to), search, branchId, ct)));
 
-        group.MapGet("/purchases", async (DateOnly? from, DateOnly? to, string? search, ReportService reports, CancellationToken ct) =>
-            Results.Ok(await reports.GetPurchasesReportAsync(new ReportRange(from, to), search, ct)));
+        group.MapGet("/purchases", async (DateOnly? from, DateOnly? to, string? search, long? branchId, ReportService reports, CancellationToken ct) =>
+            Results.Ok(await reports.GetPurchasesReportAsync(new ReportRange(from, to), search, branchId, ct)));
 
-        group.MapGet("/stock", async (string? search, ReportService reports, CancellationToken ct) =>
-            Results.Ok(await reports.GetStockReportAsync(search, ct)));
+        group.MapGet("/stock", async (string? search, long? branchId, ReportService reports, CancellationToken ct) =>
+            Results.Ok(await reports.GetStockReportAsync(search, branchId, ct)));
 
-        group.MapGet("/debts", async (string? search, ReportService reports, CancellationToken ct) =>
-            Results.Ok(await reports.GetDebtsReportAsync(search, ct)));
+        group.MapGet("/debts", async (string? search, long? branchId, ReportService reports, CancellationToken ct) =>
+            Results.Ok(await reports.GetDebtsReportAsync(search, branchId, ct)));
 
-        group.MapGet("/price-list", async (string? search, ReportService reports, CancellationToken ct) =>
-            Results.Ok(await reports.GetPriceListAsync(search, ct)));
+        group.MapGet("/price-list", async (string? search, long? branchId, ReportService reports, CancellationToken ct) =>
+            Results.Ok(await reports.GetPriceListAsync(search, branchId, ct)));
 
         group.MapGet("/sale-invoice/{saleId:long}", async (long saleId, ReportService reports, CancellationToken ct) =>
                 Results.Ok(await reports.GetWarrantyNoteAsync(saleId, ct)))

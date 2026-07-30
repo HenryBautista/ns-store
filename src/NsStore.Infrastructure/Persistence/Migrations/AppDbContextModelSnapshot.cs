@@ -23,7 +23,7 @@ namespace NsStore.Infrastructure.Persistence.Migrations
 
             NpgsqlModelBuilderExtensions.HasPostgresEnum(modelBuilder, "client_type", new[] { "company", "individual" });
             NpgsqlModelBuilderExtensions.HasPostgresEnum(modelBuilder, "invoice_type", new[] { "with_invoice", "without_invoice" });
-            NpgsqlModelBuilderExtensions.HasPostgresEnum(modelBuilder, "movement_type", new[] { "adjustment", "purchase", "sale" });
+            NpgsqlModelBuilderExtensions.HasPostgresEnum(modelBuilder, "movement_type", new[] { "adjustment", "purchase", "sale", "transfer_in", "transfer_out" });
             NpgsqlModelBuilderExtensions.HasPostgresEnum(modelBuilder, "order_status", new[] { "cancelled", "delivered", "pending" });
             NpgsqlModelBuilderExtensions.HasPostgresEnum(modelBuilder, "payment_status", new[] { "credit", "paid" });
             NpgsqlModelBuilderExtensions.HasPostgresEnum(modelBuilder, "user_role", new[] { "admin", "seller" });
@@ -54,6 +54,78 @@ namespace NsStore.Infrastructure.Persistence.Migrations
                         .HasName("pk_app_settings");
 
                     b.ToTable("app_settings", (string)null);
+                });
+
+            modelBuilder.Entity("NsStore.Domain.Entities.Branch", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("Address")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("address");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(8)
+                        .HasColumnType("character varying(8)")
+                        .HasColumnName("code");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<long?>("CreatedBy")
+                        .HasColumnType("bigint")
+                        .HasColumnName("created_by");
+
+                    b.Property<DateTimeOffset?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("deleted_at");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_active");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(120)
+                        .HasColumnType("character varying(120)")
+                        .HasColumnName("name");
+
+                    b.Property<string>("Phone")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("phone");
+
+                    b.Property<long>("PurchaseSequence")
+                        .HasColumnType("bigint")
+                        .HasColumnName("purchase_sequence");
+
+                    b.Property<long>("SaleSequence")
+                        .HasColumnType("bigint")
+                        .HasColumnName("sale_sequence");
+
+                    b.Property<long>("TransferSequence")
+                        .HasColumnType("bigint")
+                        .HasColumnName("transfer_sequence");
+
+                    b.Property<DateTimeOffset?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.HasKey("Id")
+                        .HasName("pk_branches");
+
+                    b.HasIndex("Code")
+                        .HasDatabaseName("ix_branches_code");
+
+                    b.ToTable("branches", (string)null);
                 });
 
             modelBuilder.Entity("NsStore.Domain.Entities.Category", b =>
@@ -205,6 +277,10 @@ namespace NsStore.Infrastructure.Persistence.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
+                    b.Property<long>("BranchId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("branch_id");
+
                     b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_at");
@@ -253,6 +329,9 @@ namespace NsStore.Infrastructure.Persistence.Migrations
                     b.HasIndex("ReferenceType", "ReferenceId")
                         .HasDatabaseName("ix_inventory_movements_reference_type_reference_id");
 
+                    b.HasIndex("BranchId", "ProductId", "CreatedAt")
+                        .HasDatabaseName("ix_inventory_movements_branch_id_product_id_created_at");
+
                     b.ToTable("inventory_movements", null, t =>
                         {
                             t.HasCheckConstraint("ck_inventory_movements_quantity_delta_not_zero", "quantity_delta <> 0");
@@ -272,6 +351,10 @@ namespace NsStore.Infrastructure.Persistence.Migrations
                         .HasPrecision(12, 2)
                         .HasColumnType("numeric(12,2)")
                         .HasColumnName("advance_amount");
+
+                    b.Property<long>("BranchId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("branch_id");
 
                     b.Property<string>("ClientName")
                         .IsRequired()
@@ -331,6 +414,9 @@ namespace NsStore.Infrastructure.Persistence.Migrations
                     b.HasKey("Id")
                         .HasName("pk_orders");
 
+                    b.HasIndex("BranchId")
+                        .HasDatabaseName("ix_orders_branch_id");
+
                     b.HasIndex("OrderDate")
                         .HasDatabaseName("ix_orders_order_date");
 
@@ -359,6 +445,10 @@ namespace NsStore.Infrastructure.Persistence.Migrations
                         .HasColumnType("numeric(12,2)")
                         .HasColumnName("amount");
 
+                    b.Property<long>("BranchId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("branch_id");
+
                     b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_at");
@@ -377,6 +467,9 @@ namespace NsStore.Infrastructure.Persistence.Migrations
 
                     b.HasKey("Id")
                         .HasName("pk_payments");
+
+                    b.HasIndex("BranchId")
+                        .HasDatabaseName("ix_payments_branch_id");
 
                     b.HasIndex("SaleId", "PaymentDate")
                         .HasDatabaseName("ix_payments_sale_id_payment_date");
@@ -490,6 +583,14 @@ namespace NsStore.Infrastructure.Persistence.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
+                    b.Property<long>("BranchId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("branch_id");
+
+                    b.Property<long>("BranchSequence")
+                        .HasColumnType("bigint")
+                        .HasColumnName("branch_sequence");
+
                     b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_at");
@@ -505,6 +606,12 @@ namespace NsStore.Infrastructure.Persistence.Migrations
                     b.Property<InvoiceType>("InvoiceType")
                         .HasColumnType("invoice_type")
                         .HasColumnName("invoice_type");
+
+                    b.Property<string>("Number")
+                        .IsRequired()
+                        .HasMaxLength(24)
+                        .HasColumnType("character varying(24)")
+                        .HasColumnName("number");
 
                     b.Property<PaymentStatus>("PaymentStatus")
                         .HasColumnType("payment_status")
@@ -534,11 +641,22 @@ namespace NsStore.Infrastructure.Persistence.Migrations
                     b.HasKey("Id")
                         .HasName("pk_purchases");
 
+                    b.HasIndex("Number")
+                        .IsUnique()
+                        .HasDatabaseName("ix_purchases_number");
+
                     b.HasIndex("PurchaseDate")
                         .HasDatabaseName("ix_purchases_purchase_date");
 
                     b.HasIndex("SupplierId")
                         .HasDatabaseName("ix_purchases_supplier_id");
+
+                    b.HasIndex("BranchId", "BranchSequence")
+                        .IsUnique()
+                        .HasDatabaseName("ix_purchases_branch_id_branch_sequence");
+
+                    b.HasIndex("BranchId", "PurchaseDate")
+                        .HasDatabaseName("ix_purchases_branch_id_purchase_date");
 
                     b.ToTable("purchases", null, t =>
                         {
@@ -605,6 +723,10 @@ namespace NsStore.Infrastructure.Persistence.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
+                    b.Property<long>("BranchId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("branch_id");
+
                     b.Property<string>("ClientName")
                         .IsRequired()
                         .HasMaxLength(160)
@@ -658,6 +780,9 @@ namespace NsStore.Infrastructure.Persistence.Migrations
 
                     b.HasKey("Id")
                         .HasName("pk_quotes");
+
+                    b.HasIndex("BranchId")
+                        .HasDatabaseName("ix_quotes_branch_id");
 
                     b.HasIndex("OwnerId")
                         .HasDatabaseName("ix_quotes_owner_id");
@@ -731,6 +856,14 @@ namespace NsStore.Infrastructure.Persistence.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
+                    b.Property<long>("BranchId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("branch_id");
+
+                    b.Property<long>("BranchSequence")
+                        .HasColumnType("bigint")
+                        .HasColumnName("branch_sequence");
+
                     b.Property<long>("ClientId")
                         .HasColumnType("bigint")
                         .HasColumnName("client_id");
@@ -750,6 +883,12 @@ namespace NsStore.Infrastructure.Persistence.Migrations
                     b.Property<InvoiceType>("InvoiceType")
                         .HasColumnType("invoice_type")
                         .HasColumnName("invoice_type");
+
+                    b.Property<string>("Number")
+                        .IsRequired()
+                        .HasMaxLength(24)
+                        .HasColumnType("character varying(24)")
+                        .HasColumnName("number");
 
                     b.Property<PaymentStatus>("PaymentStatus")
                         .HasColumnType("payment_status")
@@ -783,8 +922,19 @@ namespace NsStore.Infrastructure.Persistence.Migrations
                     b.HasIndex("ClientId")
                         .HasDatabaseName("ix_sales_client_id");
 
+                    b.HasIndex("Number")
+                        .IsUnique()
+                        .HasDatabaseName("ix_sales_number");
+
                     b.HasIndex("SaleDate")
                         .HasDatabaseName("ix_sales_sale_date");
+
+                    b.HasIndex("BranchId", "BranchSequence")
+                        .IsUnique()
+                        .HasDatabaseName("ix_sales_branch_id_branch_sequence");
+
+                    b.HasIndex("BranchId", "SaleDate")
+                        .HasDatabaseName("ix_sales_branch_id_sale_date");
 
                     b.HasIndex("PaymentStatus", "SaleDate")
                         .HasDatabaseName("ix_sales_payment_status_sale_date");
@@ -849,6 +999,10 @@ namespace NsStore.Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("NsStore.Domain.Entities.StockLevel", b =>
                 {
+                    b.Property<long>("BranchId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("branch_id");
+
                     b.Property<long>("ProductId")
                         .HasColumnType("bigint")
                         .HasColumnName("product_id");
@@ -866,12 +1020,135 @@ namespace NsStore.Infrastructure.Persistence.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("version");
 
-                    b.HasKey("ProductId")
+                    b.HasKey("BranchId", "ProductId")
                         .HasName("pk_stock_levels");
+
+                    b.HasIndex("ProductId")
+                        .HasDatabaseName("ix_stock_levels_product_id");
 
                     b.ToTable("stock_levels", null, t =>
                         {
                             t.HasCheckConstraint("ck_stock_levels_quantity_non_negative", "quantity >= 0");
+                        });
+                });
+
+            modelBuilder.Entity("NsStore.Domain.Entities.StockTransfer", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<long>("BranchSequence")
+                        .HasColumnType("bigint")
+                        .HasColumnName("branch_sequence");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<long?>("CreatedBy")
+                        .HasColumnType("bigint")
+                        .HasColumnName("created_by");
+
+                    b.Property<DateTimeOffset?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("deleted_at");
+
+                    b.Property<long>("DestinationBranchId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("destination_branch_id");
+
+                    b.Property<string>("Notes")
+                        .HasMaxLength(400)
+                        .HasColumnType("character varying(400)")
+                        .HasColumnName("notes");
+
+                    b.Property<string>("Number")
+                        .IsRequired()
+                        .HasMaxLength(24)
+                        .HasColumnType("character varying(24)")
+                        .HasColumnName("number");
+
+                    b.Property<long>("OriginBranchId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("origin_branch_id");
+
+                    b.Property<int>("TotalQuantity")
+                        .HasColumnType("integer")
+                        .HasColumnName("total_quantity");
+
+                    b.Property<DateOnly>("TransferDate")
+                        .HasColumnType("date")
+                        .HasColumnName("transfer_date");
+
+                    b.Property<DateTimeOffset?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.HasKey("Id")
+                        .HasName("pk_stock_transfers");
+
+                    b.HasIndex("Number")
+                        .IsUnique()
+                        .HasDatabaseName("ix_stock_transfers_number");
+
+                    b.HasIndex("TransferDate")
+                        .HasDatabaseName("ix_stock_transfers_transfer_date");
+
+                    b.HasIndex("DestinationBranchId", "TransferDate")
+                        .HasDatabaseName("ix_stock_transfers_destination_branch_id_transfer_date");
+
+                    b.HasIndex("OriginBranchId", "BranchSequence")
+                        .IsUnique()
+                        .HasDatabaseName("ix_stock_transfers_origin_branch_id_branch_sequence");
+
+                    b.HasIndex("OriginBranchId", "TransferDate")
+                        .HasDatabaseName("ix_stock_transfers_origin_branch_id_transfer_date");
+
+                    b.ToTable("stock_transfers", null, t =>
+                        {
+                            t.HasCheckConstraint("ck_stock_transfers_branches_differ", "origin_branch_id <> destination_branch_id");
+
+                            t.HasCheckConstraint("ck_stock_transfers_total_quantity_positive", "total_quantity > 0");
+                        });
+                });
+
+            modelBuilder.Entity("NsStore.Domain.Entities.StockTransferItem", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<long>("ProductId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("product_id");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("integer")
+                        .HasColumnName("quantity");
+
+                    b.Property<long>("TransferId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("transfer_id");
+
+                    b.HasKey("Id")
+                        .HasName("pk_stock_transfer_items");
+
+                    b.HasIndex("ProductId")
+                        .HasDatabaseName("ix_stock_transfer_items_product_id");
+
+                    b.HasIndex("TransferId")
+                        .HasDatabaseName("ix_stock_transfer_items_transfer_id");
+
+                    b.ToTable("stock_transfer_items", null, t =>
+                        {
+                            t.HasCheckConstraint("ck_stock_transfer_items_quantity_positive", "quantity > 0");
                         });
                 });
 
@@ -974,6 +1251,10 @@ namespace NsStore.Infrastructure.Persistence.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
+                    b.Property<long>("BranchId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("branch_id");
+
                     b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_at");
@@ -1030,6 +1311,9 @@ namespace NsStore.Infrastructure.Persistence.Migrations
                     b.HasKey("Id")
                         .HasName("pk_users");
 
+                    b.HasIndex("BranchId")
+                        .HasDatabaseName("ix_users_branch_id");
+
                     b.HasIndex("Username")
                         .HasDatabaseName("ix_users_username");
 
@@ -1078,6 +1362,13 @@ namespace NsStore.Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("NsStore.Domain.Entities.InventoryMovement", b =>
                 {
+                    b.HasOne("NsStore.Domain.Entities.Branch", "Branch")
+                        .WithMany()
+                        .HasForeignKey("BranchId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("fk_inventory_movements_branches_branch_id");
+
                     b.HasOne("NsStore.Domain.Entities.Product", "Product")
                         .WithMany()
                         .HasForeignKey("ProductId")
@@ -1085,11 +1376,20 @@ namespace NsStore.Infrastructure.Persistence.Migrations
                         .IsRequired()
                         .HasConstraintName("fk_inventory_movements_products_product_id");
 
+                    b.Navigation("Branch");
+
                     b.Navigation("Product");
                 });
 
             modelBuilder.Entity("NsStore.Domain.Entities.Order", b =>
                 {
+                    b.HasOne("NsStore.Domain.Entities.Branch", "Branch")
+                        .WithMany()
+                        .HasForeignKey("BranchId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("fk_orders_branches_branch_id");
+
                     b.HasOne("NsStore.Domain.Entities.User", "Owner")
                         .WithMany()
                         .HasForeignKey("OwnerId")
@@ -1097,17 +1397,28 @@ namespace NsStore.Infrastructure.Persistence.Migrations
                         .IsRequired()
                         .HasConstraintName("fk_orders_users_owner_id");
 
+                    b.Navigation("Branch");
+
                     b.Navigation("Owner");
                 });
 
             modelBuilder.Entity("NsStore.Domain.Entities.Payment", b =>
                 {
+                    b.HasOne("NsStore.Domain.Entities.Branch", "Branch")
+                        .WithMany()
+                        .HasForeignKey("BranchId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("fk_payments_branches_branch_id");
+
                     b.HasOne("NsStore.Domain.Entities.Sale", "Sale")
                         .WithMany("Payments")
                         .HasForeignKey("SaleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("fk_payments_sales_sale_id");
+
+                    b.Navigation("Branch");
 
                     b.Navigation("Sale");
                 });
@@ -1141,12 +1452,21 @@ namespace NsStore.Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("NsStore.Domain.Entities.Purchase", b =>
                 {
+                    b.HasOne("NsStore.Domain.Entities.Branch", "Branch")
+                        .WithMany()
+                        .HasForeignKey("BranchId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("fk_purchases_branches_branch_id");
+
                     b.HasOne("NsStore.Domain.Entities.Supplier", "Supplier")
                         .WithMany()
                         .HasForeignKey("SupplierId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
                         .HasConstraintName("fk_purchases_suppliers_supplier_id");
+
+                    b.Navigation("Branch");
 
                     b.Navigation("Supplier");
                 });
@@ -1174,12 +1494,21 @@ namespace NsStore.Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("NsStore.Domain.Entities.Quote", b =>
                 {
+                    b.HasOne("NsStore.Domain.Entities.Branch", "Branch")
+                        .WithMany()
+                        .HasForeignKey("BranchId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("fk_quotes_branches_branch_id");
+
                     b.HasOne("NsStore.Domain.Entities.User", "Owner")
                         .WithMany()
                         .HasForeignKey("OwnerId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
                         .HasConstraintName("fk_quotes_users_owner_id");
+
+                    b.Navigation("Branch");
 
                     b.Navigation("Owner");
                 });
@@ -1198,12 +1527,21 @@ namespace NsStore.Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("NsStore.Domain.Entities.Sale", b =>
                 {
+                    b.HasOne("NsStore.Domain.Entities.Branch", "Branch")
+                        .WithMany()
+                        .HasForeignKey("BranchId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("fk_sales_branches_branch_id");
+
                     b.HasOne("NsStore.Domain.Entities.Client", "Client")
                         .WithMany()
                         .HasForeignKey("ClientId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
                         .HasConstraintName("fk_sales_clients_client_id");
+
+                    b.Navigation("Branch");
 
                     b.Navigation("Client");
                 });
@@ -1231,19 +1569,82 @@ namespace NsStore.Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("NsStore.Domain.Entities.StockLevel", b =>
                 {
+                    b.HasOne("NsStore.Domain.Entities.Branch", "Branch")
+                        .WithMany()
+                        .HasForeignKey("BranchId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("fk_stock_levels_branches_branch_id");
+
                     b.HasOne("NsStore.Domain.Entities.Product", "Product")
-                        .WithOne("StockLevel")
-                        .HasForeignKey("NsStore.Domain.Entities.StockLevel", "ProductId")
+                        .WithMany("StockLevels")
+                        .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("fk_stock_levels_products_product_id");
 
+                    b.Navigation("Branch");
+
                     b.Navigation("Product");
+                });
+
+            modelBuilder.Entity("NsStore.Domain.Entities.StockTransfer", b =>
+                {
+                    b.HasOne("NsStore.Domain.Entities.Branch", "DestinationBranch")
+                        .WithMany()
+                        .HasForeignKey("DestinationBranchId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("fk_stock_transfers_branches_destination_branch_id");
+
+                    b.HasOne("NsStore.Domain.Entities.Branch", "OriginBranch")
+                        .WithMany()
+                        .HasForeignKey("OriginBranchId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("fk_stock_transfers_branches_origin_branch_id");
+
+                    b.Navigation("DestinationBranch");
+
+                    b.Navigation("OriginBranch");
+                });
+
+            modelBuilder.Entity("NsStore.Domain.Entities.StockTransferItem", b =>
+                {
+                    b.HasOne("NsStore.Domain.Entities.Product", "Product")
+                        .WithMany()
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("fk_stock_transfer_items_products_product_id");
+
+                    b.HasOne("NsStore.Domain.Entities.StockTransfer", "Transfer")
+                        .WithMany("Items")
+                        .HasForeignKey("TransferId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_stock_transfer_items_stock_transfers_transfer_id");
+
+                    b.Navigation("Product");
+
+                    b.Navigation("Transfer");
+                });
+
+            modelBuilder.Entity("NsStore.Domain.Entities.User", b =>
+                {
+                    b.HasOne("NsStore.Domain.Entities.Branch", "Branch")
+                        .WithMany()
+                        .HasForeignKey("BranchId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("fk_users_branches_branch_id");
+
+                    b.Navigation("Branch");
                 });
 
             modelBuilder.Entity("NsStore.Domain.Entities.Product", b =>
                 {
-                    b.Navigation("StockLevel");
+                    b.Navigation("StockLevels");
                 });
 
             modelBuilder.Entity("NsStore.Domain.Entities.Purchase", b =>
@@ -1256,6 +1657,11 @@ namespace NsStore.Infrastructure.Persistence.Migrations
                     b.Navigation("Items");
 
                     b.Navigation("Payments");
+                });
+
+            modelBuilder.Entity("NsStore.Domain.Entities.StockTransfer", b =>
+                {
+                    b.Navigation("Items");
                 });
 
             modelBuilder.Entity("NsStore.Domain.Entities.User", b =>

@@ -23,7 +23,8 @@ public class PurchaseAndPricingTests
         Assert.Equal(10, purchase.TotalQuantity);
         Assert.Equal(1000m, purchase.TotalAmount);
 
-        var stock = await harness.Db.StockLevels.SingleAsync(s => s.ProductId == productId);
+        var stock = await harness.Db.StockLevels
+            .SingleAsync(s => s.ProductId == productId && s.BranchId == TestHarness.MainBranchId);
         Assert.Equal(10, stock.Quantity);
 
         var movement = await harness.Db.InventoryMovements.SingleAsync(m => m.ProductId == productId);

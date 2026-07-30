@@ -1,4 +1,4 @@
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using NsStore.Application.Common;
 using NsStore.Application.Common.Interfaces;
 using NsStore.Application.Common.Models;
@@ -9,10 +9,14 @@ using NsStore.Domain.Enums;
 
 namespace NsStore.Application.Features.Products;
 
-public class ProductService(IAppDbContext db, SettingsService settingsService, TimeProvider clock)
+public class ProductService(IAppDbContext db, SettingsService settingsService, ICurrentUser currentUser, TimeProvider clock)
 {
-    public async Task<PagedResult<ProductDto>> ListAsync(PageRequest request, CancellationToken cancellationToken = default)
+    public async Task<PagedResult<ProductDto>> ListAsync(
+        PageRequest request,
+        long? branchId = null,
+        CancellationToken cancellationToken = default)
     {
+        var scope = currentUser.ResolveReadableBranch(branchId);
         var query = db.Products.AsNoTracking().AsQueryable();
         if (request.TrimmedSearch is { } search)
         {
@@ -24,18 +28,23 @@ public class ProductService(IAppDbContext db, SettingsService settingsService, T
 
         return await query
             .OrderBy(p => p.Name)
-            .Select(ProjectToDto)
+            .Select(ProjectToDto(scope))
             .ToPagedResultAsync(request, cancellationToken);
     }
 
-    public async Task<ProductDto> GetAsync(long id, CancellationToken cancellationToken = default) =>
-        await db.Products.AsNoTracking().Where(p => p.Id == id).Select(ProjectToDto)
+    public async Task<ProductDto> GetAsync(long id, long? branchId = null, CancellationToken cancellationToken = default) =>
+        await db.Products.AsNoTracking()
+            .Where(p => p.Id == id)
+            .Select(ProjectToDto(currentUser.ResolveReadableBranch(branchId)))
             .FirstOrDefaultAsync(cancellationToken)
         ?? throw new NotFoundException(nameof(Product), id);
 
     public async Task<ProductDto> CreateAsync(ProductRequest request, CancellationToken cancellationToken = default)
     {
         await EnsureReferencesExistAsync(request, cancellationToken);
+
+        var now = clock.GetUtcNow();
+        var branchIds = await db.Branches.Where(b => b.IsActive).Select(b => b.Id).ToListAsync(cancellationToken);
 
         var product = new Product
         {
@@ -49,13 +58,17 @@ public class ProductService(IAppDbContext db, SettingsService settingsService, T
             // Prices start at 0 and are set in the pricing module.
             PriceWithInvoice = 0m,
             PriceWithoutInvoice = 0m,
-            // Every product owns a stock row from creation; it may sit at 0 but is never deleted.
-            StockLevel = new StockLevel { Quantity = 0, UpdatedAt = clock.GetUtcNow() }
+            // One stock row per active branch from creation. Rows may sit at 0 and are never
+            // deleted: a missing row makes SELECT … FOR UPDATE lock nothing, which silently
+            // reintroduces the oversell race no existing test would catch.
+            StockLevels = branchIds
+                .Select(branchId => new StockLevel { BranchId = branchId, Quantity = 0, UpdatedAt = now })
+                .ToList()
         };
 
         db.Products.Add(product);
         await db.SaveChangesAsync(cancellationToken);
-        return await GetAsync(product.Id, cancellationToken);
+        return await GetAsync(product.Id, cancellationToken: cancellationToken);
     }
 
     public async Task<ProductDto> UpdateAsync(long id, ProductRequest request, CancellationToken cancellationToken = default)
@@ -72,7 +85,7 @@ public class ProductService(IAppDbContext db, SettingsService settingsService, T
         product.WarrantyTermId = request.WarrantyTermId;
 
         await db.SaveChangesAsync(cancellationToken);
-        return await GetAsync(product.Id, cancellationToken);
+        return await GetAsync(product.Id, cancellationToken: cancellationToken);
     }
 
     public async Task DeleteAsync(long id, CancellationToken cancellationToken = default)
@@ -89,7 +102,7 @@ public class ProductService(IAppDbContext db, SettingsService settingsService, T
         product.PriceWithoutInvoice = decimal.Round(request.PriceWithoutInvoice, 2, MidpointRounding.AwayFromZero);
 
         await db.SaveChangesAsync(cancellationToken);
-        return await GetAsync(product.Id, cancellationToken);
+        return await GetAsync(product.Id, cancellationToken: cancellationToken);
     }
 
     /// <summary>
@@ -154,7 +167,13 @@ public class ProductService(IAppDbContext db, SettingsService settingsService, T
         }
     }
 
-    internal static readonly System.Linq.Expressions.Expression<Func<Product, ProductDto>> ProjectToDto =
+    /// <summary>
+    /// A method rather than a static field: the projection now closes over a runtime branch id, and
+    /// a static field cannot capture one. <c>Sum</c> over a filtered set instead of
+    /// <c>FirstOrDefault</c> yields 0 for a missing row without nullable-int gymnastics, and
+    /// translates cleanly on both Npgsql and SQLite.
+    /// </summary>
+    internal static System.Linq.Expressions.Expression<Func<Product, ProductDto>> ProjectToDto(long branchId) =>
         p => new ProductDto(
             p.Id,
             p.Name,
@@ -169,5 +188,6 @@ public class ProductService(IAppDbContext db, SettingsService settingsService, T
             p.WarrantyTerm != null ? p.WarrantyTerm.Description : null,
             p.PriceWithInvoice,
             p.PriceWithoutInvoice,
-            p.StockLevel != null ? p.StockLevel.Quantity : 0);
+            p.StockLevels.Where(s => s.BranchId == branchId).Sum(s => (int?)s.Quantity) ?? 0,
+            p.StockLevels.Sum(s => (int?)s.Quantity) ?? 0);
 }

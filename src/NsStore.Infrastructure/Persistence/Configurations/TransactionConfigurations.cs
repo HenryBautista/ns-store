@@ -38,6 +38,11 @@ public class PurchaseConfiguration : IEntityTypeConfiguration<Purchase>
     {
         builder.Property(p => p.TotalAmount).HasPrecision(12, 2);
 
+        builder.HasOne(p => p.Branch)
+            .WithMany()
+            .HasForeignKey(p => p.BranchId)
+            .OnDelete(DeleteBehavior.Restrict);
+
         builder.HasOne(p => p.Supplier)
             .WithMany()
             .HasForeignKey(p => p.SupplierId)
@@ -48,7 +53,12 @@ public class PurchaseConfiguration : IEntityTypeConfiguration<Purchase>
             .HasForeignKey(i => i.PurchaseId)
             .OnDelete(DeleteBehavior.Cascade);
 
+        builder.Property(p => p.Number).HasMaxLength(24).IsRequired();
+
         builder.HasIndex(p => p.PurchaseDate);
+        builder.HasIndex(p => new { p.BranchId, p.PurchaseDate });
+        builder.HasIndex(p => new { p.BranchId, p.BranchSequence }).IsUnique();
+        builder.HasIndex(p => p.Number).IsUnique();
 
         builder.ToTable(t =>
         {
@@ -90,6 +100,11 @@ public class SaleConfiguration : IEntityTypeConfiguration<Sale>
         builder.Property(s => s.TotalPaid).HasPrecision(12, 2);
         builder.Ignore(s => s.Balance);
 
+        builder.HasOne(s => s.Branch)
+            .WithMany()
+            .HasForeignKey(s => s.BranchId)
+            .OnDelete(DeleteBehavior.Restrict);
+
         builder.HasOne(s => s.Client)
             .WithMany()
             .HasForeignKey(s => s.ClientId)
@@ -105,8 +120,15 @@ public class SaleConfiguration : IEntityTypeConfiguration<Sale>
             .HasForeignKey(p => p.SaleId)
             .OnDelete(DeleteBehavior.Cascade);
 
+        builder.Property(s => s.Number).HasMaxLength(24).IsRequired();
+
         builder.HasIndex(s => s.SaleDate);
         builder.HasIndex(s => new { s.PaymentStatus, s.SaleDate });
+        builder.HasIndex(s => new { s.BranchId, s.SaleDate });
+
+        // Belt and braces against a counter bug; the folio is globally unique because its prefix is.
+        builder.HasIndex(s => new { s.BranchId, s.BranchSequence }).IsUnique();
+        builder.HasIndex(s => s.Number).IsUnique();
 
         builder.ToTable(t =>
         {
@@ -147,6 +169,12 @@ public class PaymentConfiguration : IEntityTypeConfiguration<Payment>
     public void Configure(EntityTypeBuilder<Payment> builder)
     {
         builder.Property(p => p.Amount).HasPrecision(12, 2);
+
+        builder.HasOne(p => p.Branch)
+            .WithMany()
+            .HasForeignKey(p => p.BranchId)
+            .OnDelete(DeleteBehavior.Restrict);
+
         builder.HasIndex(p => new { p.SaleId, p.PaymentDate });
         builder.ToTable(t => t.HasCheckConstraint("ck_payments_amount_positive", "amount > 0"));
     }
@@ -163,6 +191,11 @@ public class OrderConfiguration : IEntityTypeConfiguration<Order>
         builder.Property(o => o.Price).HasPrecision(12, 2);
         builder.Property(o => o.AdvanceAmount).HasPrecision(12, 2);
         builder.Ignore(o => o.Balance);
+
+        builder.HasOne(o => o.Branch)
+            .WithMany()
+            .HasForeignKey(o => o.BranchId)
+            .OnDelete(DeleteBehavior.Restrict);
 
         builder.HasOne(o => o.Owner)
             .WithMany()
@@ -192,6 +225,11 @@ public class QuoteConfiguration : IEntityTypeConfiguration<Quote>
         builder.Property(q => q.Detail).HasMaxLength(1000).IsRequired();
         builder.Property(q => q.SupplierName).HasMaxLength(160);
         builder.Property(q => q.Price).HasPrecision(12, 2);
+
+        builder.HasOne(q => q.Branch)
+            .WithMany()
+            .HasForeignKey(q => q.BranchId)
+            .OnDelete(DeleteBehavior.Restrict);
 
         builder.HasOne(q => q.Owner)
             .WithMany()

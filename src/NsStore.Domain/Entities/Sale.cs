@@ -6,6 +6,21 @@ namespace NsStore.Domain.Entities;
 public class Sale : AuditableEntity
 {
     public DateOnly SaleDate { get; set; }
+
+    /// <summary>The branch that sold. Stamped from the caller's active branch, never from the body.</summary>
+    public long BranchId { get; set; }
+
+    public Branch Branch { get; set; } = null!;
+
+    /// <summary>Per-branch correlative — the numeric invariant behind <see cref="Number"/>.</summary>
+    public long BranchSequence { get; set; }
+
+    /// <summary>
+    /// The rendered folio, e.g. <c>MAIN-000123</c>. Stored rather than derived so that renaming a
+    /// branch code later does not rewrite the number already printed on the customer's copy.
+    /// </summary>
+    public string Number { get; set; } = null!;
+
     public long ClientId { get; set; }
     public Client Client { get; set; } = null!;
 
@@ -21,8 +36,12 @@ public class Sale : AuditableEntity
 
     public decimal Balance => TotalAmount - TotalPaid;
 
-    /// <summary>Registers an installment, keeping <see cref="TotalPaid"/> and the status consistent.</summary>
-    public Payment RegisterPayment(decimal amount, DateOnly paymentDate, long? userId, DateTimeOffset now)
+    /// <summary>
+    /// Registers an installment, keeping <see cref="TotalPaid"/> and the status consistent.
+    /// <paramref name="branchId"/> is the branch that <em>receives</em> the money, which may differ
+    /// from the branch that made the sale — that is what balances a till.
+    /// </summary>
+    public Payment RegisterPayment(decimal amount, DateOnly paymentDate, long branchId, long? userId, DateTimeOffset now)
     {
         if (amount <= 0)
         {
@@ -39,6 +58,7 @@ public class Sale : AuditableEntity
         var payment = new Payment
         {
             SaleId = Id,
+            BranchId = branchId,
             Amount = amount,
             PaymentDate = paymentDate,
             CreatedBy = userId,
@@ -77,6 +97,11 @@ public class Payment
     public long Id { get; set; }
     public long SaleId { get; set; }
     public Sale Sale { get; set; } = null!;
+
+    /// <summary>The branch that received the money — the till it has to balance against.</summary>
+    public long BranchId { get; set; }
+
+    public Branch Branch { get; set; } = null!;
     public decimal Amount { get; set; }
     public DateOnly PaymentDate { get; set; }
     public long? CreatedBy { get; set; }

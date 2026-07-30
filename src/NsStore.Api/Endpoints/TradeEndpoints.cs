@@ -20,9 +20,10 @@ public static class PurchaseEndpoints
                 DateOnly? to,
                 int? page,
                 int? pageSize,
+                long? branchId,
                 PurchaseService purchases,
                 CancellationToken ct) =>
-            Results.Ok(await purchases.ListAsync(new PurchaseQuery(search, from, to, page ?? 1, pageSize ?? 25), ct)));
+            Results.Ok(await purchases.ListAsync(new PurchaseQuery(search, from, to, page ?? 1, pageSize ?? 25, branchId), ct)));
 
         group.MapGet("/{id:long}", async (long id, PurchaseService purchases, CancellationToken ct) =>
             Results.Ok(await purchases.GetAsync(id, ct)));
@@ -54,13 +55,14 @@ public static class SaleEndpoints
                 PaymentStatus? status,
                 int? page,
                 int? pageSize,
+                long? branchId,
                 SaleService sales,
                 CancellationToken ct) =>
-            Results.Ok(await sales.ListAsync(new SaleQuery(search, from, to, status, page ?? 1, pageSize ?? 25), ct)));
+            Results.Ok(await sales.ListAsync(new SaleQuery(search, from, to, status, page ?? 1, pageSize ?? 25, branchId), ct)));
 
         // Declared before "/{id:long}" so the literal segment wins the route match.
-        group.MapGet("/debts", async (string? search, int? page, int? pageSize, SaleService sales, CancellationToken ct) =>
-                Results.Ok(await sales.ListDebtsAsync(new SaleQuery(search, null, null, null, page ?? 1, pageSize ?? 25), ct)))
+        group.MapGet("/debts", async (string? search, int? page, int? pageSize, long? branchId, SaleService sales, CancellationToken ct) =>
+                Results.Ok(await sales.ListDebtsAsync(new SaleQuery(search, null, null, null, page ?? 1, pageSize ?? 25, branchId), ct)))
             .WithSummary("Credit sales with an outstanding balance");
 
         group.MapGet("/{id:long}", async (long id, SaleService sales, CancellationToken ct) =>

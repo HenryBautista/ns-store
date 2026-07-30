@@ -8,6 +8,7 @@ public class SaleTests
 {
     private static readonly DateTimeOffset Now = new(2026, 7, 24, 12, 0, 0, TimeSpan.Zero);
     private static readonly DateOnly Today = new(2026, 7, 24);
+    private const long BranchId = 1;
 
     private static Sale CreditSale(decimal total, decimal paid = 0m) => new()
     {
@@ -22,7 +23,7 @@ public class SaleTests
     {
         var sale = CreditSale(1000m, 200m);
 
-        sale.RegisterPayment(300m, Today, userId: 7, Now);
+        sale.RegisterPayment(300m, Today, BranchId, userId: 7, Now);
 
         Assert.Equal(500m, sale.TotalPaid);
         Assert.Equal(500m, sale.Balance);
@@ -35,7 +36,7 @@ public class SaleTests
     {
         var sale = CreditSale(1000m, 400m);
 
-        sale.RegisterPayment(600m, Today, userId: 7, Now);
+        sale.RegisterPayment(600m, Today, BranchId, userId: 7, Now);
 
         Assert.Equal(0m, sale.Balance);
         Assert.Equal(PaymentStatus.Paid, sale.PaymentStatus);
@@ -46,7 +47,7 @@ public class SaleTests
     {
         var sale = CreditSale(1000m, 900m);
 
-        var exception = Assert.Throws<DomainRuleException>(() => sale.RegisterPayment(200m, Today, null, Now));
+        var exception = Assert.Throws<DomainRuleException>(() => sale.RegisterPayment(200m, Today, BranchId, null, Now));
 
         Assert.Equal(ErrorCodes.PaymentExceedsBalance, exception.ErrorCode);
         Assert.Equal(900m, sale.TotalPaid);
@@ -59,7 +60,7 @@ public class SaleTests
     {
         var sale = CreditSale(1000m);
 
-        Assert.Throws<DomainRuleException>(() => sale.RegisterPayment(amount, Today, null, Now));
+        Assert.Throws<DomainRuleException>(() => sale.RegisterPayment(amount, Today, BranchId, null, Now));
     }
 }
 

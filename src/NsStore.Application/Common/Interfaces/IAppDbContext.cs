@@ -8,6 +8,7 @@ namespace NsStore.Application.Common.Interfaces;
 /// </summary>
 public interface IAppDbContext
 {
+    DbSet<Branch> Branches { get; }
     DbSet<User> Users { get; }
     DbSet<RefreshToken> RefreshTokens { get; }
     DbSet<Trademark> Trademarks { get; }
@@ -25,6 +26,8 @@ public interface IAppDbContext
     DbSet<Payment> Payments { get; }
     DbSet<Order> Orders { get; }
     DbSet<Quote> Quotes { get; }
+    DbSet<StockTransfer> StockTransfers { get; }
+    DbSet<StockTransferItem> StockTransferItems { get; }
     DbSet<AppSetting> AppSettings { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);

@@ -31,7 +31,7 @@ public class InventoryReportingTests
         // A later purchase at a different price is the one valuation must use.
         await BuyAsync(harness, productId, quantity: 5, unitPrice: 120m);
 
-        var row = Assert.Single((await harness.Inventory.ListStockAsync(new PageRequest())).Items);
+        var row = Assert.Single((await harness.Inventory.ListStockAsync(new StockQuery(null))).Items);
 
         Assert.Equal(15, row.Quantity);
         Assert.Equal(120m, row.LastCost);
@@ -44,7 +44,7 @@ public class InventoryReportingTests
         using var harness = new TestHarness();
         await harness.CreateProductAsync();
 
-        var row = Assert.Single((await harness.Inventory.ListStockAsync(new PageRequest())).Items);
+        var row = Assert.Single((await harness.Inventory.ListStockAsync(new StockQuery(null))).Items);
 
         Assert.Null(row.LastCost);
         Assert.Equal(0m, row.InventoryValue);
@@ -82,7 +82,7 @@ public class InventoryReportingTests
             [new SaleItemRequest(productId, Quantity: 5)]));
         await harness.Inventory.AdjustAsync(new StockAdjustmentRequest(productId, QuantityDelta: -2, Notes: "Merma"));
 
-        var row = Assert.Single((await harness.Inventory.GetKardexAsync(new PageRequest())).Items);
+        var row = Assert.Single((await harness.Inventory.GetKardexAsync(new KardexQuery(null))).Items);
 
         Assert.Equal(20, row.TotalPurchased);
         Assert.Equal(5, row.TotalSold);
@@ -110,7 +110,7 @@ public class InventoryReportingTests
         // Repricing afterwards must not rewrite the history of what was already sold.
         await harness.Products.SetPricesAsync(productId, new SetPricesRequest(232m, 200m));
 
-        var row = Assert.Single((await harness.Inventory.GetKardexAsync(new PageRequest())).Items);
+        var row = Assert.Single((await harness.Inventory.GetKardexAsync(new KardexQuery(null))).Items);
 
         Assert.Equal(520m, row.TotalSoldAmount); // 4 × 130, the price charged at sale time
     }
@@ -126,7 +126,7 @@ public class InventoryReportingTests
         var product = await harness.Products.CreateAsync(
             new ProductRequest("SSD 1TB", "SA400S37", null, null, TrademarkId: 1, null, null));
 
-        var row = Assert.Single((await harness.Inventory.GetKardexAsync(new PageRequest())).Items);
+        var row = Assert.Single((await harness.Inventory.GetKardexAsync(new KardexQuery(null))).Items);
 
         Assert.Equal(product.Id, row.ProductId);
         Assert.Equal("SA400S37", row.PartNumber);

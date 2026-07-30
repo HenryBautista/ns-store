@@ -45,14 +45,17 @@ public record PriceListRowDto(
     string? CategoryName,
     decimal PriceWithInvoice,
     decimal PriceWithoutInvoice,
-    int AvailableQuantity);
+    int AvailableQuantity,
+    int QuantityAllBranches);
 
 public record PriceListReportDto(string Currency, IReadOnlyList<PriceListRowDto> Items);
 
 /// <summary>Warranty note ("nota de garantía"): standard for a cash sale, credit variant otherwise.</summary>
 public record WarrantyNoteDto(string NoteType, SaleDto Sale);
 
+/// <summary><paramref name="BranchId"/> is null when the figures span every branch (admin only).</summary>
 public record DashboardDto(
+    long? BranchId,
     DateOnly Date,
     decimal SalesTodayAmount,
     int SalesTodayCount,

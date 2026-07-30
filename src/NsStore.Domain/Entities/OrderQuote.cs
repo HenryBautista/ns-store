@@ -8,6 +8,11 @@ public class Order : AuditableEntity
 {
     public DateOnly OrderDate { get; set; }
 
+    /// <summary>Stamped at creation; orders are not branch-filtered yet (see the multi-branch plan).</summary>
+    public long BranchId { get; set; }
+
+    public Branch Branch { get; set; } = null!;
+
     /// <summary>Free text — the requester is not necessarily a catalog client.</summary>
     public string ClientName { get; set; } = null!;
 
@@ -40,6 +45,11 @@ public class Order : AuditableEntity
 public class Quote : AuditableEntity
 {
     public DateOnly QuoteDate { get; set; }
+
+    /// <summary>Stamped at creation; quotes are not branch-filtered yet (see the multi-branch plan).</summary>
+    public long BranchId { get; set; }
+
+    public Branch Branch { get; set; } = null!;
     public string ClientName { get; set; } = null!;
     public string? Phone { get; set; }
     public string Detail { get; set; } = null!;

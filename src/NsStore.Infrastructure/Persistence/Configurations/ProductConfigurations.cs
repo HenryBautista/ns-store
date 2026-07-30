@@ -36,14 +36,26 @@ public class StockLevelConfiguration : IEntityTypeConfiguration<StockLevel>
 {
     public void Configure(EntityTypeBuilder<StockLevel> builder)
     {
-        builder.HasKey(s => s.ProductId);
+        // Composite rather than surrogate: it spends no identity sequence, the PK index directly
+        // serves "all stock in my branch", and branch_id leading gives the deterministic ordering
+        // the FOR UPDATE acquisition relies on.
+        builder.HasKey(s => new { s.BranchId, s.ProductId });
+
+        builder.HasOne(s => s.Branch)
+            .WithMany()
+            .HasForeignKey(s => s.BranchId)
+            .OnDelete(DeleteBehavior.Restrict);
 
         builder.HasOne(s => s.Product)
-            .WithOne(p => p.StockLevel)
-            .HasForeignKey<StockLevel>(s => s.ProductId)
+            .WithMany(p => p.StockLevels)
+            .HasForeignKey(s => s.ProductId)
             .OnDelete(DeleteBehavior.Cascade);
 
-        // Optimistic concurrency: a competing sale that changed the row makes this update fail.
+        // Backs the FK now that product_id no longer leads the PK, and serves cross-branch reads.
+        builder.HasIndex(s => s.ProductId);
+
+        // Optimistic concurrency, now scoped per (branch, product): a conflict no longer spills
+        // across branches.
         builder.Property(s => s.Version).IsConcurrencyToken();
 
         builder.ToTable(t => t.HasCheckConstraint("ck_stock_levels_quantity_non_negative", "quantity >= 0"));
@@ -58,12 +70,18 @@ public class InventoryMovementConfiguration : IEntityTypeConfiguration<Inventory
         builder.Property(m => m.ReferenceType).HasMaxLength(20);
         builder.Property(m => m.Notes).HasMaxLength(400);
 
+        builder.HasOne(m => m.Branch)
+            .WithMany()
+            .HasForeignKey(m => m.BranchId)
+            .OnDelete(DeleteBehavior.Restrict);
+
         builder.HasOne(m => m.Product)
             .WithMany()
             .HasForeignKey(m => m.ProductId)
             .OnDelete(DeleteBehavior.Restrict);
 
         builder.HasIndex(m => new { m.ProductId, m.CreatedAt });
+        builder.HasIndex(m => new { m.BranchId, m.ProductId, m.CreatedAt });
         builder.HasIndex(m => new { m.ReferenceType, m.ReferenceId });
 
         builder.ToTable(t => t.HasCheckConstraint("ck_inventory_movements_quantity_delta_not_zero", "quantity_delta <> 0"));
