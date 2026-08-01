@@ -1,14 +1,18 @@
-name: CI
+name: CI/CD
 
 on:
   push:
-    branches: [main, master]
+    branches: [master]
   pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  build-and-test:
+  test:
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v4
 
@@ -16,18 +20,97 @@ jobs:
         with:
           dotnet-version: '10.0.x'
 
-      - name: Restore
-        run: dotnet restore
+      - uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: nuget-${{ hashFiles('**/*.csproj') }}
+          restore-keys: nuget-
 
-      - name: Build
-        run: dotnet build --no-restore -c Release
+      - run: dotnet restore
+      - run: dotnet build --no-restore -c Release
+      - run: dotnet test --no-build -c Release
 
-      - name: Test
-        run: dotnet test --no-build -c Release --verbosity normal
-
+      # The guard that keeps the schema honest: any entity or EF-configuration change without a
+      # matching migration fails here rather than at startup on the server.
       - name: Verify the model has no pending migrations
         run: |
           dotnet tool install --global dotnet-ef
           dotnet ef migrations has-pending-model-changes \
             --project src/NsStore.Infrastructure \
             --startup-project src/NsStore.Api
+
+  build-image:
+    needs: test
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: src/NsStore.Api/Dockerfile
+          push: true
+          provenance: false
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          tags: |
+            ghcr.io/henrybautista/ns-store:latest
+            ghcr.io/henrybautista/ns-store:${{ github.sha }}
+
+  deploy:
+    needs: build-image
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+    runs-on: [self-hosted, casa-illimani]
+    steps:
+      - uses: actions/checkout@v4
+
+      # This repo owns the stack definition; ns-store-ui only restarts its own service against it.
+      # The .env living next to it is server-only and is deliberately left alone.
+      - name: Sync the compose file to the deploy directory
+        run: |
+          mkdir -p ~/ns-store-deploy
+          cp deploy/docker-compose.prod.yml ~/ns-store-deploy/docker-compose.prod.yml
+
+      - name: Pull latest images and restart the stack
+        run: |
+          cd ~/ns-store-deploy
+          docker compose -f docker-compose.prod.yml pull
+          docker compose -f docker-compose.prod.yml up -d --remove-orphans
+
+      # From inside the stack network: the API publishes no port. Generous retries because a first
+      # deploy migrates and seeds six months of demo history before it answers.
+      - name: Smoke test the API
+        run: |
+          cd ~/ns-store-deploy
+          # Looping here rather than with wget's own retries: nginx ships busybox wget, which has
+          # neither --waitretry nor --retry-connrefused, and a refused connection is exactly the
+          # state we are waiting out.
+          for i in $(seq 1 40); do
+            if docker compose -f docker-compose.prod.yml exec -T web \
+                 wget -q -O - http://api:8080/health 2>/dev/null | grep -q Healthy; then
+              echo "API healthy after $i attempt(s)"
+              exit 0
+            fi
+            sleep 5
+          done
+          echo "::error::The API never reported healthy"
+          exit 1
+
+      - name: Show API logs on failure
+        if: failure()
+        run: |
+          cd ~/ns-store-deploy
+          docker compose -f docker-compose.prod.yml logs --tail 200 api
+
+      - name: Prune dangling images
+        if: always()
+        run: docker image prune -f

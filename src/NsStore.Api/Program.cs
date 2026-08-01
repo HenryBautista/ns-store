@@ -2,6 +2,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.RateLimiting;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.IdentityModel.Tokens;
 using NsStore.Api.Endpoints;
@@ -89,6 +90,26 @@ builder.Services.AddExceptionHandler<AppExceptionHandler>();
 builder.Services.AddOpenApi();
 builder.Services.AddHealthChecks();
 
+// Behind a reverse proxy the API only ever sees plain HTTP on the internal network, so without the
+// forwarded headers UseHttpsRedirection below bounces every request to a port nothing listens on,
+// and the login rate limiter partitions every caller into a single bucket — the proxy's address.
+// Opt-in, because trusting these headers is only sound when the API cannot be reached except
+// through that proxy, which is exactly what deploy/docker-compose.deploy.yml enforces by publishing
+// no port for it.
+var trustForwardedHeaders = builder.Configuration.GetValue("ForwardedHeaders:Enabled", false);
+if (trustForwardedHeaders)
+{
+    builder.Services.Configure<ForwardedHeadersOptions>(options =>
+    {
+        options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+
+        // The proxy is a sibling container on a bridge network with no fixed address, so the
+        // loopback-only default would reject it.
+        options.KnownNetworks.Clear();
+        options.KnownProxies.Clear();
+    });
+}
+
 var corsOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>() ?? [];
 if (corsOrigins.Length > 0)
 {
@@ -102,6 +123,13 @@ if (corsOrigins.Length > 0)
 var app = builder.Build();
 
 app.UseExceptionHandler();
+
+// Before the request logging and the HTTPS redirect, so both see the caller's real scheme and address.
+if (trustForwardedHeaders)
+{
+    app.UseForwardedHeaders();
+}
+
 app.UseSerilogRequestLogging();
 
 if (!app.Environment.IsDevelopment())

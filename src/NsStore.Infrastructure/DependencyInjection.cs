@@ -47,6 +47,7 @@ public static class DependencyInjection
         services.AddScoped<IStockLockService, StockLockService>();
         services.AddScoped<IDocumentNumberService, DocumentNumberService>();
         services.AddScoped<DatabaseInitializer>();
+        services.AddScoped<DemoDataSeeder>();
         services.AddSingleton<IPasswordHasher, PasswordHasher>();
         services.AddSingleton<ITokenService, TokenService>();
 

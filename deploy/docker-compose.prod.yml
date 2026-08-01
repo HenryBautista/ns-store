@@ -1,0 +1,79 @@
+# Development / demo stack for the home server (chromebox), following the same shape as
+# ~/casa-illimani-deploy: images are pulled prebuilt from GHCR (each repo's CI pushes on merge),
+# and the Cloudflare Tunnel is a sidecar inside this stack's own network.
+#
+#   cd ~/ns-store-deploy
+#   docker compose -f docker-compose.prod.yml pull && docker compose -f docker-compose.prod.yml up -d
+#
+# Reachable on the LAN at http://<host>:8081 and externally through the tunnel's Public Hostname,
+# configured in the Cloudflare Zero Trust dashboard to point at http://web:80.
+#
+# This file is versioned in the ns-store repo and copied to ~/ns-store-deploy by the deploy job.
+# The .env beside it is server-only and hand-maintained — it holds the tunnel token.
+
+services:
+  postgres:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-nsstore}
+      POSTGRES_USER: ${POSTGRES_USER:-nsstore}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-nsstore} -d ${POSTGRES_DB:-nsstore}"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+
+  api:
+    image: ghcr.io/henrybautista/ns-store:latest
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT:-Production}
+      ASPNETCORE_HTTP_PORTS: 8080
+
+      # Lets the API see the caller's real address through nginx. The login rate limiter partitions
+      # on it, so without this every user shares one 10-per-minute bucket. Safe only because the API
+      # publishes no port and nginx is its sole route.
+      ForwardedHeaders__Enabled: "true"
+
+      ConnectionStrings__Default: "Host=postgres;Port=5432;Database=${POSTGRES_DB:-nsstore};Username=${POSTGRES_USER:-nsstore};Password=${POSTGRES_PASSWORD}"
+      Jwt__SigningKey: ${JWT_SIGNING_KEY:?set JWT_SIGNING_KEY in .env (32+ chars)}
+
+      # Same-origin through nginx means CORS is never exercised; this is belt-and-braces.
+      Cors__AllowedOrigins__0: ${PUBLIC_ORIGIN:?set PUBLIC_ORIGIN in .env}
+
+      # Only used while no user exists.
+      Seed__Admin__Username: ${SEED_ADMIN_USERNAME:-}
+      Seed__Admin__Password: ${SEED_ADMIN_PASSWORD:-}
+
+      # Safe to leave enabled: the seeder no-ops once the catalog has rows. Reset is the destructive
+      # one and belongs to the reset-demo-data workflow, never to a push.
+      Seed__Demo__Enabled: ${SEED_DEMO_ENABLED:-true}
+      Seed__Demo__Reset: ${SEED_DEMO_RESET:-false}
+
+  web:
+    image: ghcr.io/henrybautista/ns-store-ui:latest
+    restart: unless-stopped
+    depends_on:
+      - api
+    ports:
+      - "${WEB_PORT:-8081}:80"
+
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    container_name: ns-store-cloudflared
+    restart: unless-stopped
+    command: tunnel --no-autoupdate run --token ${CLOUDFLARE_TUNNEL_TOKEN}
+    environment:
+      - TUNNEL_TOKEN=${CLOUDFLARE_TUNNEL_TOKEN:?set CLOUDFLARE_TUNNEL_TOKEN in .env}
+    depends_on:
+      - web
+
+volumes:
+  pgdata:

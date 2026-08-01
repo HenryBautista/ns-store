@@ -1,0 +1,62 @@
+# The only path that destroys data in the demo environment. A normal deploy never reseeds: the
+# seeder no-ops as soon as the catalog has rows, so whatever the client entered while testing stays.
+name: Reset demo data
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: 'Type RESET (uppercase) to wipe and rebuild the demo dataset'
+        required: true
+        default: ''
+
+concurrency:
+  group: ns-store-deploy
+  cancel-in-progress: false
+
+jobs:
+  reset:
+    runs-on: [self-hosted, casa-illimani]
+
+    steps:
+      - name: Require an explicit confirmation
+        if: inputs.confirm != 'RESET'
+        run: |
+          echo "::error::This deletes every product, sale, purchase and client in the demo environment."
+          echo "::error::Re-run it with the confirm input set to RESET."
+          exit 1
+
+      - name: Reseed
+        run: |
+          set -euo pipefail
+          cd ~/ns-store-deploy
+
+          # The flag lives in the server-side .env, so it is flipped in place rather than passed in.
+          sed -i 's/^SEED_DEMO_RESET=.*/SEED_DEMO_RESET=true/' .env
+          grep -q '^SEED_DEMO_RESET=' .env || echo 'SEED_DEMO_RESET=true' >> .env
+
+          docker compose -f docker-compose.prod.yml up -d --force-recreate api
+
+          for i in $(seq 1 60); do
+            if docker compose -f docker-compose.prod.yml exec -T web \
+                 wget -q -O - http://api:8080/health 2>/dev/null | grep -q Healthy; then
+              echo "Reseed finished after $i attempt(s)"
+              break
+            fi
+            sleep 5
+          done
+
+      # Leaving the flag on would rebuild the dataset on every future restart of the container.
+      - name: Turn the reset flag back off
+        if: always()
+        run: |
+          set -euo pipefail
+          cd ~/ns-store-deploy
+          sed -i 's/^SEED_DEMO_RESET=.*/SEED_DEMO_RESET=false/' .env
+          docker compose -f docker-compose.prod.yml up -d --force-recreate api
+
+      - name: Show API logs on failure
+        if: failure()
+        run: |
+          cd ~/ns-store-deploy
+          docker compose -f docker-compose.prod.yml logs --tail 200 api
