@@ -1,0 +1,87 @@
+# The only path that destroys data in the demo environment. A normal deploy never reseeds: the
+# seeder no-ops as soon as the catalog has rows, so whatever the client entered while testing stays.
+name: Reset demo data
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: 'Type RESET (uppercase) to wipe and rebuild the demo dataset'
+        required: true
+        default: ''
+
+concurrency:
+  group: nsstore-api-refs/heads/master
+  cancel-in-progress: false
+
+jobs:
+  reset:
+    runs-on: [self-hosted, linux]
+
+    steps:
+      - name: Require an explicit confirmation
+        if: inputs.confirm != 'RESET'
+        run: |
+          echo "::error::This deletes every product, sale, purchase and client in the demo environment."
+          echo "::error::Re-run it with the confirm input set to RESET."
+          exit 1
+
+      - uses: actions/checkout@v4
+
+      - name: Ensure the shared network exists
+        run: docker network inspect nsstore-net >/dev/null 2>&1 || docker network create nsstore-net
+
+      - name: Write the server environment file with the reset flag on
+        env:
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          JWT_SIGNING_KEY: ${{ secrets.JWT_SIGNING_KEY }}
+          PUBLIC_ORIGIN: ${{ secrets.PUBLIC_ORIGIN }}
+          SEED_ADMIN_USERNAME: ${{ secrets.SEED_ADMIN_USERNAME }}
+          SEED_ADMIN_PASSWORD: ${{ secrets.SEED_ADMIN_PASSWORD }}
+        run: |
+          set -euo pipefail
+          umask 077
+          mkdir -p "$HOME/.nsstore"
+          cat > "$HOME/.nsstore/deploy.env" <<EOF
+          POSTGRES_DB=nsstore
+          POSTGRES_USER=nsstore
+          POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+          JWT_SIGNING_KEY=${JWT_SIGNING_KEY}
+          PUBLIC_ORIGIN=${PUBLIC_ORIGIN}
+          SEED_ADMIN_USERNAME=${SEED_ADMIN_USERNAME}
+          SEED_ADMIN_PASSWORD=${SEED_ADMIN_PASSWORD}
+          SEED_DEMO_ENABLED=true
+          SEED_DEMO_RESET=true
+          ASPNETCORE_ENVIRONMENT=Production
+          EOF
+
+      - name: Restart the API so it reseeds
+        run: |
+          docker compose \
+            -f deploy/docker-compose.deploy.yml \
+            --env-file "$HOME/.nsstore/deploy.env" \
+            up -d --force-recreate api
+
+      - name: Wait for the reseed to finish
+        run: |
+          docker run --rm --network nsstore-net curlimages/curl:latest \
+            -fsS --retry 60 --retry-delay 5 --retry-all-errors http://api:8080/health
+
+      # Leaving the flag on would rebuild the dataset on every future restart of the container.
+      - name: Turn the reset flag back off
+        if: always()
+        run: |
+          set -euo pipefail
+          sed -i 's/^SEED_DEMO_RESET=true$/SEED_DEMO_RESET=false/' "$HOME/.nsstore/deploy.env"
+          docker compose \
+            -f deploy/docker-compose.deploy.yml \
+            --env-file "$HOME/.nsstore/deploy.env" \
+            up -d --force-recreate api
+
+      - name: Show API logs on failure
+        if: failure()
+        run: |
+          docker compose \
+            -f deploy/docker-compose.deploy.yml \
+            --env-file "$HOME/.nsstore/deploy.env" \
+            logs --tail 200 api

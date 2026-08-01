@@ -16,7 +16,8 @@ public class DatabaseInitializer(
     IPasswordHasher passwordHasher,
     IConfiguration configuration,
     ILogger<DatabaseInitializer> logger,
-    TimeProvider clock)
+    TimeProvider clock,
+    DemoDataSeeder demoData)
 {
     private const string DefaultBranchCode = "MAIN";
 
@@ -35,6 +36,10 @@ public class DatabaseInitializer(
 
         await SeedAdminAsync(cancellationToken);
         await db.SaveChangesAsync(cancellationToken);
+
+        // Last, and only behind its own flag: it needs the settings, the branch and the admin above,
+        // and on a production install it must do nothing at all.
+        await demoData.SeedAsync(cancellationToken);
     }
 
     /// <summary>

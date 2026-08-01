@@ -4,17 +4,30 @@ on:
   push:
     branches: [main, master]
   pull_request:
+  workflow_dispatch:
+
+# One deploy at a time; a queued run waits instead of racing the container that is starting.
+concurrency:
+  group: nsstore-api-${{ github.ref }}
+  cancel-in-progress: false
 
 jobs:
   build-and-test:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux]
+
+    # The toolchain comes from the image, so the box never needs a .NET SDK installed or upgraded.
+    container:
+      image: mcr.microsoft.com/dotnet/sdk:10.0
 
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/setup-dotnet@v4
+      # Worth it on a persistent runner in a way it never was on a fresh hosted VM.
+      - uses: actions/cache@v4
         with:
-          dotnet-version: '10.0.x'
+          path: ~/.nuget/packages
+          key: nuget-${{ runner.os }}-${{ hashFiles('**/*.csproj', 'Directory.Build.props') }}
+          restore-keys: nuget-${{ runner.os }}-
 
       - name: Restore
         run: dotnet restore
@@ -25,9 +38,78 @@ jobs:
       - name: Test
         run: dotnet test --no-build -c Release --verbosity normal
 
+      # The guard that keeps the schema honest: any entity or EF-configuration change without a
+      # matching migration fails here rather than at startup on the server.
       - name: Verify the model has no pending migrations
         run: |
           dotnet tool install --global dotnet-ef
+          export PATH="$PATH:$HOME/.dotnet/tools"
           dotnet ef migrations has-pending-model-changes \
             --project src/NsStore.Infrastructure \
             --startup-project src/NsStore.Api
+
+  deploy:
+    needs: build-and-test
+    if: github.ref == 'refs/heads/master' && github.event_name == 'push'
+    runs-on: [self-hosted, linux]
+
+    # On the host, not in a container: this job drives the Docker daemon.
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Ensure the shared network exists
+        run: docker network inspect nsstore-net >/dev/null 2>&1 || docker network create nsstore-net
+
+      - name: Write the server environment file
+        env:
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          JWT_SIGNING_KEY: ${{ secrets.JWT_SIGNING_KEY }}
+          PUBLIC_ORIGIN: ${{ secrets.PUBLIC_ORIGIN }}
+          SEED_ADMIN_USERNAME: ${{ secrets.SEED_ADMIN_USERNAME }}
+          SEED_ADMIN_PASSWORD: ${{ secrets.SEED_ADMIN_PASSWORD }}
+        run: |
+          set -euo pipefail
+          # Outside the workspace so a later manual `docker compose` on the box can reuse it, and
+          # so the secrets are not left sitting in a checkout directory.
+          umask 077
+          mkdir -p "$HOME/.nsstore"
+          cat > "$HOME/.nsstore/deploy.env" <<EOF
+          POSTGRES_DB=nsstore
+          POSTGRES_USER=nsstore
+          POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+          JWT_SIGNING_KEY=${JWT_SIGNING_KEY}
+          PUBLIC_ORIGIN=${PUBLIC_ORIGIN}
+          SEED_ADMIN_USERNAME=${SEED_ADMIN_USERNAME}
+          SEED_ADMIN_PASSWORD=${SEED_ADMIN_PASSWORD}
+          SEED_DEMO_ENABLED=true
+          SEED_DEMO_RESET=false
+          ASPNETCORE_ENVIRONMENT=Production
+          EOF
+
+      - name: Build and start db + api
+        run: |
+          docker compose \
+            -f deploy/docker-compose.deploy.yml \
+            --env-file "$HOME/.nsstore/deploy.env" \
+            up -d --build
+
+      # From inside the network, because the API deliberately publishes no host port. Generous
+      # retries: a first deploy runs migrations and seeds six months of demo history before it
+      # starts answering.
+      - name: Smoke test the API
+        run: |
+          docker run --rm --network nsstore-net curlimages/curl:latest \
+            -fsS --retry 40 --retry-delay 5 --retry-all-errors http://api:8080/health
+
+      - name: Show API logs on failure
+        if: failure()
+        run: |
+          docker compose \
+            -f deploy/docker-compose.deploy.yml \
+            --env-file "$HOME/.nsstore/deploy.env" \
+            logs --tail 200 api
+
+      # A persistent runner accumulates a layer set per build; the chromebox has a finite disk.
+      - name: Prune dangling images
+        if: always()
+        run: docker image prune -f
