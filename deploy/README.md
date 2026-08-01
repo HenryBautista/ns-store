@@ -1,64 +1,54 @@
 # Deploy — development / demo server
 
-The stack runs on the chromebox as two independent Compose projects joined by an external Docker
-network, so either repository can redeploy without touching the other's files.
+Runs on the chromebox in the same shape as `~/casa-illimani-deploy`: images are built by CI on
+GitHub-hosted runners and pushed to GHCR, the self-hosted runner only pulls and restarts, and the
+Cloudflare Tunnel is a sidecar inside the stack.
 
 ```
-Cloudflare Tunnel (TLS ends here)
-        │  http
-        ▼
-  web   nginx:alpine, :8081        [ns-store-ui]
-        ├── /            → SPA bundle, history fallback
-        ├── /api/…       → proxy_pass http://api:8080
-        └── /healthz     → proxy_pass http://api:8080/health
+Cloudflare edge (TLS ends here)
         │
-        ├──────── nsstore-net (external) ────────┐
-                                                 │
-  api   NsStore.Api :8080, no published port    [ns-store]
-  db    postgres:17-alpine, volume db-data      [ns-store]
+        ▼
+  cloudflared  ──► http://web:80        (all inside the stack network)
+  web          nginx, LAN :8081
+               ├── /         → SPA bundle, history fallback
+               ├── /api/…    → proxy_pass http://api:8080
+               └── /healthz  → proxy_pass http://api:8080/health
+  api          NsStore.Api :8080, no published port
+  postgres     :5432, volume pgdata
 ```
 
-## Why nginx and why one origin
+`docker-compose.prod.yml` is versioned here and copied to `~/ns-store-deploy/` by the ns-store
+deploy job. The `.env` beside it is **server-only and hand-maintained** — it holds the tunnel token.
+
+## Why one origin
 
 The refresh token is an httpOnly cookie scoped to `/api/v1/auth`, issued with `Secure` and
 `SameSite=Strict` (`src/NsStore.Api/Endpoints/AuthEndpoints.cs`). Serving the SPA and the API from
-one origin over HTTPS is what makes it behave — it is the same arrangement the Vite dev proxy
-creates locally. The tunnel supplies the HTTPS half.
+a single origin over HTTPS is what makes it work — the same arrangement the Vite dev proxy creates
+locally. The tunnel supplies the HTTPS half.
 
 **A browser will not store a `Secure` cookie over plain HTTP**, so reaching the app directly at
 `http://192.168.0.130:8081` lets you log in but drops the session on the next refresh. The tunnel
-hostname is the only supported entry point.
+hostname is the only supported entry point; the LAN port is for smoke tests.
 
-## First-time setup on the server
+## First-time setup
 
-1. Create the shared network (the deploy jobs also do this, idempotently):
+1. Create a tunnel for this stack in the Cloudflare Zero Trust dashboard with a Public Hostname
+   pointing at `http://web:80`, and put its token in `~/ns-store-deploy/.env`.
+2. Fill the rest of `~/ns-store-deploy/.env` from `.env.example` in this folder.
+3. Push to `master` — CI builds the API image and the deploy job takes it from there. Push
+   ns-store-ui's `main` for the web image. **The branches differ between the two repos.**
 
-   ```bash
-   docker network create nsstore-net
-   ```
-
-2. Add these repository secrets to **ns-store** on GitHub:
-
-   | Secret | Notes |
-   |---|---|
-   | `POSTGRES_PASSWORD` | any strong value |
-   | `JWT_SIGNING_KEY` | 32+ chars, `openssl rand -base64 48` |
-   | `PUBLIC_ORIGIN` | the tunnel hostname, e.g. `https://nsstore-dev.example.com` |
-   | `SEED_ADMIN_USERNAME` | only used while no user exists |
-   | `SEED_ADMIN_PASSWORD` | idem |
-
-   The deploy job writes them to `~/.nsstore/deploy.env` (mode 600) on the runner. `.env.example`
-   in this folder documents the same keys for a manual run.
-
-3. Point the Cloudflare Tunnel's ingress for the public hostname at `http://localhost:8081`.
+No GitHub Secrets are needed: images come from GHCR with the built-in `GITHUB_TOKEN`, and every
+secret value lives in the server-side `.env`.
 
 ## Deploying
 
-Push to `master` (ns-store) or `main` (ns-store-ui) — note the branches differ. Each repo's CI runs
-first and the deploy job only follows on a push to that branch.
-
 A normal deploy **never touches existing data**: the demo seeder no-ops as soon as the catalog has
 rows, so whatever the client entered while testing survives.
+
+Ownership is split so neither repo needs the other's files: **ns-store owns the compose file** and
+restarts the whole stack; **ns-store-ui only pulls and restarts `web`**.
 
 ## Demo dataset
 
@@ -68,18 +58,18 @@ open overdue balances), 6 inter-branch transfers, adjustments, orders and quotat
 
 Seller logins are `mquispe`, `jvargas` and `dcamacho`, all with password `Demo1234`.
 
-To rebuild it from scratch, run the **Reset demo data** workflow in ns-store and type `RESET` in the
-confirmation input. That is the only path that deletes anything; it keeps the admin account and the
-business settings. The dataset is generated from a fixed random seed, so a reset reproduces exactly
-the same numbers.
+To rebuild it, run the **Reset demo data** workflow in ns-store and type `RESET` in the confirmation
+input. That is the only path that deletes anything; it keeps the admin account and the business
+settings. The dataset comes from a fixed random seed, so a reset reproduces the same numbers.
 
 ## Operating notes
 
-- The API publishes no host port. To reach it directly:
-  `docker run --rm --network nsstore-net curlimages/curl -fsS http://api:8080/health`
+- The API publishes no host port. To reach it:
+  `docker compose -f docker-compose.prod.yml exec web wget -qO- http://api:8080/health`
 - `ForwardedHeaders__Enabled=true` is what lets the API see the caller's real address, which the
   login rate limiter partitions on. Without it every user shares one 10-per-minute bucket. It is
-  only safe because the API is unreachable except through nginx — do not publish a port for it.
-- Logs: `docker compose -f deploy/docker-compose.deploy.yml --env-file ~/.nsstore/deploy.env logs -f api`
-- Set `ASPNETCORE_ENVIRONMENT=Development` in the env file to expose the Scalar API explorer at
+  only safe while nginx is the sole route to the API — do not publish a port for it.
+- Logs: `cd ~/ns-store-deploy && docker compose -f docker-compose.prod.yml logs -f api`
+- Set `ASPNETCORE_ENVIRONMENT=Development` in the `.env` to expose the Scalar API explorer at
   `/scalar/v1`.
+- LAN ports already taken on this box: 8080 (qbittorrent), 8090 (service-center), 8888 (nextcloud).

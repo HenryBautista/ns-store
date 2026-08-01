@@ -1,115 +1,116 @@
-name: CI
+name: CI/CD
 
 on:
   push:
-    branches: [main, master]
+    branches: [master]
   pull_request:
   workflow_dispatch:
 
-# One deploy at a time; a queued run waits instead of racing the container that is starting.
 concurrency:
-  group: nsstore-api-${{ github.ref }}
-  cancel-in-progress: false
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  build-and-test:
-    runs-on: [self-hosted, linux]
-
-    # The toolchain comes from the image, so the box never needs a .NET SDK installed or upgraded.
-    container:
-      image: mcr.microsoft.com/dotnet/sdk:10.0
-
+  test:
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
-      # Worth it on a persistent runner in a way it never was on a fresh hosted VM.
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
       - uses: actions/cache@v4
         with:
           path: ~/.nuget/packages
-          key: nuget-${{ runner.os }}-${{ hashFiles('**/*.csproj', 'Directory.Build.props') }}
-          restore-keys: nuget-${{ runner.os }}-
+          key: nuget-${{ hashFiles('**/*.csproj') }}
+          restore-keys: nuget-
 
-      - name: Restore
-        run: dotnet restore
-
-      - name: Build
-        run: dotnet build --no-restore -c Release
-
-      - name: Test
-        run: dotnet test --no-build -c Release --verbosity normal
+      - run: dotnet restore
+      - run: dotnet build --no-restore -c Release
+      - run: dotnet test --no-build -c Release
 
       # The guard that keeps the schema honest: any entity or EF-configuration change without a
       # matching migration fails here rather than at startup on the server.
       - name: Verify the model has no pending migrations
         run: |
           dotnet tool install --global dotnet-ef
-          export PATH="$PATH:$HOME/.dotnet/tools"
           dotnet ef migrations has-pending-model-changes \
             --project src/NsStore.Infrastructure \
             --startup-project src/NsStore.Api
 
-  deploy:
-    needs: build-and-test
-    if: github.ref == 'refs/heads/master' && github.event_name == 'push'
-    runs-on: [self-hosted, linux]
+  build-image:
+    needs: test
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: src/NsStore.Api/Dockerfile
+          push: true
+          provenance: false
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          tags: |
+            ghcr.io/henrybautista/ns-store:latest
+            ghcr.io/henrybautista/ns-store:${{ github.sha }}
 
-    # On the host, not in a container: this job drives the Docker daemon.
+  deploy:
+    needs: build-image
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+    runs-on: [self-hosted, casa-illimani]
     steps:
       - uses: actions/checkout@v4
 
-      - name: Ensure the shared network exists
-        run: docker network inspect nsstore-net >/dev/null 2>&1 || docker network create nsstore-net
-
-      - name: Write the server environment file
-        env:
-          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
-          JWT_SIGNING_KEY: ${{ secrets.JWT_SIGNING_KEY }}
-          PUBLIC_ORIGIN: ${{ secrets.PUBLIC_ORIGIN }}
-          SEED_ADMIN_USERNAME: ${{ secrets.SEED_ADMIN_USERNAME }}
-          SEED_ADMIN_PASSWORD: ${{ secrets.SEED_ADMIN_PASSWORD }}
+      # This repo owns the stack definition; ns-store-ui only restarts its own service against it.
+      # The .env living next to it is server-only and is deliberately left alone.
+      - name: Sync the compose file to the deploy directory
         run: |
-          set -euo pipefail
-          # Outside the workspace so a later manual `docker compose` on the box can reuse it, and
-          # so the secrets are not left sitting in a checkout directory.
-          umask 077
-          mkdir -p "$HOME/.nsstore"
-          cat > "$HOME/.nsstore/deploy.env" <<EOF
-          POSTGRES_DB=nsstore
-          POSTGRES_USER=nsstore
-          POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-          JWT_SIGNING_KEY=${JWT_SIGNING_KEY}
-          PUBLIC_ORIGIN=${PUBLIC_ORIGIN}
-          SEED_ADMIN_USERNAME=${SEED_ADMIN_USERNAME}
-          SEED_ADMIN_PASSWORD=${SEED_ADMIN_PASSWORD}
-          SEED_DEMO_ENABLED=true
-          SEED_DEMO_RESET=false
-          ASPNETCORE_ENVIRONMENT=Production
-          EOF
+          mkdir -p ~/ns-store-deploy
+          cp deploy/docker-compose.prod.yml ~/ns-store-deploy/docker-compose.prod.yml
 
-      - name: Build and start db + api
+      - name: Pull latest images and restart the stack
         run: |
-          docker compose \
-            -f deploy/docker-compose.deploy.yml \
-            --env-file "$HOME/.nsstore/deploy.env" \
-            up -d --build
+          cd ~/ns-store-deploy
+          docker compose -f docker-compose.prod.yml pull
+          docker compose -f docker-compose.prod.yml up -d --remove-orphans
 
-      # From inside the network, because the API deliberately publishes no host port. Generous
-      # retries: a first deploy runs migrations and seeds six months of demo history before it
-      # starts answering.
+      # From inside the stack network: the API publishes no port. Generous retries because a first
+      # deploy migrates and seeds six months of demo history before it answers.
       - name: Smoke test the API
         run: |
-          docker run --rm --network nsstore-net curlimages/curl:latest \
-            -fsS --retry 40 --retry-delay 5 --retry-all-errors http://api:8080/health
+          cd ~/ns-store-deploy
+          # Looping here rather than with wget's own retries: nginx ships busybox wget, which has
+          # neither --waitretry nor --retry-connrefused, and a refused connection is exactly the
+          # state we are waiting out.
+          for i in $(seq 1 40); do
+            if docker compose -f docker-compose.prod.yml exec -T web \
+                 wget -q -O - http://api:8080/health 2>/dev/null | grep -q Healthy; then
+              echo "API healthy after $i attempt(s)"
+              exit 0
+            fi
+            sleep 5
+          done
+          echo "::error::The API never reported healthy"
+          exit 1
 
       - name: Show API logs on failure
         if: failure()
         run: |
-          docker compose \
-            -f deploy/docker-compose.deploy.yml \
-            --env-file "$HOME/.nsstore/deploy.env" \
-            logs --tail 200 api
+          cd ~/ns-store-deploy
+          docker compose -f docker-compose.prod.yml logs --tail 200 api
 
-      # A persistent runner accumulates a layer set per build; the chromebox has a finite disk.
       - name: Prune dangling images
         if: always()
         run: docker image prune -f
