@@ -87,7 +87,7 @@ public static class SaleEndpoints
         group.MapPost("/collections", async (CollectDebtRequest request, SaleService sales, CancellationToken ct) =>
                 Results.Ok(await sales.CollectFromClientAsync(request, ct)))
             .WithValidation<CollectDebtRequest>()
-            .WithSummary("Collect one amount from a client, spread oldest-first, and issue a receipt");
+            .WithSummary("Collect one amount from a client over the sales it names, or oldest-first, and issue a receipt");
 
         group.MapGet("/collections/{receiptId:long}", async (long receiptId, SaleService sales, CancellationToken ct) =>
                 Results.Ok(await sales.GetCollectionReceiptAsync(receiptId, ct)))

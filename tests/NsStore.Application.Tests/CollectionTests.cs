@@ -166,6 +166,103 @@ public class CollectionTests
     }
 
     [Fact]
+    public async Task Named_allocations_settle_the_chosen_sale_and_leave_an_older_one_untouched()
+    {
+        using var harness = new TestHarness();
+        var (older, newer) = await TwoDebtsAsync(harness);
+
+        // The whole point of allocations: oldest-first would have put this against `older`.
+        var receipt = await harness.Sales.CollectFromClientAsync(
+            new CollectDebtRequest(1, 200m, null, [new CollectAllocationRequest(newer, 200m)]));
+
+        var allocation = Assert.Single(receipt.Allocations);
+        Assert.Equal(newer, allocation.SaleId);
+        Assert.True(allocation.Settled);
+
+        Assert.Equal(PaymentStatus.Paid, (await harness.Sales.GetAsync(newer)).PaymentStatus);
+        Assert.Equal(100m, (await harness.Sales.GetAsync(older)).Balance);
+        Assert.Equal(100m, receipt.RemainingDebt);
+    }
+
+    [Fact]
+    public async Task A_named_allocation_may_be_a_partial_instalment()
+    {
+        using var harness = new TestHarness();
+        var (older, newer) = await TwoDebtsAsync(harness);
+
+        var receipt = await harness.Sales.CollectFromClientAsync(
+            new CollectDebtRequest(1, 100m, null, [new CollectAllocationRequest(newer, 100m)]));
+
+        var allocation = Assert.Single(receipt.Allocations);
+        Assert.Equal(newer, allocation.SaleId);
+        Assert.False(allocation.Settled);
+        Assert.Equal(100m, allocation.RemainingBalance);
+
+        Assert.Equal(PaymentStatus.Credit, (await harness.Sales.GetAsync(newer)).PaymentStatus);
+        Assert.Equal(100m, (await harness.Sales.GetAsync(older)).Balance);
+    }
+
+    [Fact]
+    public async Task Allocations_are_spread_across_every_sale_they_name()
+    {
+        using var harness = new TestHarness();
+        var (older, newer) = await TwoDebtsAsync(harness);
+
+        var receipt = await harness.Sales.CollectFromClientAsync(new CollectDebtRequest(
+            1, 200m, null,
+            [new CollectAllocationRequest(newer, 100m), new CollectAllocationRequest(older, 100m)]));
+
+        Assert.Equal(2, receipt.Allocations.Count);
+        Assert.True(receipt.Allocations.Single(a => a.SaleId == older).Settled);
+        Assert.Equal(100m, receipt.Allocations.Single(a => a.SaleId == newer).RemainingBalance);
+        Assert.Equal(100m, receipt.RemainingDebt);
+    }
+
+    [Fact]
+    public async Task Allocations_that_do_not_add_up_to_the_collected_amount_are_rejected()
+    {
+        using var harness = new TestHarness();
+        var (_, newer) = await TwoDebtsAsync(harness);
+
+        // The receipt is printed from Amount, so a breakdown that says something else cannot stand.
+        await Assert.ThrowsAsync<BadRequestException>(() => harness.Sales.CollectFromClientAsync(
+            new CollectDebtRequest(1, 200m, null, [new CollectAllocationRequest(newer, 100m)])));
+
+        Assert.Empty(await harness.Db.PaymentReceipts.ToListAsync());
+    }
+
+    [Fact]
+    public async Task An_allocation_beyond_that_sales_own_balance_is_rejected()
+    {
+        using var harness = new TestHarness();
+        var (older, _) = await TwoDebtsAsync(harness);
+
+        // 200 is under the client's 300, so only the per-sale check can catch this.
+        var error = await Assert.ThrowsAsync<DomainRuleException>(() => harness.Sales.CollectFromClientAsync(
+            new CollectDebtRequest(1, 200m, null, [new CollectAllocationRequest(older, 200m)])));
+
+        Assert.Equal(ErrorCodes.PaymentExceedsBalance, error.ErrorCode);
+
+        Assert.Empty(await harness.Db.PaymentReceipts.ToListAsync());
+        Assert.Equal(100m, (await harness.Sales.GetAsync(older)).Balance);
+    }
+
+    [Fact]
+    public async Task An_allocation_naming_a_sale_that_no_longer_owes_is_rejected()
+    {
+        using var harness = new TestHarness();
+        var (older, _) = await TwoDebtsAsync(harness);
+
+        await harness.Sales.CollectFromClientAsync(new CollectDebtRequest(1, 100m, null));
+
+        // What a till holding a stale list would send: the sale another till has already settled.
+        await Assert.ThrowsAsync<NotFoundException>(() => harness.Sales.CollectFromClientAsync(
+            new CollectDebtRequest(1, 100m, null, [new CollectAllocationRequest(older, 100m)])));
+
+        Assert.Single(await harness.Db.PaymentReceipts.ToListAsync());
+    }
+
+    [Fact]
     public async Task A_credit_sale_made_at_one_branch_can_be_collected_at_another()
     {
         using var harness = new TestHarness();

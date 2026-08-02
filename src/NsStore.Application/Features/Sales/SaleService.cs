@@ -406,12 +406,14 @@ public class SaleService(
     }
 
     /// <summary>
-    /// Collects one amount from a client and spreads it across their unpaid sales, oldest first,
-    /// issuing a numbered receipt for the whole act.
+    /// Collects one amount from a client and spreads it across their unpaid sales — over the ones
+    /// the caller named, or oldest-first when it named none — issuing a numbered receipt for the
+    /// whole act.
     /// </summary>
     /// <remarks>
-    /// Oldest-first is not a preference: it is what keeps a debt from ageing forever while the
-    /// client keeps paying, and it matches what the collections screen previews before confirming.
+    /// Oldest-first stays the default because it keeps a debt from ageing forever while the client
+    /// keeps paying. Explicit allocations exist because the counter often settles a named invoice,
+    /// and guessing at that leaves the receipt disagreeing with what the customer asked for.
     /// The whole thing is one transaction — a partially applied collection would leave the customer
     /// holding a receipt for money the ledger disagrees about.
     /// </remarks>
@@ -478,6 +480,36 @@ public class SaleService(
 
             db.PaymentReceipts.Add(receipt);
 
+            foreach (var (sale, applied) in ResolveAllocations(request, owing, amount))
+            {
+                var payment = sale.RegisterPayment(applied, paymentDate, branchId, currentUser.UserId, now);
+                payment.Receipt = receipt;
+
+                db.Payments.Add(payment);
+            }
+
+            await db.SaveChangesAsync(ct);
+            return receipt.Id;
+        }, cancellationToken);
+
+        return await GetCollectionReceiptAsync(receiptId, cancellationToken);
+    }
+
+    /// <summary>
+    /// Decides what each sale absorbs of a collection: the caller's own breakdown when it sent one,
+    /// otherwise the oldest-first walk. Only the split is decided here — whether a sale can actually
+    /// take its share is <see cref="Sale.RegisterPayment"/>'s call, against the balance it reads
+    /// inside the transaction rather than whatever the caller was looking at.
+    /// </summary>
+    private static List<(Sale Sale, decimal Applied)> ResolveAllocations(
+        CollectDebtRequest request,
+        List<Sale> owing,
+        decimal amount)
+    {
+        var result = new List<(Sale, decimal)>();
+
+        if (request.Allocations is not { Count: > 0 } allocations)
+        {
             var remaining = amount;
             foreach (var sale in owing)
             {
@@ -487,18 +519,33 @@ public class SaleService(
                 }
 
                 var applied = Math.Min(remaining, sale.Balance);
-                var payment = sale.RegisterPayment(applied, paymentDate, branchId, currentUser.UserId, now);
-                payment.Receipt = receipt;
-
-                db.Payments.Add(payment);
+                result.Add((sale, applied));
                 remaining -= applied;
             }
 
-            await db.SaveChangesAsync(ct);
-            return receipt.Id;
-        }, cancellationToken);
+            return result;
+        }
 
-        return await GetCollectionReceiptAsync(receiptId, cancellationToken);
+        foreach (var allocation in allocations)
+        {
+            // Missing covers all three ways a sale can fail to belong here — another client's,
+            // already settled, or soft-deleted — and none of them is worth telling apart.
+            var sale = owing.FirstOrDefault(s => s.Id == allocation.SaleId)
+                ?? throw new NotFoundException(nameof(Sale), allocation.SaleId);
+
+            result.Add((sale, decimal.Round(allocation.Amount, 2, MidpointRounding.AwayFromZero)));
+        }
+
+        // The receipt is printed from Amount, so a breakdown that does not add up to it would hand
+        // the customer paper that contradicts the ledger.
+        var allocated = result.Sum(entry => entry.Item2);
+        if (allocated != amount)
+        {
+            throw new BadRequestException(
+                $"Allocations total {allocated}, which does not match the collected amount {amount}");
+        }
+
+        return result;
     }
 
     /// <summary>Reissues a receipt: the customer's copy has to survive being lost.</summary>

@@ -133,12 +133,23 @@ public record ClientDebtQuery(
     int PageSize = 25,
     long? BranchId = null);
 
+/// <summary>One sale a collection is being applied to, and how much of it that sale absorbs.</summary>
+public record CollectAllocationRequest(long SaleId, decimal Amount);
+
 /// <summary>
-/// Collect <paramref name="Amount"/> from a client, spread over their unpaid sales oldest-first.
-/// There is no per-sale breakdown in the request on purpose: the customer hands over money, not an
-/// allocation, and letting the caller choose would let two tills disagree about the same debt.
+/// Collect <paramref name="Amount"/> from a client. With <paramref name="Allocations"/> the caller
+/// says which sales absorb it — at the counter one often settles a named invoice rather than handing
+/// over a loose sum. Without them the amount still spreads oldest-first, which stays the default so
+/// a debt cannot age forever while the client keeps paying.
+/// Either way <see cref="Domain.Entities.Sale.RegisterPayment"/> re-checks each balance inside the
+/// transaction, so an allocation built from figures a second till has already moved is rejected
+/// rather than silently overpaid.
 /// </summary>
-public record CollectDebtRequest(long ClientId, decimal Amount, DateOnly? PaymentDate);
+public record CollectDebtRequest(
+    long ClientId,
+    decimal Amount,
+    DateOnly? PaymentDate,
+    IReadOnlyList<CollectAllocationRequest>? Allocations = null);
 
 /// <summary>What one sale absorbed of a collection, and what it still owes afterwards.</summary>
 public record PaymentAllocationDto(
