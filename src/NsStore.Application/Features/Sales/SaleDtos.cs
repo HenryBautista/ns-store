@@ -59,6 +59,12 @@ public record SaleDto(
     IReadOnlyList<SaleItemDto> Items,
     IReadOnlyList<PaymentDto> Payments);
 
+/// <summary>
+/// <paramref name="DaysOutstanding"/> counts from the last instalment, or from the sale when none
+/// has been paid: a client who is paying down an old debt is not treated as if they had vanished.
+/// It and <paramref name="IsOverdue"/> are resolved server-side against the configurable
+/// <c>overdue_days</c>, so no screen or printed sheet carries its own copy of the rule.
+/// </summary>
 public record SaleListItemDto(
     long Id,
     DateOnly SaleDate,
@@ -67,12 +73,16 @@ public record SaleListItemDto(
     string Number,
     long ClientId,
     string ClientName,
+    string? ClientDocument,
     InvoiceType InvoiceType,
     PaymentStatus PaymentStatus,
     int TotalQuantity,
     decimal TotalAmount,
     decimal TotalPaid,
     decimal Balance,
+    DateOnly? LastPaymentDate,
+    int DaysOutstanding,
+    bool IsOverdue,
     string? CreatedByName);
 
 /// <summary>
@@ -86,4 +96,72 @@ public record SaleQuery(
     PaymentStatus? Status,
     int Page = 1,
     int PageSize = 25,
+    long? BranchId = null,
+    long? ClientId = null);
+
+/// <summary>Which clients the collections screen wants: everyone owing, or only one side of the due date.</summary>
+public enum ClientDebtFilter
+{
+    All,
+    Overdue,
+    Current
+}
+
+/// <summary>
+/// One client's outstanding position, aggregated across every sale they still owe on.
+/// <paramref name="DaysOutstanding"/> runs from their last instalment — on any of their sales —
+/// falling back to the oldest unpaid sale, so a client paying something is not shown as abandoned.
+/// </summary>
+public record ClientDebtDto(
+    long ClientId,
+    string ClientName,
+    string? Document,
+    string? Phone,
+    int SaleCount,
+    decimal TotalAmount,
+    decimal TotalPaid,
+    decimal Balance,
+    DateOnly OldestSaleDate,
+    DateOnly? LastPaymentDate,
+    int DaysOutstanding,
+    bool IsOverdue);
+
+public record ClientDebtQuery(
+    string? Search,
+    ClientDebtFilter Status = ClientDebtFilter.All,
+    int Page = 1,
+    int PageSize = 25,
     long? BranchId = null);
+
+/// <summary>
+/// Collect <paramref name="Amount"/> from a client, spread over their unpaid sales oldest-first.
+/// There is no per-sale breakdown in the request on purpose: the customer hands over money, not an
+/// allocation, and letting the caller choose would let two tills disagree about the same debt.
+/// </summary>
+public record CollectDebtRequest(long ClientId, decimal Amount, DateOnly? PaymentDate);
+
+/// <summary>What one sale absorbed of a collection, and what it still owes afterwards.</summary>
+public record PaymentAllocationDto(
+    long SaleId,
+    string SaleNumber,
+    DateOnly SaleDate,
+    decimal SaleTotal,
+    decimal Applied,
+    decimal RemainingBalance,
+    bool Settled);
+
+/// <summary>The customer's proof of payment: what they handed over and where it landed.</summary>
+public record CollectionReceiptDto(
+    long ReceiptId,
+    string Number,
+    long BranchId,
+    string BranchCode,
+    long ClientId,
+    string ClientName,
+    string? ClientDocument,
+    string? ClientPhone,
+    DateOnly ReceiptDate,
+    decimal TotalCollected,
+    decimal RemainingDebt,
+    string? CreatedByName,
+    IReadOnlyList<PaymentAllocationDto> Allocations);

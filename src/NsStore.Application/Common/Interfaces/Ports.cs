@@ -58,7 +58,7 @@ public interface IStockLockService
     Task LockAsync(IReadOnlyCollection<StockKey> keys, CancellationToken cancellationToken = default);
 }
 
-public enum DocumentKind { Sale, Purchase, Transfer }
+public enum DocumentKind { Sale, Purchase, Transfer, Receipt }
 
 /// <summary>
 /// Hands out the next per-branch document number.

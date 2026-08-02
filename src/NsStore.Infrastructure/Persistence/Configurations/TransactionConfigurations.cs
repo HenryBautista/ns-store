@@ -180,6 +180,42 @@ public class PaymentConfiguration : IEntityTypeConfiguration<Payment>
     }
 }
 
+public class PaymentReceiptConfiguration : IEntityTypeConfiguration<PaymentReceipt>
+{
+    public void Configure(EntityTypeBuilder<PaymentReceipt> builder)
+    {
+        builder.Property(r => r.TotalAmount).HasPrecision(12, 2);
+        builder.Property(r => r.Number).HasMaxLength(24).IsRequired();
+
+        builder.HasOne(r => r.Client)
+            .WithMany()
+            .HasForeignKey(r => r.ClientId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        builder.HasOne(r => r.Branch)
+            .WithMany()
+            .HasForeignKey(r => r.BranchId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        // Cascade would delete the instalments with the receipt; the money moved regardless, so the
+        // Payment rows outlive it and simply lose their grouping.
+        builder.HasMany(r => r.Payments)
+            .WithOne(p => p.Receipt!)
+            .HasForeignKey(p => p.ReceiptId)
+            .OnDelete(DeleteBehavior.SetNull);
+
+        builder.HasIndex(r => new { r.ClientId, r.ReceiptDate });
+
+        // Same belt and braces as sales: the folio is globally unique because its prefix is.
+        builder.HasIndex(r => new { r.BranchId, r.BranchSequence }).IsUnique();
+        builder.HasIndex(r => r.Number).IsUnique();
+
+        builder.ToTable(t => t.HasCheckConstraint("ck_payment_receipts_total_positive", "total_amount > 0"));
+
+        builder.HasQueryFilter(r => r.DeletedAt == null);
+    }
+}
+
 public class OrderConfiguration : IEntityTypeConfiguration<Order>
 {
     public void Configure(EntityTypeBuilder<Order> builder)

@@ -82,7 +82,8 @@ public class PurchaseAndPricingTests
         await harness.Settings.UpdateAsync(new Features.Settings.UpdateSettingsRequest(
             VatRate: 13m,
             DefaultMarginPct: 50m,
-            Currency: "BOB"));
+            Currency: "BOB",
+            OverdueDays: 15));
 
         var suggestion = await harness.Products.GetPriceSuggestionAsync(productId);
 

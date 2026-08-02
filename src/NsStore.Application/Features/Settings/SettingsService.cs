@@ -5,13 +5,19 @@ using NsStore.Domain.Entities;
 
 namespace NsStore.Application.Features.Settings;
 
-/// <summary>Business parameters as percentages (e.g. <c>vatRate = 16</c> means 16%).</summary>
-public record SettingsDto(decimal VatRate, decimal DefaultMarginPct, string Currency);
+/// <summary>
+/// Business parameters as percentages (e.g. <c>vatRate = 16</c> means 16%).
+/// <paramref name="OverdueDays"/> is a day count, not a percentage.
+/// </summary>
+public record SettingsDto(decimal VatRate, decimal DefaultMarginPct, string Currency, int OverdueDays);
 
-public record UpdateSettingsRequest(decimal VatRate, decimal DefaultMarginPct, string Currency);
+public record UpdateSettingsRequest(decimal VatRate, decimal DefaultMarginPct, string Currency, int OverdueDays);
 
 public class SettingsService(IAppDbContext db, ICurrentUser currentUser, TimeProvider clock)
 {
+    /// <summary>Legacy rule 7 ("deuda vencida > 15 días"), now the starting value rather than the law.</summary>
+    public const int DefaultOverdueDays = 15;
+
     public async Task<SettingsDto> GetAsync(CancellationToken cancellationToken = default)
     {
         var settings = await db.AppSettings.AsNoTracking().ToDictionaryAsync(s => s.Key, s => s.Value, cancellationToken);
@@ -19,7 +25,8 @@ public class SettingsService(IAppDbContext db, ICurrentUser currentUser, TimePro
         return new SettingsDto(
             ReadDecimal(settings, AppSettingKeys.VatRate, 16m),
             ReadDecimal(settings, AppSettingKeys.DefaultMarginPct, 30m),
-            settings.GetValueOrDefault(AppSettingKeys.Currency, "BOB"));
+            settings.GetValueOrDefault(AppSettingKeys.Currency, "BOB"),
+            ReadInt(settings, AppSettingKeys.OverdueDays, DefaultOverdueDays));
     }
 
     public async Task<SettingsDto> UpdateAsync(UpdateSettingsRequest request, CancellationToken cancellationToken = default)
@@ -27,6 +34,7 @@ public class SettingsService(IAppDbContext db, ICurrentUser currentUser, TimePro
         await UpsertAsync(AppSettingKeys.VatRate, request.VatRate.ToString(CultureInfo.InvariantCulture), cancellationToken);
         await UpsertAsync(AppSettingKeys.DefaultMarginPct, request.DefaultMarginPct.ToString(CultureInfo.InvariantCulture), cancellationToken);
         await UpsertAsync(AppSettingKeys.Currency, request.Currency.Trim().ToUpperInvariant(), cancellationToken);
+        await UpsertAsync(AppSettingKeys.OverdueDays, request.OverdueDays.ToString(CultureInfo.InvariantCulture), cancellationToken);
 
         await db.SaveChangesAsync(cancellationToken);
         return await GetAsync(cancellationToken);
@@ -48,6 +56,11 @@ public class SettingsService(IAppDbContext db, ICurrentUser currentUser, TimePro
 
     private static decimal ReadDecimal(IReadOnlyDictionary<string, string> settings, string key, decimal fallback) =>
         settings.TryGetValue(key, out var raw) && decimal.TryParse(raw, NumberStyles.Any, CultureInfo.InvariantCulture, out var value)
+            ? value
+            : fallback;
+
+    private static int ReadInt(IReadOnlyDictionary<string, string> settings, string key, int fallback) =>
+        settings.TryGetValue(key, out var raw) && int.TryParse(raw, NumberStyles.Integer, CultureInfo.InvariantCulture, out var value)
             ? value
             : fallback;
 }

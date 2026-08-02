@@ -4,6 +4,7 @@ using NsStore.Application.Common.Interfaces;
 using NsStore.Application.Common.Models;
 using NsStore.Application.Features.Branches;
 using NsStore.Application.Features.Inventory;
+using NsStore.Application.Features.Settings;
 using NsStore.Domain.Common;
 using NsStore.Domain.Entities;
 using NsStore.Domain.Enums;
@@ -16,6 +17,7 @@ public class SaleService(
     BranchService branches,
     IStockLockService stockLock,
     IDocumentNumberService documentNumbers,
+    SettingsService settings,
     ICurrentUser currentUser,
     TimeProvider clock)
 {
@@ -27,11 +29,10 @@ public class SaleService(
         var request = new PageRequest(query.Search, query.Page, query.PageSize);
         var sales = Filter(db.Sales.AsNoTracking(), query, request);
 
-        return await sales
-            .OrderByDescending(s => s.SaleDate)
-            .ThenByDescending(s => s.Id)
-            .Select(ProjectToListItem)
-            .ToPagedResultAsync(request, cancellationToken);
+        return await ToListResultAsync(
+            sales.OrderByDescending(s => s.SaleDate).ThenByDescending(s => s.Id),
+            request,
+            cancellationToken);
     }
 
     /// <summary>Credit sales with an outstanding balance (legacy "No pagadas").</summary>
@@ -43,11 +44,118 @@ public class SaleService(
         var sales = Filter(db.Sales.AsNoTracking(), query with { Status = null }, request)
             .Where(s => s.PaymentStatus == PaymentStatus.Credit && s.TotalPaid < s.TotalAmount);
 
-        return await sales
-            .OrderBy(s => s.SaleDate)
-            .ThenBy(s => s.Id)
-            .Select(ProjectToListItem)
-            .ToPagedResultAsync(request, cancellationToken);
+        return await ToListResultAsync(
+            sales.OrderBy(s => s.SaleDate).ThenBy(s => s.Id),
+            request,
+            cancellationToken);
+    }
+
+    /// <summary>
+    /// The collections screen: one row per client who still owes, newest debt aside — the order is
+    /// worst-overdue first, because that is the order someone works the phone in.
+    /// </summary>
+    /// <remarks>
+    /// Branch scope follows the same policy as every other money read: an admin sees the whole
+    /// business consolidated, a seller only their own branch. A client's debt is the business's
+    /// debt, not one till's, so the aggregate deliberately spans branches when the caller may see
+    /// them — a sale made at one branch can be settled at another.
+    /// </remarks>
+    public async Task<PagedResult<ClientDebtDto>> ListDebtsByClientAsync(
+        ClientDebtQuery query,
+        CancellationToken cancellationToken = default)
+    {
+        var branchId = currentUser.ResolveScopedBranch(query.BranchId);
+        var overdueDays = (await settings.GetAsync(cancellationToken)).OverdueDays;
+        var today = DateOnly.FromDateTime(clock.GetUtcNow().UtcDateTime);
+
+        var request = new PageRequest(query.Search, query.Page, query.PageSize);
+
+        var owing = Filter(
+            db.Sales.AsNoTracking(),
+            new SaleQuery(query.Search, null, null, null, BranchId: branchId),
+            request)
+            .Where(s => s.TotalPaid < s.TotalAmount);
+
+        var grouped = await owing
+            .GroupBy(s => s.ClientId)
+            .Select(g => new
+            {
+                ClientId = g.Key,
+                SaleCount = g.Count(),
+                TotalAmount = g.Sum(s => s.TotalAmount),
+                TotalPaid = g.Sum(s => s.TotalPaid),
+                OldestSaleDate = g.Min(s => s.SaleDate)
+            })
+            .ToListAsync(cancellationToken);
+
+        if (grouped.Count == 0)
+        {
+            return new PagedResult<ClientDebtDto>([], request.NormalizedPage, request.NormalizedPageSize, 0);
+        }
+
+        var clientIds = grouped.Select(g => g.ClientId).ToList();
+
+        // Second query rather than a SelectMany inside the grouping projection: that shape does not
+        // translate reliably, and the client count here is already bounded by the page above.
+        var lastPayments = await db.Payments.AsNoTracking()
+            .Where(p => clientIds.Contains(p.Sale.ClientId))
+            .GroupBy(p => p.Sale.ClientId)
+            .Select(g => new { ClientId = g.Key, Last = g.Max(p => p.PaymentDate) })
+            .ToDictionaryAsync(x => x.ClientId, x => x.Last, cancellationToken);
+
+        var clients = await db.Clients.AsNoTracking()
+            .Where(c => clientIds.Contains(c.Id))
+            .Select(c => new
+            {
+                c.Id,
+                Name = c.Type == ClientType.Company
+                    ? c.Name
+                    : (c.Name + " " + (c.LastName ?? "") + " " + (c.MotherLastName ?? "")).Trim(),
+                Document = c.Nit ?? c.Ci,
+                c.Phone
+            })
+            .ToDictionaryAsync(c => c.Id, cancellationToken);
+
+        var rows = grouped
+            .Select(g =>
+            {
+                var client = clients[g.ClientId];
+                var lastPayment = lastPayments.TryGetValue(g.ClientId, out var last) ? last : (DateOnly?)null;
+                var since = lastPayment ?? g.OldestSaleDate;
+                var days = Math.Max(0, today.DayNumber - since.DayNumber);
+
+                return new ClientDebtDto(
+                    g.ClientId,
+                    client.Name,
+                    client.Document,
+                    client.Phone,
+                    g.SaleCount,
+                    g.TotalAmount,
+                    g.TotalPaid,
+                    g.TotalAmount - g.TotalPaid,
+                    g.OldestSaleDate,
+                    lastPayment,
+                    days,
+                    days > overdueDays);
+            })
+            .Where(r => query.Status switch
+            {
+                ClientDebtFilter.Overdue => r.IsOverdue,
+                ClientDebtFilter.Current => !r.IsOverdue,
+                _ => true
+            })
+            .OrderByDescending(r => r.IsOverdue)
+            .ThenByDescending(r => r.DaysOutstanding)
+            .ThenByDescending(r => r.Balance)
+            .ToList();
+
+        // Paged in memory: the status filter is only decidable after aggregating, so a SQL-side
+        // Skip/Take would page the wrong set.
+        return new PagedResult<ClientDebtDto>(
+            [.. rows.Skip(request.Skip).Take(request.NormalizedPageSize)],
+            request.NormalizedPage,
+            request.NormalizedPageSize,
+            rows.Count);
     }
 
     public async Task<PagedResult<SaleListItemDto>> ListByClientAsync(long clientId, PageRequest request, CancellationToken cancellationToken = default)
@@ -59,12 +167,13 @@ public class SaleService(
 
         var branchId = currentUser.ResolveScopedBranch();
 
-        return await db.Sales.AsNoTracking()
-            .Where(s => s.ClientId == clientId && (branchId == null || s.BranchId == branchId))
-            .OrderByDescending(s => s.SaleDate)
-            .ThenByDescending(s => s.Id)
-            .Select(ProjectToListItem)
-            .ToPagedResultAsync(request, cancellationToken);
+        return await ToListResultAsync(
+            db.Sales.AsNoTracking()
+                .Where(s => s.ClientId == clientId && (branchId == null || s.BranchId == branchId))
+                .OrderByDescending(s => s.SaleDate)
+                .ThenByDescending(s => s.Id),
+            request,
+            cancellationToken);
     }
 
     public async Task<SaleDto> GetAsync(long id, CancellationToken cancellationToken = default)
@@ -297,6 +406,160 @@ public class SaleService(
     }
 
     /// <summary>
+    /// Collects one amount from a client and spreads it across their unpaid sales, oldest first,
+    /// issuing a numbered receipt for the whole act.
+    /// </summary>
+    /// <remarks>
+    /// Oldest-first is not a preference: it is what keeps a debt from ageing forever while the
+    /// client keeps paying, and it matches what the collections screen previews before confirming.
+    /// The whole thing is one transaction — a partially applied collection would leave the customer
+    /// holding a receipt for money the ledger disagrees about.
+    /// </remarks>
+    public async Task<CollectionReceiptDto> CollectFromClientAsync(
+        CollectDebtRequest request,
+        CancellationToken cancellationToken = default)
+    {
+        var branchId = currentUser.RequireWritableBranch();
+        var amount = decimal.Round(request.Amount, 2, MidpointRounding.AwayFromZero);
+
+        if (amount <= 0)
+        {
+            throw new BadRequestException("Collected amount must be greater than zero");
+        }
+
+        var receiptId = await db.ExecuteInTransactionAsync(async ct =>
+        {
+            await branches.EnsureWritableAsync(branchId, ct);
+
+            if (!await db.Clients.AnyAsync(c => c.Id == request.ClientId, ct))
+            {
+                throw new NotFoundException(nameof(Client), request.ClientId);
+            }
+
+            // Read across branches: a debt belongs to the business, and the client is standing at
+            // whichever counter they walked into.
+            var owing = await db.Sales
+                .Include(s => s.Payments)
+                .Where(s => s.ClientId == request.ClientId && s.TotalPaid < s.TotalAmount)
+                .OrderBy(s => s.SaleDate)
+                .ThenBy(s => s.Id)
+                .ToListAsync(ct);
+
+            if (owing.Count == 0)
+            {
+                throw new BadRequestException($"Client {request.ClientId} has no outstanding balance");
+            }
+
+            var outstanding = owing.Sum(s => s.Balance);
+            if (amount > outstanding)
+            {
+                throw new ConflictException(
+                    ErrorCodes.PaymentExceedsBalance,
+                    $"Collected {amount} exceeds the client's outstanding balance {outstanding}");
+            }
+
+            var now = clock.GetUtcNow();
+            var paymentDate = request.PaymentDate ?? DateOnly.FromDateTime(now.UtcDateTime);
+
+            // Taken inside the transaction and never cached outside it: ExecuteInTransactionAsync
+            // may retry the whole action, and a retry has to read a fresh number.
+            var branch = await db.Branches.FirstAsync(b => b.Id == branchId, ct);
+            var sequence = await documentNumbers.NextAsync(branchId, DocumentKind.Receipt, ct);
+
+            var receipt = new PaymentReceipt
+            {
+                ClientId = request.ClientId,
+                BranchId = branchId,
+                BranchSequence = sequence,
+                Number = branch.FormatDocumentNumber(sequence),
+                ReceiptDate = paymentDate,
+                TotalAmount = amount
+            };
+
+            db.PaymentReceipts.Add(receipt);
+
+            var remaining = amount;
+            foreach (var sale in owing)
+            {
+                if (remaining <= 0)
+                {
+                    break;
+                }
+
+                var applied = Math.Min(remaining, sale.Balance);
+                var payment = sale.RegisterPayment(applied, paymentDate, branchId, currentUser.UserId, now);
+                payment.Receipt = receipt;
+
+                db.Payments.Add(payment);
+                remaining -= applied;
+            }
+
+            await db.SaveChangesAsync(ct);
+            return receipt.Id;
+        }, cancellationToken);
+
+        return await GetCollectionReceiptAsync(receiptId, cancellationToken);
+    }
+
+    /// <summary>Reissues a receipt: the customer's copy has to survive being lost.</summary>
+    public async Task<CollectionReceiptDto> GetCollectionReceiptAsync(long receiptId, CancellationToken cancellationToken = default)
+    {
+        var receipt = await db.PaymentReceipts.AsNoTracking()
+            .Where(r => r.Id == receiptId)
+            .Select(r => new
+            {
+                r.Id,
+                r.Number,
+                r.BranchId,
+                BranchCode = r.Branch.Code,
+                r.ClientId,
+                ClientName = r.Client.Type == ClientType.Company
+                    ? r.Client.Name
+                    : (r.Client.Name + " " + (r.Client.LastName ?? "") + " " + (r.Client.MotherLastName ?? "")).Trim(),
+                ClientDocument = r.Client.Nit ?? r.Client.Ci,
+                ClientPhone = r.Client.Phone,
+                r.ReceiptDate,
+                r.TotalAmount,
+                CreatedByName = db.Users.Where(u => u.Id == r.CreatedBy).Select(u => u.Username).FirstOrDefault(),
+                Allocations = r.Payments
+                    .OrderBy(p => p.Sale.SaleDate)
+                    .ThenBy(p => p.SaleId)
+                    .Select(p => new PaymentAllocationDto(
+                        p.SaleId,
+                        p.Sale.Number,
+                        p.Sale.SaleDate,
+                        p.Sale.TotalAmount,
+                        p.Amount,
+                        p.Sale.TotalAmount - p.Sale.TotalPaid,
+                        p.Sale.TotalPaid >= p.Sale.TotalAmount))
+                    .ToList()
+            })
+            .FirstOrDefaultAsync(cancellationToken)
+            ?? throw new NotFoundException(nameof(PaymentReceipt), receiptId);
+
+        // What the client still owes now, not at the time of the receipt: a reissued copy should
+        // tell them where they actually stand.
+        var remainingDebt = await db.Sales.AsNoTracking()
+            .Where(s => s.ClientId == receipt.ClientId && s.TotalPaid < s.TotalAmount)
+            .SumAsync(s => (decimal?)(s.TotalAmount - s.TotalPaid), cancellationToken) ?? 0m;
+
+        return new CollectionReceiptDto(
+            receipt.Id,
+            receipt.Number,
+            receipt.BranchId,
+            receipt.BranchCode,
+            receipt.ClientId,
+            receipt.ClientName,
+            receipt.ClientDocument,
+            receipt.ClientPhone,
+            receipt.ReceiptDate,
+            receipt.TotalAmount,
+            remainingDebt,
+            receipt.CreatedByName,
+            receipt.Allocations);
+    }
+
+    /// <summary>
     /// A cash sale ("contado") is fully paid; a credit sale may carry an initial payment that,
     /// if it covers the total, settles the sale immediately.
     /// </summary>
@@ -349,11 +612,71 @@ public class SaleService(
             sales = sales.Where(s => s.BranchId == branchId);
         }
 
+        if (query.ClientId is { } clientId)
+        {
+            sales = sales.Where(s => s.ClientId == clientId);
+        }
+
         return sales;
     }
 
-    private System.Linq.Expressions.Expression<Func<Sale, SaleListItemDto>> ProjectToListItem =>
-        s => new SaleListItemDto(
+    /// <summary>
+    /// Pages the query and finishes the two day-derived fields in memory. The subtraction is not
+    /// pushed to SQL on purpose: <see cref="DateOnly"/> arithmetic translates differently on Npgsql
+    /// and on the SQLite the tests run against, and this is a handful of rows either way.
+    /// </summary>
+    private async Task<PagedResult<SaleListItemDto>> ToListResultAsync(
+        IQueryable<Sale> sales,
+        PageRequest request,
+        CancellationToken cancellationToken)
+    {
+        var overdueDays = (await settings.GetAsync(cancellationToken)).OverdueDays;
+        var today = DateOnly.FromDateTime(clock.GetUtcNow().UtcDateTime);
+
+        var page = await sales.Select(ProjectToRow).ToPagedResultAsync(request, cancellationToken);
+
+        return new PagedResult<SaleListItemDto>(
+            [.. page.Items.Select(row => row.ToDto(overdueDays, today))],
+            page.Page,
+            page.PageSize,
+            page.Total);
+    }
+
+    /// <summary>The SQL-shaped row behind <see cref="SaleListItemDto"/>.</summary>
+    private sealed record SaleListRow(
+        long Id,
+        DateOnly SaleDate,
+        long BranchId,
+        string BranchCode,
+        string Number,
+        long ClientId,
+        string ClientName,
+        string? ClientDocument,
+        InvoiceType InvoiceType,
+        PaymentStatus PaymentStatus,
+        int TotalQuantity,
+        decimal TotalAmount,
+        decimal TotalPaid,
+        DateOnly? LastPaymentDate,
+        string? CreatedByName)
+    {
+        public SaleListItemDto ToDto(int overdueDays, DateOnly today)
+        {
+            var balance = TotalAmount - TotalPaid;
+
+            // A settled sale is not "outstanding" for any number of days, however old it is.
+            var since = LastPaymentDate ?? SaleDate;
+            var days = balance > 0 ? Math.Max(0, today.DayNumber - since.DayNumber) : 0;
+
+            return new SaleListItemDto(
+                Id, SaleDate, BranchId, BranchCode, Number, ClientId, ClientName, ClientDocument,
+                InvoiceType, PaymentStatus, TotalQuantity, TotalAmount, TotalPaid, balance,
+                LastPaymentDate, days, balance > 0 && days > overdueDays, CreatedByName);
+        }
+    }
+
+    private System.Linq.Expressions.Expression<Func<Sale, SaleListRow>> ProjectToRow =>
+        s => new SaleListRow(
             s.Id,
             s.SaleDate,
             s.BranchId,
@@ -363,11 +686,12 @@ public class SaleService(
             s.Client.Type == ClientType.Company
                 ? s.Client.Name
                 : (s.Client.Name + " " + (s.Client.LastName ?? "") + " " + (s.Client.MotherLastName ?? "")).Trim(),
+            s.Client.Nit ?? s.Client.Ci,
             s.InvoiceType,
             s.PaymentStatus,
             s.TotalQuantity,
             s.TotalAmount,
             s.TotalPaid,
-            s.TotalAmount - s.TotalPaid,
+            s.Payments.Max(p => (DateOnly?)p.PaymentDate),
             db.Users.Where(u => u.Id == s.CreatedBy).Select(u => u.Username).FirstOrDefault());
 }

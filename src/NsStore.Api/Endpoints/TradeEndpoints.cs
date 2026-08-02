@@ -56,14 +56,37 @@ public static class SaleEndpoints
                 int? page,
                 int? pageSize,
                 long? branchId,
+                long? clientId,
                 SaleService sales,
                 CancellationToken ct) =>
-            Results.Ok(await sales.ListAsync(new SaleQuery(search, from, to, status, page ?? 1, pageSize ?? 25, branchId), ct)));
+            Results.Ok(await sales.ListAsync(new SaleQuery(search, from, to, status, page ?? 1, pageSize ?? 25, branchId, clientId), ct)));
 
         // Declared before "/{id:long}" so the literal segment wins the route match.
-        group.MapGet("/debts", async (string? search, int? page, int? pageSize, long? branchId, SaleService sales, CancellationToken ct) =>
-                Results.Ok(await sales.ListDebtsAsync(new SaleQuery(search, null, null, null, page ?? 1, pageSize ?? 25, branchId), ct)))
+        group.MapGet("/debts", async (string? search, int? page, int? pageSize, long? branchId, long? clientId, SaleService sales, CancellationToken ct) =>
+                Results.Ok(await sales.ListDebtsAsync(new SaleQuery(search, null, null, null, page ?? 1, pageSize ?? 25, branchId, clientId), ct)))
             .WithSummary("Credit sales with an outstanding balance");
+
+        // Also before "/{id:long}", and before "/debts" would match it as an id.
+        group.MapGet("/debts/by-client", async (
+                string? search,
+                ClientDebtFilter? status,
+                int? page,
+                int? pageSize,
+                long? branchId,
+                SaleService sales,
+                CancellationToken ct) =>
+                Results.Ok(await sales.ListDebtsByClientAsync(
+                    new ClientDebtQuery(search, status ?? ClientDebtFilter.All, page ?? 1, pageSize ?? 25, branchId), ct)))
+            .WithSummary("Outstanding balance aggregated per client, worst-overdue first");
+
+        group.MapPost("/collections", async (CollectDebtRequest request, SaleService sales, CancellationToken ct) =>
+                Results.Ok(await sales.CollectFromClientAsync(request, ct)))
+            .WithValidation<CollectDebtRequest>()
+            .WithSummary("Collect one amount from a client, spread oldest-first, and issue a receipt");
+
+        group.MapGet("/collections/{receiptId:long}", async (long receiptId, SaleService sales, CancellationToken ct) =>
+                Results.Ok(await sales.GetCollectionReceiptAsync(receiptId, ct)))
+            .WithSummary("Reissue a collection receipt");
 
         group.MapGet("/{id:long}", async (long id, SaleService sales, CancellationToken ct) =>
             Results.Ok(await sales.GetAsync(id, ct)));

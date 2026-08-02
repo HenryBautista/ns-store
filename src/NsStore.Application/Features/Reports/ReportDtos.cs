@@ -1,3 +1,4 @@
+using NsStore.Application.Features.Clients;
 using NsStore.Application.Features.Inventory;
 using NsStore.Application.Features.Purchases;
 using NsStore.Application.Features.Sales;
@@ -36,6 +37,37 @@ public record StockReportDto(
     IReadOnlyList<StockLevelDto> Items);
 
 public record DebtsReportDto(int SaleCount, decimal TotalDebt, IReadOnlyList<SaleListItemDto> Sales);
+
+/// <summary>One unpaid sale on a client's statement, with the instalments already credited to it.</summary>
+public record ClientStatementSaleDto(
+    long SaleId,
+    string Number,
+    string BranchCode,
+    DateOnly SaleDate,
+    InvoiceType InvoiceType,
+    decimal TotalAmount,
+    decimal TotalPaid,
+    decimal Balance,
+    int DaysOutstanding,
+    bool IsOverdue,
+    IReadOnlyList<PaymentDto> Payments);
+
+/// <summary>
+/// A statement of account addressed to one client — the sheet the owner hands over or sends so the
+/// customer pays. Unlike the receivables report it names a single client and carries nothing
+/// internal: no seller, no cost, no other customer.
+/// </summary>
+public record ClientStatementDto(
+    ClientDto Client,
+    DateOnly IssuedOn,
+    int OverdueDays,
+    int SaleCount,
+    decimal TotalAmount,
+    decimal TotalPaid,
+    decimal TotalDebt,
+    DateOnly? OldestSaleDate,
+    DateOnly? LastPaymentDate,
+    IReadOnlyList<ClientStatementSaleDto> Sales);
 
 public record PriceListRowDto(
     long ProductId,
