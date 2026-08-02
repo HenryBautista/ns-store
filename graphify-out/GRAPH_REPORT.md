@@ -1,16 +1,16 @@
 # Graph Report - ns-store  (2026-08-01)
 
 ## Corpus Check
-- 137 files · ~57,637 words
+- 138 files · ~57,834 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 1194 nodes · 2877 edges · 66 communities (54 shown, 12 thin omitted)
-- Extraction: 92% EXTRACTED · 8% INFERRED · 0% AMBIGUOUS · INFERRED: 223 edges (avg confidence: 0.8)
+- 1137 nodes · 2933 edges · 66 communities (56 shown, 10 thin omitted)
+- Extraction: 92% EXTRACTED · 8% INFERRED · 0% AMBIGUOUS · INFERRED: 224 edges (avg confidence: 0.8)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `8836a47a`
+- Built from commit: `f6f7a535`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -71,28 +71,28 @@
 - PasswordHasher
 - ValidationFilter.cs
 - .MapAuthEndpoints
-- AppSetting
-- SaleDtos.cs
+- Ports.cs
+- TradeEndpoints.cs
 - .TwoDebtsAsync
 - TokenService
-- .IssueTokensAsync
-- Branch
-- DocumentNumberingTests
-- PageRequest
-- Ports.cs
-- PasswordHasher
+- NsStore.Application.Features.Users
+- DependencyInjection
+- AppClaimTypes.cs
+- ErrorCodes.cs
+- SaleDtoAssertions
+- IEndpointRouteBuilder
 
 ## God Nodes (most connected - your core abstractions)
-1. `NsStore.Domain.Entities` - 43 edges
-2. `DemoDataSeeder` - 38 edges
-3. `TestHarness` - 37 edges
-4. `NsStore.Domain.Enums` - 37 edges
-5. `NsStore.Domain.Common` - 35 edges
+1. `NsStore.Domain.Enums` - 51 edges
+2. `NsStore.Domain.Entities` - 43 edges
+3. `NsStore.Domain.Common` - 42 edges
+4. `DemoDataSeeder` - 38 edges
+5. `TestHarness` - 37 edges
 6. `AppDbContext` - 31 edges
 7. `NsStore.Application.Common.Interfaces` - 30 edges
 8. `IAppDbContext` - 27 edges
 9. `Branch` - 27 edges
-10. `NsStore.Application.Common` - 21 edges
+10. `NsStore.Application.Common` - 26 edges
 
 ## Surprising Connections (you probably didn't know these)
 - `Database__MigrateOnStartup setting` --semantically_similar_to--> `Verify model has no pending migrations (dotnet-ef check)`  [INFERRED] [semantically similar]
@@ -114,11 +114,11 @@
 - **Business rules worth knowing (pricing, stock, sales, credit, soft delete)** — readme_dual_price, readme_price_suggestion, readme_stock_ledger, readme_atomic_sales, readme_credit_sales, readme_soft_delete [EXTRACTED 0.90]
 - **API service environment configuration shared with README config table** — docker_compose_api_service, readme_config_connectionstrings_default, readme_config_jwt_signingkey, readme_config_cors_allowedorigins_0, readme_config_seed_admin_username, readme_config_seed_admin_password [INFERRED 0.85]
 
-## Communities (66 total, 12 thin omitted)
+## Communities (66 total, 10 thin omitted)
 
 ### Community 0 - ".SaveChangesAsync"
-Cohesion: 0.08
-Nodes (29): InventoryEndpoints, CancellationToken, IQueryable, Task, PagedResult, QueryableExtensions, BranchAvailabilityDto, InventoryMovementDto (+21 more)
+Cohesion: 0.16
+Nodes (14): BranchAvailabilityDto, InventoryMovementDto, KardexQuery, KardexRowDto, StockAdjustmentRequest, StockLevelDto, StockQuery, CancellationToken (+6 more)
 
 ### Community 1 - "NsStore.Infrastructure.csproj"
 Cohesion: 0.05
@@ -134,103 +134,103 @@ Nodes (3): Fact, Task, SaleServiceTests
 
 ### Community 4 - "ReportDtos.cs"
 Cohesion: 0.09
-Nodes (27): Amount, Balance, IReadOnlyDictionary, Paid, Quantity, IEndpointRouteBuilder, ClientStatementDto, ClientStatementSaleDto (+19 more)
+Nodes (27): Amount, Balance, IReadOnlyDictionary, Paid, IEndpointRouteBuilder, ReportEndpoints, SettingsEndpoints, ClientStatementDto (+19 more)
 
 ### Community 5 - "AbstractValidator"
 Cohesion: 0.18
 Nodes (15): IEndpointRouteBuilder, UserEndpoints, CreateUserRequest, UpdateUserBranchRequest, UpdateUserRequest, UpdateUserRoleRequest, UpdateUserStatusRequest, UserDto (+7 more)
 
 ### Community 6 - ".LockAsync"
-Cohesion: 0.05
-Nodes (39): HttpContext, IEndpointRouteBuilder, AuthEndpoints, CancellationToken, IReadOnlyCollection, Task, User, AccessToken (+31 more)
+Cohesion: 0.08
+Nodes (22): HttpContext, IEndpointRouteBuilder, AuthEndpoints, AccessToken, IPasswordHasher, IssuedRefreshToken, ITokenService, AuthResult (+14 more)
 
 ### Community 7 - ".IssueTokensAsync"
-Cohesion: 0.55
-Nodes (3): Fact, Task, BranchScopingTests
+Cohesion: 0.18
+Nodes (12): IEndpointRouteBuilder, InventoryEndpoints, CreateTransferRequest, TransferDto, TransferItemDto, TransferItemRequest, TransferListItemDto, TransferQuery (+4 more)
 
 ### Community 8 - "NsStore.Application.Common.Interfaces"
-Cohesion: 0.13
-Nodes (11): NsStore.Application.Common.Interfaces, NsStore.Application, NsStore.Infrastructure, NsStore.Infrastructure.Persistence, NsStore.Infrastructure.Security, IConfiguration, Program, IServiceCollection (+3 more)
+Cohesion: 0.15
+Nodes (8): NsStore.Application.Common.Interfaces, NsStore.Application, NsStore.Infrastructure, NsStore.Infrastructure.Persistence, NsStore.Infrastructure.Security, Program, string, DemoDataCatalog
 
 ### Community 9 - "AuditableEntity"
-Cohesion: 0.09
-Nodes (23): NsStore.Infrastructure.Persistence.Configurations, DateTimeOffset, AuditableEntity, DateTimeOffset, IHasCreationAudit, DateTimeOffset, string, AppSetting (+15 more)
+Cohesion: 0.20
+Nodes (10): Category, Supplier, Trademark, WarrantyTerm, EntityTypeBuilder, AppSettingConfiguration, CategoryConfiguration, SupplierConfiguration (+2 more)
 
 ### Community 10 - "Order"
 Cohesion: 0.23
-Nodes (10): OrderEndpoints, OrderDto, OrderQuery, OrderRequest, CancellationToken, Expression, Task, OrderService (+2 more)
+Nodes (9): OrderEndpoints, OrderDto, OrderQuery, OrderRequest, CancellationToken, Expression, Task, OrderService (+1 more)
 
 ### Community 11 - ".CreateAsync"
-Cohesion: 0.22
-Nodes (10): CreatePurchaseRequest, PurchaseDto, PurchaseItemDto, PurchaseItemRequest, PurchaseListItemDto, PurchaseQuery, CancellationToken, Task (+2 more)
+Cohesion: 0.09
+Nodes (23): CancellationToken, IReadOnlyCollection, Task, IStockLockService, StockKey, CreatePurchaseRequest, PurchaseDto, PurchaseItemDto (+15 more)
 
 ### Community 12 - "IEntityTypeConfiguration"
-Cohesion: 0.17
-Nodes (11): EntityTypeBuilder, Client, Purchase, PurchaseItem, Quote, ClientConfiguration, PaymentConfiguration, PaymentReceiptConfiguration (+3 more)
+Cohesion: 0.11
+Nodes (16): NsStore.Infrastructure.Persistence.Configurations, IEntityTypeConfiguration, PurchaseItem, EntityTypeBuilder, BranchConfiguration, EntityTypeBuilder, StockTransferConfiguration, StockTransferItemConfiguration (+8 more)
 
 ### Community 13 - "ProductService"
-Cohesion: 0.13
-Nodes (19): AbstractValidator, IEndpointRouteBuilder, ProductEndpoints, DescriptionRequestValidator, NameRequestValidator, SupplierRequestValidator, ClientRequestValidator, StockAdjustmentRequestValidator (+11 more)
+Cohesion: 0.29
+Nodes (9): ProductEndpoints, PriceSuggestionDto, ProductDto, ProductRequest, SetPricesRequest, CancellationToken, Expression, Task (+1 more)
 
 ### Community 14 - "User"
 Cohesion: 0.23
-Nodes (7): IEntityTypeConfiguration, DateTimeOffset, Guid, RefreshToken, EntityTypeBuilder, RefreshTokenConfiguration, UserConfiguration
+Nodes (8): DateTimeOffset, Guid, RefreshToken, List, User, EntityTypeBuilder, RefreshTokenConfiguration, UserConfiguration
 
 ### Community 15 - "StockTransfer"
-Cohesion: 0.29
-Nodes (7): DateOnly, List, StockTransfer, StockTransferItem, EntityTypeBuilder, StockTransferConfiguration, StockTransferItemConfiguration
+Cohesion: 0.34
+Nodes (6): decimal, Newer, Older, Fact, Task, CollectionTests
 
 ### Community 16 - "docker-compose 'api' service (src/NsStore.Api/Dockerfile)"
 Cohesion: 0.13
 Nodes (18): docker-compose 'api' service (src/NsStore.Api/Dockerfile), docker-compose 'db' service (postgres:17-alpine), docs/new-app/03-frontend.md (Frontend plan: React + TS + Vite), docs/new-app/README.md (new build plan, English), docs/README.md (legacy analysis, Spanish), Verify model has no pending migrations (dotnet-ef check), CI Workflow (build-and-test), NsStore.Api layer (endpoints, auth, ProblemDetails, rate limiting, DI, config) (+10 more)
 
 ### Community 17 - "IAppDbContext"
-Cohesion: 0.26
-Nodes (11): AuditableEntity, InvoiceType, List, PaymentStatus, Client, DateOnly, DateTimeOffset, Payment (+3 more)
+Cohesion: 0.12
+Nodes (14): CollectDebtRequestValidator, ClientDebtDto, ClientDebtFilter, ClientDebtQuery, CollectDebtRequest, CreateSaleRequest, PaymentAllocationDto, PaymentDto (+6 more)
 
 ### Community 18 - "ClientServiceTests"
-Cohesion: 0.17
-Nodes (11): IEndpointRouteBuilder, ClientEndpoints, ClientDto, ClientRequest, CancellationToken, Task, ClientService, Client (+3 more)
+Cohesion: 0.18
+Nodes (10): IEndpointRouteBuilder, ClientEndpoints, ClientDto, ClientRequest, CancellationToken, Task, ClientService, Fact (+2 more)
 
 ### Community 19 - "AuthPolicies.cs"
 Cohesion: 0.67
 Nodes (3): string, AuthCookies, AuthPolicies
 
 ### Community 20 - "QuoteService.cs"
-Cohesion: 0.24
-Nodes (12): IEndpointRouteBuilder, QuoteEndpoints, CancellationToken, Expression, Task, QuoteDto, QuoteQuery, QuoteRequest (+4 more)
+Cohesion: 0.14
+Nodes (18): AbstractValidator, IEndpointRouteBuilder, QuoteEndpoints, DescriptionRequestValidator, NameRequestValidator, SupplierRequestValidator, ClientRequestValidator, ProductRequestValidator (+10 more)
 
 ### Community 21 - "http"
 Cohesion: 0.13
 Nodes (15): ASPNETCORE_ENVIRONMENT, applicationUrl, commandName, dotnetRunMessages, environmentVariables, launchBrowser, applicationUrl, commandName (+7 more)
 
 ### Community 22 - "DemoDataSeeder"
-Cohesion: 0.19
-Nodes (12): BaseCosts, MarginPct, Products, Random, CancellationToken, int, List, string (+4 more)
+Cohesion: 0.14
+Nodes (17): At, Date, IEnumerable, MarginPct, Random, CancellationToken, DateOnly, DateTimeOffset (+9 more)
 
 ### Community 23 - "SaleTests"
-Cohesion: 0.08
-Nodes (21): ClaimsPrincipal, InlineData, CurrentUser, BranchScope, UserRole, ICurrentUser, ClientType, InvoiceType (+13 more)
+Cohesion: 0.18
+Nodes (9): InlineData, DateOnly, DateTimeOffset, Fact, long, OrderTests, ProductTests, SaleTests (+1 more)
 
 ### Community 24 - "NsStore.Domain.Enums"
-Cohesion: 0.12
-Nodes (9): NsStore.Domain.Tests, NsStore.Application.Features.Clients, NsStore.Domain.Enums, NsStore.Domain.Common, NsStore.Domain.Entities, string, AppClaimTypes, string (+1 more)
+Cohesion: 0.17
+Nodes (6): NsStore.Domain.Tests, NsStore.Application.Common, NsStore.Domain.Enums, NsStore.Application.Features.Branches, NsStore.Domain.Common, NsStore.Domain.Entities
 
 ### Community 25 - "AppExceptionHandler"
 Cohesion: 0.19
 Nodes (9): Detail, ErrorCode, IExceptionHandler, CancellationToken, Exception, HttpContext, ValueTask, AppExceptionHandler (+1 more)
 
 ### Community 26 - "AppDbContext"
-Cohesion: 0.09
-Nodes (22): DbContext, IDesignTimeDbContextFactory, Category, Client, DbSet, InventoryMovement, ModelBuilder, Order (+14 more)
+Cohesion: 0.10
+Nodes (32): DbContext, IDesignTimeDbContextFactory, DbSet, IAppDbContext, DateTimeOffset, AuditableEntity, DateTimeOffset, string (+24 more)
 
 ### Community 27 - "Exceptions.cs"
 Cohesion: 0.26
 Nodes (10): Exception, IDictionary, AppException, BadRequestException, ConflictException, ForbiddenException, NotFoundException, UnauthorizedException (+2 more)
 
 ### Community 28 - ".CreateAsync"
-Cohesion: 0.08
-Nodes (34): Expression, IQueryable, IReadOnlyList, PagedResult, PageRequest, IEndpointRouteBuilder, PurchaseEndpoints, SaleEndpoints (+26 more)
+Cohesion: 0.21
+Nodes (12): CancellationToken, Func, Task, CollectionReceiptDto, SaleDto, SaleListItemDto, SaleQuery, CancellationToken (+4 more)
 
 ### Community 29 - ".SavingChangesAsync"
 Cohesion: 0.29
@@ -258,39 +258,39 @@ Nodes (10): IEndpointRouteBuilder, BranchEndpoints, BranchDto, BranchRequest, Up
 
 ### Community 35 - "Migration"
 Cohesion: 0.07
-Nodes (15): Migration, MigrationBuilder, MigrationBuilder, InitialSchema, MigrationBuilder, UniqueClientCi, MigrationBuilder, string (+7 more)
+Nodes (15): Migration, MigrationBuilder, InitialSchema, MigrationBuilder, UniqueClientCi, MigrationBuilder, string, AddBranches (+7 more)
 
 ### Community 36 - "CatalogEndpoints"
-Cohesion: 0.13
-Nodes (19): NsStore.Application.Features.Catalogs, IEndpointRouteBuilder, CatalogEndpoints, int, PageRequest, CatalogMapping, CategoryDto, DescriptionRequest (+11 more)
+Cohesion: 0.14
+Nodes (16): IEndpointRouteBuilder, CatalogEndpoints, CatalogMapping, CategoryDto, DescriptionRequest, NameRequest, SupplierDto, SupplierRequest (+8 more)
 
 ### Community 37 - "NsStore.Infrastructure.Persistence.Migrations"
 Cohesion: 0.07
 Nodes (13): NsStore.Infrastructure.Persistence.Migrations, ModelBuilder, InitialSchema, ModelBuilder, UniqueClientCi, ModelBuilder, AddBranches, ModelBuilder (+5 more)
 
 ### Community 38 - "NsStore.Application.Features.Users"
-Cohesion: 0.28
-Nodes (5): NsStore.Application.Features.Users, NsStore.Application.Features.Auth, LoginRequest, LoginResponse, LoginRequestValidator
+Cohesion: 0.22
+Nodes (8): DateOnly, List, Purchase, ClientType, InvoiceType, MovementType, PaymentStatus, PurchaseConfiguration
 
 ### Community 39 - "Atomic sales transaction"
 Cohesion: 0.67
 Nodes (3): Atomic sales transaction, Credit sales / installment payments, Stock movement ledger (inventory_movements + stock_levels cache)
 
 ### Community 40 - "NsStore.Application.Common.Models"
-Cohesion: 0.24
-Nodes (8): NsStore.Api.Endpoints, NsStore.Application.Common.Models, NsStore.Api.Security, NsStore.Application.Features.Quotes, NsStore.Application.Features.Orders, NsStore.Api.Middleware, string, RateLimitPolicies
+Cohesion: 0.17
+Nodes (10): NsStore.Api.Endpoints, NsStore.Application.Common.Models, NsStore.Application.Features.Catalogs, NsStore.Api.Security, NsStore.Application.Features.Quotes, NsStore.Application.Features.Orders, NsStore.Api.Middleware, QueryEnum (+2 more)
 
 ### Community 41 - "NsStore.Application.Features.Inventory"
-Cohesion: 0.17
-Nodes (10): NsStore.Application.Tests, NsStore.Application.Features.Reports, NsStore.Application.Features.Products, NsStore.Application.Features.Sales, NsStore.Application.Features.Purchases, NsStore.Application.Features.Settings, ReportEndpoints, SettingsEndpoints (+2 more)
+Cohesion: 0.25
+Nodes (10): NsStore.Application.Tests, NsStore.Application.Features.Inventory, NsStore.Application.Features.Reports, NsStore.Application.Features.Products, NsStore.Application.Features.Sales, NsStore.Application.Features.Clients, NsStore.Application.Features.Purchases, NsStore.Application.Features.Settings (+2 more)
 
 ### Community 45 - "TestHarness"
-Cohesion: 0.25
-Nodes (6): At, Date, IEnumerable, DateOnly, Quantity, Workspace
+Cohesion: 0.58
+Nodes (3): Fact, Task, DocumentNumberingTests
 
 ### Community 46 - ".StockedInMainAsync"
-Cohesion: 0.11
-Nodes (18): Category, Client, DbSet, InventoryMovement, Order, Product, Purchase, PurchaseItem (+10 more)
+Cohesion: 0.31
+Nodes (6): ClaimsPrincipal, CurrentUser, BranchScope, ICurrentUser, UserRole, FakeCurrentUser
 
 ### Community 47 - "Deploy — development / demo server"
 Cohesion: 0.29
@@ -309,48 +309,56 @@ Cohesion: 0.58
 Nodes (3): Fact, Task, ReportServiceTests
 
 ### Community 51 - "Ports.cs"
-Cohesion: 0.16
-Nodes (16): BranchId, Dictionary, Movement, ProductId, DateTimeOffset, InventoryMovement, StockLevel, List (+8 more)
+Cohesion: 0.13
+Nodes (18): BaseCosts, BranchId, Dictionary, Movement, ProductId, Products, DateTimeOffset, IHasCreationAudit (+10 more)
 
 ### Community 52 - "AppClaimTypes.cs"
-Cohesion: 0.67
-Nodes (3): Product, SaleItem, SaleItemConfiguration
+Cohesion: 0.50
+Nodes (3): IConfiguration, IServiceCollection, DependencyInjection
 
 ### Community 53 - "PasswordHasher"
 Cohesion: 0.50
 Nodes (3): CancellationToken, Func, Task
 
-### Community 54 - "ValidationFilter.cs"
-Cohesion: 0.23
-Nodes (5): NsStore.Application.Features.Inventory, NsStore.Application.Common, NsStore.Application.Features.Branches, RouteHandlerBuilder, ValidationFilterExtensions
+### Community 56 - "Ports.cs"
+Cohesion: 0.33
+Nodes (5): DocumentKind, IDocumentNumberService, CancellationToken, Task, DocumentNumberService
+
+### Community 57 - "TradeEndpoints.cs"
+Cohesion: 0.40
+Nodes (3): IEndpointRouteBuilder, PurchaseEndpoints, SaleEndpoints
 
 ### Community 58 - ".TwoDebtsAsync"
-Cohesion: 0.09
-Nodes (26): BranchService, ClientService, decimal, IDisposable, InventoryService, long, Newer, Older (+18 more)
+Cohesion: 0.15
+Nodes (14): IDisposable, SqliteConnection, Fact, Task, BranchScopingTests, DateOnly, DateTimeOffset, long (+6 more)
 
-### Community 61 - "Branch"
-Cohesion: 0.25
-Nodes (5): Branch, List, User, EntityTypeBuilder, BranchConfiguration
+### Community 59 - "TokenService"
+Cohesion: 0.28
+Nodes (7): CancellationToken, int, IQueryable, Task, PagedResult, PageRequest, QueryableExtensions
+
+### Community 60 - "NsStore.Application.Features.Users"
+Cohesion: 0.50
+Nodes (3): NsStore.Application.Features.Users, NsStore.Application.Features.Auth, LoginResponse
 
 ## Knowledge Gaps
-- **86 isolated node(s):** `ClientStatementSaleDto`, `PriceListRowDto`, `SaleItemRequest`, `PaymentDto`, `ClientDebtFilter` (+81 more)
+- **86 isolated node(s):** `net10.0`, `Microsoft.AspNetCore.Authentication.JwtBearer (10.0.10)`, `Microsoft.AspNetCore.OpenApi (10.0.10)`, `Microsoft.EntityFrameworkCore.Design (10.0.10)`, `Microsoft.OpenApi (2.11.0)` (+81 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **12 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **10 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `TestHarness` connect `.TwoDebtsAsync` to `.CreateProductAsync`, `TokenService`, `ReportDtos.cs`, `.LockAsync`, `.IssueTokensAsync`, `NsStore.Application.Features.Inventory`, `.AddInfrastructure`, `ClientServiceTests`, `ErrorCodes.cs`, `SaleTests`, `AppDbContext`, `.CreateAsync`?**
-  _High betweenness centrality (0.149) - this node is a cross-community bridge._
-- **Why does `NsStore.Domain.Entities` connect `NsStore.Domain.Enums` to `CatalogEndpoints`, `ReportDtos.cs`, `NsStore.Application.Features.Users`, `.LockAsync`, `NsStore.Application.Common.Models`, `NsStore.Application.Features.Inventory`, `AbstractValidator`, `AuditableEntity`, `NsStore.Application.Common.Interfaces`, `IEntityTypeConfiguration`, `User`, `StockTransfer`, `IAppDbContext`, `Ports.cs`, `QuoteService.cs`, `ValidationFilter.cs`, `Branch`?**
-  _High betweenness centrality (0.126) - this node is a cross-community bridge._
-- **Why does `AppDbContext` connect `AppDbContext` to `NsStore.Application.Common.Interfaces`, `AuditableEntity`, `.StockedInMainAsync`, `IAppDbContext`, `AppClaimTypes.cs`, `PasswordHasher`, `.TwoDebtsAsync`, `Branch`?**
-  _High betweenness centrality (0.102) - this node is a cross-community bridge._
-- **What connects `ClientStatementSaleDto`, `PriceListRowDto`, `SaleItemRequest` to the rest of the system?**
+- **Why does `TestHarness` connect `.TwoDebtsAsync` to `.SaveChangesAsync`, `.CreateProductAsync`, `TokenService`, `BranchService`, `ReportDtos.cs`, `.IssueTokensAsync`, `NsStore.Application.Features.Inventory`, `.CreateAsync`, `TestHarness`, `ProductService`, `StockTransfer`, `.AddInfrastructure`, `.StockedInMainAsync`, `ClientServiceTests`, `ErrorCodes.cs`, `Ports.cs`, `AppDbContext`, `.CreateAsync`?**
+  _High betweenness centrality (0.153) - this node is a cross-community bridge._
+- **Why does `NsStore.Domain.Enums` connect `NsStore.Domain.Enums` to `.SaveChangesAsync`, `AbstractValidator`, `NsStore.Application.Features.Users`, `NsStore.Infrastructure.Persistence.Migrations`, `NsStore.Application.Common.Interfaces`, `NsStore.Application.Features.Inventory`, `Order`, `.CreateAsync`, `IAppDbContext`, `ClientServiceTests`, `Ports.cs`, `AppDbContext`?**
+  _High betweenness centrality (0.145) - this node is a cross-community bridge._
+- **Why does `NsStore.Domain.Common` connect `NsStore.Domain.Enums` to `NsStore.Application.Common.Models`, `AuditableEntity`, `NsStore.Application.Common.Interfaces`, `NsStore.Application.Features.Inventory`, `Ports.cs`, `AppDbContext`, `Exceptions.cs`, `NsStore.Application.Features.Users`, `AppClaimTypes.cs`, `ErrorCodes.cs`?**
+  _High betweenness centrality (0.079) - this node is a cross-community bridge._
+- **What connects `net10.0`, `Microsoft.AspNetCore.Authentication.JwtBearer (10.0.10)`, `Microsoft.AspNetCore.OpenApi (10.0.10)` to the rest of the system?**
   _86 weakly-connected nodes found - possible documentation gaps or missing edges._
-- **Should `.SaveChangesAsync` be split into smaller, more focused modules?**
-  _Cohesion score 0.08244680851063829 - nodes in this community are weakly interconnected._
 - **Should `NsStore.Infrastructure.csproj` be split into smaller, more focused modules?**
   _Cohesion score 0.047872340425531915 - nodes in this community are weakly interconnected._
 - **Should `ReportDtos.cs` be split into smaller, more focused modules?**
-  _Cohesion score 0.09393939393939393 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.08879492600422834 - nodes in this community are weakly interconnected._
+- **Should `.LockAsync` be split into smaller, more focused modules?**
+  _Cohesion score 0.08130081300813008 - nodes in this community are weakly interconnected._

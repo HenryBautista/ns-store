@@ -169,8 +169,8 @@
       },
       "_origin": "ast",
       "id": "src_nsstore_api_endpoints_authendpoints_nsstore_api_endpoints_authendpoints",
-      "community": 66,
-      "community_name": ".MapAuthEndpoints",
+      "community": 6,
+      "community_name": ".LockAsync",
       "norm_label": "authendpoints"
     },
     {
@@ -186,8 +186,8 @@
       },
       "_origin": "ast",
       "id": "src_nsstore_api_endpoints_authendpoints_nsstore_api_endpoints_authendpoints_mapauthendpoints",
-      "community": 66,
-      "community_name": ".MapAuthEndpoints",
+      "community": 6,
+      "community_name": ".LockAsync",
       "norm_label": ".mapauthendpoints()"
     },
     {
@@ -197,8 +197,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_nsstore_api_endpoints_authendpoints_cs_iendpointroutebuilder",
-      "community": 66,
-      "community_name": ".MapAuthEndpoints",
+      "community": 6,
+      "community_name": ".LockAsync",
       "norm_label": "iendpointroutebuilder"
     },
     {
@@ -214,8 +214,8 @@
       },
       "_origin": "ast",
       "id": "src_nsstore_api_endpoints_authendpoints_nsstore_api_endpoints_authendpoints_setrefreshcookie",
-      "community": 66,
-      "community_name": ".MapAuthEndpoints",
+      "community": 6,
+      "community_name": ".LockAsync",
       "norm_label": ".setrefreshcookie()"
     },
     {
@@ -225,8 +225,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_nsstore_api_endpoints_authendpoints_cs_httpcontext",
-      "community": 66,
-      "community_name": ".MapAuthEndpoints",
+      "community": 6,
+      "community_name": ".LockAsync",
       "norm_label": "httpcontext"
     },
     {
@@ -607,8 +607,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_nsstore_api_endpoints_productendpoints_cs_iendpointroutebuilder",
-      "community": 46,
-      "community_name": ".StockedInMainAsync",
+      "community": 0,
+      "community_name": ".SaveChangesAsync",
       "norm_label": "iendpointroutebuilder"
     },
     {
@@ -624,8 +624,8 @@
       },
       "_origin": "ast",
       "id": "src_nsstore_api_endpoints_productendpoints_nsstore_api_endpoints_inventoryendpoints",
-      "community": 46,
-      "community_name": ".StockedInMainAsync",
+      "community": 0,
+      "community_name": ".SaveChangesAsync",
       "norm_label": "inventoryendpoints"
     },
     {
@@ -641,9 +641,54 @@
       },
       "_origin": "ast",
       "id": "src_nsstore_api_endpoints_productendpoints_nsstore_api_endpoints_inventoryendpoints_mapinventoryendpoints",
-      "community": 46,
-      "community_name": ".StockedInMainAsync",
+      "community": 0,
+      "community_name": ".SaveChangesAsync",
       "norm_label": ".mapinventoryendpoints()"
+    },
+    {
+      "label": "QueryEnum.cs",
+      "file_type": "code",
+      "source_file": "src/NsStore.Api/Endpoints/QueryEnum.cs",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "src_nsstore_api_endpoints_queryenum",
+      "community": 40,
+      "community_name": "NsStore.Application.Common.Models",
+      "norm_label": "queryenum.cs"
+    },
+    {
+      "label": "QueryEnum",
+      "file_type": "code",
+      "source_file": "src/NsStore.Api/Endpoints/QueryEnum.cs",
+      "source_location": "L15",
+      "metadata": {
+        "namespace": "NsStore.Api.Endpoints",
+        "scope_chain": [
+          "s35"
+        ]
+      },
+      "_origin": "ast",
+      "id": "src_nsstore_api_endpoints_queryenum_nsstore_api_endpoints_queryenum",
+      "community": 40,
+      "community_name": "NsStore.Application.Common.Models",
+      "norm_label": "queryenum"
+    },
+    {
+      "label": ".Parse()",
+      "file_type": "code",
+      "source_file": "src/NsStore.Api/Endpoints/QueryEnum.cs",
+      "source_location": "L18",
+      "metadata": {
+        "namespace": "NsStore.Api.Endpoints",
+        "scope_chain": [
+          "s35"
+        ]
+      },
+      "_origin": "ast",
+      "id": "src_nsstore_api_endpoints_queryenum_nsstore_api_endpoints_queryenum_parse",
+      "community": 40,
+      "community_name": "NsStore.Application.Common.Models",
+      "norm_label": ".parse()"
     },
     {
       "label": "SettingsReportEndpoints.cs",
@@ -888,8 +933,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_nsstore_api_middleware_appexceptionhandler",
-      "community": 24,
-      "community_name": "NsStore.Domain.Enums",
+      "community": 40,
+      "community_name": "NsStore.Application.Common.Models",
       "norm_label": "appexceptionhandler.cs"
     },
     {
@@ -1619,8 +1664,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_nsstore_api_security_currentuser",
-      "community": 24,
-      "community_name": "NsStore.Domain.Enums",
+      "community": 37,
+      "community_name": "NsStore.Infrastructure.Persistence.Migrations",
       "norm_label": "currentuser.cs"
     },
     {
@@ -1636,8 +1681,8 @@
       },
       "_origin": "ast",
       "id": "src_nsstore_api_security_currentuser_nsstore_api_security_currentuser",
-      "community": 53,
-      "community_name": "PasswordHasher",
+      "community": 46,
+      "community_name": ".StockedInMainAsync",
       "norm_label": "currentuser"
     },
     {
@@ -1647,8 +1692,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "claimsprincipal",
-      "community": 53,
-      "community_name": "PasswordHasher",
+      "community": 46,
+      "community_name": ".StockedInMainAsync",
       "norm_label": "claimsprincipal"
     },
     {
@@ -1658,8 +1703,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_nsstore_application_common_branchscope",
-      "community": 24,
-      "community_name": "NsStore.Domain.Enums",
+      "community": 8,
+      "community_name": "NsStore.Application.Common.Interfaces",
       "norm_label": "branchscope.cs"
     },
     {
@@ -1674,8 +1719,8 @@
       },
       "_origin": "ast",
       "id": "csharp_namespace:7c5554109ae51efb",
-      "community": 24,
-      "community_name": "NsStore.Domain.Enums",
+      "community": 54,
+      "community_name": "ValidationFilter.cs",
       "norm_label": "nsstore.application.common"
     },
     {
@@ -1691,8 +1736,8 @@
       },
       "_origin": "ast",
       "id": "src_nsstore_application_common_branchscope_nsstore_application_common_branchscope",
-      "community": 53,
-      "community_name": "PasswordHasher",
+      "community": 46,
+      "community_name": ".StockedInMainAsync",
       "norm_label": "branchscope"
     },
     {
@@ -1708,8 +1753,8 @@
       },
       "_origin": "ast",
       "id": "src_nsstore_application_common_branchscope_nsstore_application_common_branchscope_requirebranch",
-      "community": 53,
-      "community_name": "PasswordHasher",
+      "community": 46,
+      "community_name": ".StockedInMainAsync",
       "norm_label": ".requirebranch()"
     },
     {
@@ -1725,8 +1770,8 @@
       },
       "_origin": "ast",
       "id": "src_nsstore_application_common_branchscope_nsstore_application_common_branchscope_resolvereadablebranch",
-      "community": 53,
-      "community_name": "PasswordHasher",
+      "community": 46,
+      "community_name": ".StockedInMainAsync",
       "norm_label": ".resolvereadablebranch()"
     },
     {
@@ -1742,8 +1787,8 @@
       },
       "_origin": "ast",
       "id": "src_nsstore_application_common_branchscope_nsstore_application_common_branchscope_resolvescopedbranch",
-      "community": 53,
-      "community_name": "PasswordHasher",
+      "community": 46,
+      "community_name": ".StockedInMainAsync",
       "norm_label": ".resolvescopedbranch()"
     },
     {
@@ -1759,8 +1804,8 @@
       },
       "_origin": "ast",
       "id": "src_nsstore_application_common_branchscope_nsstore_application_common_branchscope_requirewritablebranch",
-      "community": 53,
-      "community_name": "PasswordHasher",
+      "community": 46,
+      "community_name": ".StockedInMainAsync",
       "norm_label": ".requirewritablebranch()"
     },
     {
@@ -1955,8 +2000,8 @@
       },
       "_origin": "ast",
       "id": "src_nsstore_application_common_interfaces_iappdbcontext_nsstore_application_common_interfaces_iappdbcontext",
-      "community": 17,
-      "community_name": "IAppDbContext",
+      "community": 26,
+      "community_name": "AppDbContext",
       "norm_label": "iappdbcontext"
     },
     {
@@ -1966,8 +2011,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_nsstore_application_common_interfaces_iappdbcontext_cs_dbset",
-      "community": 17,
-      "community_name": "IAppDbContext",
+      "community": 26,
+      "community_name": "AppDbContext",
       "norm_label": "dbset"
     },
     {
@@ -1994,8 +2039,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_nsstore_application_common_interfaces_iappdbcontext_cs_cancellationtoken",
-      "community": 67,
-      "community_name": ".ExecuteInTransactionAsync",
+      "community": 28,
+      "community_name": ".CreateAsync",
       "norm_label": "cancellationtoken"
     },
     {
@@ -2005,8 +2050,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_nsstore_application_common_interfaces_iappdbcontext_cs_task",
-      "community": 67,
-      "community_name": ".ExecuteInTransactionAsync",
+      "community": 28,
+      "community_name": ".CreateAsync",
       "norm_label": "task"
     },
     {
@@ -2022,8 +2067,8 @@
       },
       "_origin": "ast",
       "id": "src_nsstore_application_common_interfaces_iappdbcontext_nsstore_application_common_interfaces_iappdbcontext_executeintransactionasync",
-      "community": 67,
-      "community_name": ".ExecuteInTransactionAsync",
+      "community": 28,
+      "community_name": ".CreateAsync",
       "norm_label": ".executeintransactionasync()"
     },
     {
@@ -2033,8 +2078,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_nsstore_application_common_interfaces_iappdbcontext_cs_func",
-      "community": 67,
-      "community_name": ".ExecuteInTransactionAsync",
+      "community": 28,
+      "community_name": ".CreateAsync",
       "norm_label": "func"
     },
     {
@@ -2044,8 +2089,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_nsstore_application_common_interfaces_ports",
-      "community": 64,
-      "community_name": "Ports.cs",
+      "community": 37,
+      "community_name": "NsStore.Infrastructure.Persistence.Migrations",
       "norm_label": "ports.cs"
     },
     {
@@ -2061,8 +2106,8 @@
       },
       "_origin": "ast",
       "id": "src_nsstore_application_common_interfaces_ports_nsstore_application_common_interfaces_icurrentuser",
-      "community": 53,
-      "community_name": "PasswordHasher",
+      "community": 46,
+      "community_name": ".StockedInMainAsync",
       "norm_label": "icurrentuser"
     },
     {
@@ -2078,8 +2123,8 @@
       },
       "_origin": "ast",
       "id": "src_nsstore_application_common_interfaces_ports_nsstore_application_common_interfaces_ipasswordhasher",
-      "community": 65,
-      "community_name": "PasswordHasher",
+      "community": 6,
+      "community_name": ".LockAsync",
       "norm_label": "ipasswordhasher"
     },
     {
@@ -2112,8 +2157,8 @@
       },
       "_origin": "ast",
       "id": "src_nsstore_application_common_interfaces_ports_nsstore_application_common_interfaces_ipasswordhasher_verify",
-      "community": 65,
-      "community_name": "PasswordHasher",
+      "community": 6,
+      "community_name": ".LockAsync",
       "norm_label": ".verify()"
     },
     {
@@ -2129,8 +2174,8 @@
       },
       "_origin": "ast",
       "id": "src_nsstore_application_common_interfaces_ports_nsstore_application_common_interfaces_accesstoken",
-      "community": 59,
-      "community_name": "TokenService",
+      "community": 6,
+      "community_name": ".LockAsync",
       "norm_label": "accesstoken"
     },
     {
@@ -2146,8 +2191,8 @@
       },
       "_origin": "ast",
       "id": "src_nsstore_application_common_interfaces_ports_nsstore_application_common_interfaces_issuedrefreshtoken",
-      "community": 59,
-      "community_name": "TokenService",
+      "community": 6,
+      "community_name": ".LockAsync",
       "norm_label": "issuedrefreshtoken"
     },
     {
@@ -2163,8 +2208,8 @@
       },
       "_origin": "ast",
       "id": "src_nsstore_application_common_interfaces_ports_nsstore_application_common_interfaces_itokenservice",
-      "community": 59,
-      "community_name": "TokenService",
+      "community": 6,
+      "community_name": ".LockAsync",
       "norm_label": "itokenservice"
     },
     {
@@ -2180,8 +2225,8 @@
       },
       "_origin": "ast",
       "id": "src_nsstore_application_common_interfaces_ports_nsstore_application_common_interfaces_itokenservice_createaccesstoken",
-      "community": 59,
-      "community_name": "TokenService",
+      "community": 6,
+      "community_name": ".LockAsync",
       "norm_label": ".createaccesstoken()"
     },
     {
@@ -2197,8 +2242,8 @@
       },
       "_origin": "ast",
       "id": "src_nsstore_application_common_interfaces_ports_nsstore_application_common_interfaces_itokenservice_createrefreshtoken",
-      "community": 59,
-      "community_name": "TokenService",
+      "community": 6,
+      "community_name": ".LockAsync",
       "norm_label": ".createrefreshtoken()"
     },
     {
@@ -2214,8 +2259,8 @@
       },
       "_origin": "ast",
       "id": "src_nsstore_application_common_interfaces_ports_nsstore_application_common_interfaces_itokenservice_hashrefreshtoken",
-      "community": 60,
-      "community_name": ".IssueTokensAsync",
+      "community": 6,
+      "community_name": ".LockAsync",
       "norm_label": ".hashrefreshtoken()"
     },
     {
@@ -2231,8 +2276,8 @@
       },
       "_origin": "ast",
       "id": "src_nsstore_application_common_interfaces_ports_nsstore_application_common_interfaces_stockkey",
-      "community": 6,
-      "community_name": ".LockAsync",
+      "community": 11,
+      "community_name": ".CreateAsync",
       "norm_label": "stockkey"
     },
     {
@@ -2248,8 +2293,8 @@
       },
       "_origin": "ast",
       "id": "src_nsstore_application_common_interfaces_ports_nsstore_application_common_interfaces_istocklockservice",
-      "community": 6,
-      "community_name": ".LockAsync",
+      "community": 11,
+      "community_name": ".CreateAsync",
       "norm_label": "istocklockservice"
     },
     {
@@ -2265,8 +2310,8 @@
       },
       "_origin": "ast",
       "id": "src_nsstore_application_common_interfaces_ports_nsstore_application_common_interfaces_istocklockservice_lockasync",
-      "community": 6,
-      "community_name": ".LockAsync",
+      "community": 11,
+      "community_name": ".CreateAsync",
       "norm_label": ".lockasync()"
     },
     {
@@ -2276,8 +2321,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_nsstore_application_common_interfaces_ports_cs_ireadonlycollection",
-      "community": 6,
-      "community_name": ".LockAsync",
+      "community": 11,
+      "community_name": ".CreateAsync",
       "norm_label": "ireadonlycollection"
     },
     {
@@ -2287,8 +2332,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_nsstore_application_common_interfaces_ports_cs_cancellationtoken",
-      "community": 6,
-      "community_name": ".LockAsync",
+      "community": 11,
+      "community_name": ".CreateAsync",
       "norm_label": "cancellationtoken"
     },
     {
@@ -2298,8 +2343,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_nsstore_application_common_interfaces_ports_cs_task",
-      "community": 6,
-      "community_name": ".LockAsync",
+      "community": 11,
+      "community_name": ".CreateAsync",
       "norm_label": "task"
     },
     {
@@ -2315,8 +2360,8 @@
       },
       "_origin": "ast",
       "id": "src_nsstore_application_common_interfaces_ports_nsstore_application_common_interfaces_documentkind",
-      "community": 64,
-      "community_name": "Ports.cs",
+      "community": 58,
+      "community_name": ".TwoDebtsAsync",
       "norm_label": "documentkind"
     },
     {
@@ -2332,8 +2377,8 @@
       },
       "_origin": "ast",
       "id": "src_nsstore_application_common_interfaces_ports_nsstore_application_common_interfaces_idocumentnumberservice",
-      "community": 64,
-      "community_name": "Ports.cs",
+      "community": 58,
+      "community_name": ".TwoDebtsAsync",
       "norm_label": "idocumentnumberservice"
     },
     {
@@ -2360,8 +2405,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_nsstore_application_common_models_paging",
-      "community": 63,
-      "community_name": "PageRequest",
+      "community": 59,
+      "community_name": "TokenService",
       "norm_label": "paging.cs"
     },
     {
@@ -2376,8 +2421,8 @@
       },
       "_origin": "ast",
       "id": "csharp_namespace:17339629dcc4aea9",
-      "community": 40,
-      "community_name": "NsStore.Application.Common.Models",
+      "community": 54,
+      "community_name": "ValidationFilter.cs",
       "norm_label": "nsstore.application.common.models"
     },
     {
@@ -2393,8 +2438,8 @@
       },
       "_origin": "ast",
       "id": "src_nsstore_application_common_models_paging_nsstore_application_common_models_pagedresult",
-      "community": 0,
-      "community_name": ".SaveChangesAsync",
+      "community": 59,
+      "community_name": "TokenService",
       "norm_label": "pagedresult"
     },
     {
@@ -2410,8 +2455,8 @@
       },
       "_origin": "ast",
       "id": "src_nsstore_application_common_models_paging_nsstore_application_common_models_pagerequest",
-      "community": 63,
-      "community_name": "PageRequest",
+      "community": 59,
+      "community_name": "TokenService",
       "norm_label": "pagerequest"
     },
     {
@@ -2421,8 +2466,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_nsstore_application_common_models_paging_cs_int",
-      "community": 63,
-      "community_name": "PageRequest",
+      "community": 59,
+      "community_name": "TokenService",
       "norm_label": "int"
     },
     {
@@ -2438,8 +2483,8 @@
       },
       "_origin": "ast",
       "id": "src_nsstore_application_common_models_paging_nsstore_application_common_models_queryableextensions",
-      "community": 63,
-      "community_name": "PageRequest",
+      "community": 59,
+      "community_name": "TokenService",
       "norm_label": "queryableextensions"
     },
     {
@@ -2455,8 +2500,8 @@
       },
       "_origin": "ast",
       "id": "src_nsstore_application_common_models_paging_nsstore_application_common_models_queryableextensions_topagedresultasync",
-      "community": 63,
-      "community_name": "PageRequest",
+      "community": 59,
+      "community_name": "TokenService",
       "norm_label": ".topagedresultasync()"
     },
     {
@@ -2466,8 +2511,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_nsstore_application_common_models_paging_cs_iqueryable",
-      "community": 63,
-      "community_name": "PageRequest",
+      "community": 59,
+      "community_name": "TokenService",
       "norm_label": "iqueryable"
     },
     {
@@ -2477,8 +2522,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_nsstore_application_common_models_paging_cs_cancellationtoken",
-      "community": 63,
-      "community_name": "PageRequest",
+      "community": 59,
+      "community_name": "TokenService",
       "norm_label": "cancellationtoken"
     },
     {
@@ -2488,8 +2533,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_nsstore_application_common_models_paging_cs_task",
-      "community": 63,
-      "community_name": "PageRequest",
+      "community": 59,
+      "community_name": "TokenService",
       "norm_label": "task"
     },
     {
@@ -2499,8 +2544,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_nsstore_application_dependencyinjection",
-      "community": 41,
-      "community_name": "NsStore.Application.Features.Inventory",
+      "community": 40,
+      "community_name": "NsStore.Application.Common.Models",
       "norm_label": "nsstore.application/dependencyinjection.cs"
     },
     {
@@ -2532,8 +2577,8 @@
       },
       "_origin": "ast",
       "id": "src_nsstore_application_dependencyinjection_nsstore_application_dependencyinjection",
-      "community": 68,
-      "community_name": "DependencyInjection",
+      "community": 40,
+      "community_name": "NsStore.Application.Common.Models",
       "norm_label": "dependencyinjection"
     },
     {
@@ -2549,8 +2594,8 @@
       },
       "_origin": "ast",
       "id": "src_nsstore_application_dependencyinjection_nsstore_application_dependencyinjection_addapplication",
-      "community": 68,
-      "community_name": "DependencyInjection",
+      "community": 40,
+      "community_name": "NsStore.Application.Common.Models",
       "norm_label": ".addapplication()"
     },
     {
@@ -2560,8 +2605,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_nsstore_application_dependencyinjection_cs_iservicecollection",
-      "community": 68,
-      "community_name": "DependencyInjection",
+      "community": 40,
+      "community_name": "NsStore.Application.Common.Models",
       "norm_label": "iservicecollection"
     },
     {
@@ -2571,8 +2616,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_nsstore_application_features_auth_authdtos",
-      "community": 38,
-      "community_name": "NsStore.Application.Features.Users",
+      "community": 40,
+      "community_name": "NsStore.Application.Common.Models",
       "norm_label": "authdtos.cs"
     },
     {
@@ -2587,8 +2632,8 @@
       },
       "_origin": "ast",
       "id": "csharp_namespace:9403767cf40c2406",
-      "community": 38,
-      "community_name": "NsStore.Application.Features.Users",
+      "community": 40,
+      "community_name": "NsStore.Application.Common.Models",
       "norm_label": "nsstore.application.features.auth"
     },
     {
@@ -2604,8 +2649,8 @@
       },
       "_origin": "ast",
       "id": "src_nsstore_application_features_auth_authdtos_nsstore_application_features_auth_loginrequest",
-      "community": 69,
-      "community_name": "LoginRequest",
+      "community": 6,
+      "community_name": ".LockAsync",
       "norm_label": "loginrequest"
     },
     {
@@ -2621,8 +2666,8 @@
       },
       "_origin": "ast",
       "id": "src_nsstore_application_features_auth_authdtos_nsstore_application_features_auth_authresult",
-      "community": 60,
-      "community_name": ".IssueTokensAsync",
+      "community": 6,
+      "community_name": ".LockAsync",
       "norm_label": "authresult"
     },
     {
@@ -2638,8 +2683,8 @@
       },
       "_origin": "ast",
       "id": "src_nsstore_application_features_auth_authdtos_nsstore_application_features_auth_loginresponse",
-      "community": 38,
-      "community_name": "NsStore.Application.Features.Users",
+      "community": 40,
+      "community_name": "NsStore.Application.Common.Models",
       "norm_label": "loginresponse"
     },
     {
@@ -2649,8 +2694,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_nsstore_application_features_auth_authservice",
-      "community": 38,
-      "community_name": "NsStore.Application.Features.Users",
+      "community": 24,
+      "community_name": "NsStore.Domain.Enums",
       "norm_label": "authservice.cs"
     },
     {
@@ -2666,8 +2711,8 @@
       },
       "_origin": "ast",
       "id": "src_nsstore_application_features_auth_authservice_nsstore_application_features_auth_authservice",
-      "community": 60,
-      "community_name": ".IssueTokensAsync",
+      "community": 6,
+      "community_name": ".LockAsync",
       "norm_label": "authservice"
     },
     {
@@ -2683,8 +2728,8 @@
       },
       "_origin": "ast",
       "id": "src_nsstore_application_features_auth_authservice_nsstore_application_features_auth_authservice_loginasync",
-      "community": 60,
-      "community_name": ".IssueTokensAsync",
+      "community": 6,
+      "community_name": ".LockAsync",
       "norm_label": ".loginasync()"
     },
     {
@@ -2694,8 +2739,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_nsstore_application_features_auth_authservice_cs_cancellationtoken",
-      "community": 60,
-      "community_name": ".IssueTokensAsync",
+      "community": 6,
+      "community_name": ".LockAsync",
       "norm_label": "cancellationtoken"
     },
     {
@@ -2705,8 +2750,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_nsstore_application_features_auth_authservice_cs_task",
-      "community": 60,
-      "community_name": ".IssueTokensAsync",
+      "community": 6,
+      "community_name": ".LockAsync",
       "norm_label": "task"
     },
     {
@@ -2722,8 +2767,8 @@
       },
       "_origin": "ast",
       "id": "src_nsstore_application_features_auth_authservice_nsstore_application_features_auth_authservice_refreshasync",
-      "community": 60,
-      "community_name": ".IssueTokensAsync",
+      "community": 6,
+      "community_name": ".LockAsync",
       "norm_label": ".refreshasync()"
     },
     {
@@ -2739,8 +2784,8 @@
       },
       "_origin": "ast",
       "id": "src_nsstore_application_features_auth_authservice_nsstore_application_features_auth_authservice_logoutasync",
-      "community": 60,
-      "community_name": ".IssueTokensAsync",
+      "community": 6,
+      "community_name": ".LockAsync",
       "norm_label": ".logoutasync()"
     },
     {
@@ -2756,8 +2801,8 @@
       },
       "_origin": "ast",
       "id": "src_nsstore_application_features_auth_authservice_nsstore_application_features_auth_authservice_getcurrentuserasync",
-      "community": 60,
-      "community_name": ".IssueTokensAsync",
+      "community": 6,
+      "community_name": ".LockAsync",
       "norm_label": ".getcurrentuserasync()"
     },
     {
@@ -2773,8 +2818,8 @@
       },
       "_origin": "ast",
       "id": "src_nsstore_application_features_auth_authservice_nsstore_application_features_auth_authservice_issuetokensasync",
-      "community": 60,
-      "community_name": ".IssueTokensAsync",
+      "community": 6,
+      "community_name": ".LockAsync",
       "norm_label": ".issuetokensasync()"
     },
     {
@@ -2784,8 +2829,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_nsstore_application_features_auth_authservice_cs_guid",
-      "community": 60,
-      "community_name": ".IssueTokensAsync",
+      "community": 6,
+      "community_name": ".LockAsync",
       "norm_label": "guid"
     },
     {
@@ -2801,8 +2846,8 @@
       },
       "_origin": "ast",
       "id": "src_nsstore_application_features_auth_authservice_nsstore_application_features_auth_authservice_revokefamilyasync",
-      "community": 60,
-      "community_name": ".IssueTokensAsync",
+      "community": 6,
+      "community_name": ".LockAsync",
       "norm_label": ".revokefamilyasync()"
     },
     {
@@ -2812,8 +2857,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_nsstore_application_features_auth_authservice_cs_datetimeoffset",
-      "community": 60,
-      "community_name": ".IssueTokensAsync",
+      "community": 6,
+      "community_name": ".LockAsync",
       "norm_label": "datetimeoffset"
     },
     {
@@ -2823,8 +2868,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_nsstore_application_features_auth_authvalidators",
-      "community": 69,
-      "community_name": "LoginRequest",
+      "community": 6,
+      "community_name": ".LockAsync",
       "norm_label": "authvalidators.cs"
     },
     {
@@ -2840,8 +2885,8 @@
       },
       "_origin": "ast",
       "id": "src_nsstore_application_features_auth_authvalidators_nsstore_application_features_auth_loginrequestvalidator",
-      "community": 69,
-      "community_name": "LoginRequest",
+      "community": 6,
+      "community_name": ".LockAsync",
       "norm_label": "loginrequestvalidator"
     },
     {
@@ -2851,8 +2896,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "abstractvalidator",
-      "community": 5,
-      "community_name": "AbstractValidator",
+      "community": 13,
+      "community_name": "ProductService",
       "norm_label": "abstractvalidator"
     },
     {
@@ -2878,8 +2923,8 @@
       },
       "_origin": "ast",
       "id": "csharp_namespace:bbe09276c29b4af4",
-      "community": 24,
-      "community_name": "NsStore.Domain.Enums",
+      "community": 54,
+      "community_name": "ValidationFilter.cs",
       "norm_label": "nsstore.application.features.branches"
     },
     {
@@ -2940,8 +2985,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_nsstore_application_features_branches_branchservice",
-      "community": 24,
-      "community_name": "NsStore.Domain.Enums",
+      "community": 54,
+      "community_name": "ValidationFilter.cs",
       "norm_label": "branchservice.cs"
     },
     {
@@ -3098,8 +3143,8 @@
       },
       "_origin": "ast",
       "id": "src_nsstore_application_features_branches_branchservice_nsstore_application_features_branches_branchservice_ensurewritableasync",
-      "community": 28,
-      "community_name": ".CreateAsync",
+      "community": 34,
+      "community_name": "BranchService",
       "norm_label": ".ensurewritableasync()"
     },
     {
@@ -3368,8 +3413,8 @@
       },
       "_origin": "ast",
       "id": "src_nsstore_application_features_catalogs_catalogdtos_nsstore_application_features_catalogs_catalogmapping_todto",
-      "community": 9,
-      "community_name": "AuditableEntity",
+      "community": 36,
+      "community_name": "CatalogEndpoints",
       "norm_label": ".todto()"
     },
     {
@@ -3379,8 +3424,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_nsstore_application_features_catalogs_catalogservices",
-      "community": 40,
-      "community_name": "NsStore.Application.Common.Models",
+      "community": 24,
+      "community_name": "NsStore.Domain.Enums",
       "norm_label": "catalogservices.cs"
     },
     {
@@ -3956,8 +4001,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_nsstore_application_features_catalogs_catalogvalidators",
-      "community": 5,
-      "community_name": "AbstractValidator",
+      "community": 13,
+      "community_name": "ProductService",
       "norm_label": "catalogvalidators.cs"
     },
     {
@@ -3973,8 +4018,8 @@
       },
       "_origin": "ast",
       "id": "src_nsstore_application_features_catalogs_catalogvalidators_nsstore_application_features_catalogs_namerequestvalidator",
-      "community": 5,
-      "community_name": "AbstractValidator",
+      "community": 13,
+      "community_name": "ProductService",
       "norm_label": "namerequestvalidator"
     },
     {
@@ -3990,8 +4035,8 @@
       },
       "_origin": "ast",
       "id": "src_nsstore_application_features_catalogs_catalogvalidators_nsstore_application_features_catalogs_descriptionrequestvalidator",
-      "community": 5,
-      "community_name": "AbstractValidator",
+      "community": 13,
+      "community_name": "ProductService",
       "norm_label": "descriptionrequestvalidator"
     },
     {
@@ -4007,8 +4052,8 @@
       },
       "_origin": "ast",
       "id": "src_nsstore_application_features_catalogs_catalogvalidators_nsstore_application_features_catalogs_supplierrequestvalidator",
-      "community": 5,
-      "community_name": "AbstractValidator",
+      "community": 13,
+      "community_name": "ProductService",
       "norm_label": "supplierrequestvalidator"
     },
     {
@@ -4034,8 +4079,8 @@
       },
       "_origin": "ast",
       "id": "csharp_namespace:93cc5b3afbfbacf5",
-      "community": 41,
-      "community_name": "NsStore.Application.Features.Inventory",
+      "community": 37,
+      "community_name": "NsStore.Infrastructure.Persistence.Migrations",
       "norm_label": "nsstore.application.features.clients"
     },
     {
@@ -4079,8 +4124,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_nsstore_application_features_clients_clientservice",
-      "community": 24,
-      "community_name": "NsStore.Domain.Enums",
+      "community": 37,
+      "community_name": "NsStore.Infrastructure.Persistence.Migrations",
       "norm_label": "clientservice.cs"
     },
     {
@@ -4282,8 +4327,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_nsstore_application_features_clients_clientvalidators",
-      "community": 24,
-      "community_name": "NsStore.Domain.Enums",
+      "community": 37,
+      "community_name": "NsStore.Infrastructure.Persistence.Migrations",
       "norm_label": "clientvalidators.cs"
     },
     {
@@ -4299,8 +4344,8 @@
       },
       "_origin": "ast",
       "id": "src_nsstore_application_features_clients_clientvalidators_nsstore_application_features_clients_clientrequestvalidator",
-      "community": 5,
-      "community_name": "AbstractValidator",
+      "community": 13,
+      "community_name": "ProductService",
       "norm_label": "clientrequestvalidator"
     },
     {
@@ -4326,8 +4371,8 @@
       },
       "_origin": "ast",
       "id": "csharp_namespace:43599258d447e2ad",
-      "community": 41,
-      "community_name": "NsStore.Application.Features.Inventory",
+      "community": 54,
+      "community_name": "ValidationFilter.cs",
       "norm_label": "nsstore.application.features.inventory"
     },
     {
@@ -4411,8 +4456,8 @@
       },
       "_origin": "ast",
       "id": "src_nsstore_application_features_inventory_inventorydtos_nsstore_application_features_inventory_stockquery",
-      "community": 63,
-      "community_name": "PageRequest",
+      "community": 0,
+      "community_name": ".SaveChangesAsync",
       "norm_label": "stockquery"
     },
     {
@@ -4428,8 +4473,8 @@
       },
       "_origin": "ast",
       "id": "src_nsstore_application_features_inventory_inventorydtos_nsstore_application_features_inventory_stockquery_topagerequest",
-      "community": 63,
-      "community_name": "PageRequest",
+      "community": 0,
+      "community_name": ".SaveChangesAsync",
       "norm_label": ".topagerequest()"
     },
     {
@@ -4490,8 +4535,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_nsstore_application_features_inventory_inventoryservice",
-      "community": 24,
-      "community_name": "NsStore.Domain.Enums",
+      "community": 54,
+      "community_name": "ValidationFilter.cs",
       "norm_label": "inventoryservice.cs"
     },
     {
@@ -4720,8 +4765,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_nsstore_application_features_inventory_transferdtos",
-      "community": 46,
-      "community_name": ".StockedInMainAsync",
+      "community": 7,
+      "community_name": ".IssueTokensAsync",
       "norm_label": "transferdtos.cs"
     },
     {
@@ -4737,8 +4782,8 @@
       },
       "_origin": "ast",
       "id": "src_nsstore_application_features_inventory_transferdtos_nsstore_application_features_inventory_transferitemrequest",
-      "community": 46,
-      "community_name": ".StockedInMainAsync",
+      "community": 7,
+      "community_name": ".IssueTokensAsync",
       "norm_label": "transferitemrequest"
     },
     {
@@ -4754,8 +4799,8 @@
       },
       "_origin": "ast",
       "id": "src_nsstore_application_features_inventory_transferdtos_nsstore_application_features_inventory_createtransferrequest",
-      "community": 46,
-      "community_name": ".StockedInMainAsync",
+      "community": 7,
+      "community_name": ".IssueTokensAsync",
       "norm_label": "createtransferrequest"
     },
     {
@@ -4771,8 +4816,8 @@
       },
       "_origin": "ast",
       "id": "src_nsstore_application_features_inventory_transferdtos_nsstore_application_features_inventory_transferitemdto",
-      "community": 46,
-      "community_name": ".StockedInMainAsync",
+      "community": 7,
+      "community_name": ".IssueTokensAsync",
       "norm_label": "transferitemdto"
     },
     {
@@ -4788,8 +4833,8 @@
       },
       "_origin": "ast",
       "id": "src_nsstore_application_features_inventory_transferdtos_nsstore_application_features_inventory_transferdto",
-      "community": 46,
-      "community_name": ".StockedInMainAsync",
+      "community": 7,
+      "community_name": ".IssueTokensAsync",
       "norm_label": "transferdto"
     },
     {
@@ -4805,8 +4850,8 @@
       },
       "_origin": "ast",
       "id": "src_nsstore_application_features_inventory_transferdtos_nsstore_application_features_inventory_transferlistitemdto",
-      "community": 46,
-      "community_name": ".StockedInMainAsync",
+      "community": 7,
+      "community_name": ".IssueTokensAsync",
       "norm_label": "transferlistitemdto"
     },
     {
@@ -4822,8 +4867,8 @@
       },
       "_origin": "ast",
       "id": "src_nsstore_application_features_inventory_transferdtos_nsstore_application_features_inventory_transferquery",
-      "community": 46,
-      "community_name": ".StockedInMainAsync",
+      "community": 7,
+      "community_name": ".IssueTokensAsync",
       "norm_label": "transferquery"
     },
     {
@@ -4839,8 +4884,8 @@
       },
       "_origin": "ast",
       "id": "src_nsstore_application_features_inventory_transferdtos_nsstore_application_features_inventory_transferquery_topagerequest",
-      "community": 46,
-      "community_name": ".StockedInMainAsync",
+      "community": 7,
+      "community_name": ".IssueTokensAsync",
       "norm_label": ".topagerequest()"
     },
     {
@@ -4850,8 +4895,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_nsstore_application_features_inventory_transferservice",
-      "community": 24,
-      "community_name": "NsStore.Domain.Enums",
+      "community": 54,
+      "community_name": "ValidationFilter.cs",
       "norm_label": "transferservice.cs"
     },
     {
@@ -4867,8 +4912,8 @@
       },
       "_origin": "ast",
       "id": "src_nsstore_application_features_inventory_transferservice_nsstore_application_features_inventory_transferservice",
-      "community": 46,
-      "community_name": ".StockedInMainAsync",
+      "community": 7,
+      "community_name": ".IssueTokensAsync",
       "norm_label": "transferservice"
     },
     {
@@ -4884,8 +4929,8 @@
       },
       "_origin": "ast",
       "id": "src_nsstore_application_features_inventory_transferservice_nsstore_application_features_inventory_transferservice_listasync",
-      "community": 46,
-      "community_name": ".StockedInMainAsync",
+      "community": 7,
+      "community_name": ".IssueTokensAsync",
       "norm_label": ".listasync()"
     },
     {
@@ -4895,8 +4940,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_nsstore_application_features_inventory_transferservice_cs_cancellationtoken",
-      "community": 46,
-      "community_name": ".StockedInMainAsync",
+      "community": 7,
+      "community_name": ".IssueTokensAsync",
       "norm_label": "cancellationtoken"
     },
     {
@@ -4906,8 +4951,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_nsstore_application_features_inventory_transferservice_cs_task",
-      "community": 46,
-      "community_name": ".StockedInMainAsync",
+      "community": 7,
+      "community_name": ".IssueTokensAsync",
       "norm_label": "task"
     },
     {
@@ -4923,8 +4968,8 @@
       },
       "_origin": "ast",
       "id": "src_nsstore_application_features_inventory_transferservice_nsstore_application_features_inventory_transferservice_getasync",
-      "community": 46,
-      "community_name": ".StockedInMainAsync",
+      "community": 7,
+      "community_name": ".IssueTokensAsync",
       "norm_label": ".getasync()"
     },
     {
@@ -4940,8 +4985,8 @@
       },
       "_origin": "ast",
       "id": "src_nsstore_application_features_inventory_transferservice_nsstore_application_features_inventory_transferservice_createasync",
-      "community": 46,
-      "community_name": ".StockedInMainAsync",
+      "community": 7,
+      "community_name": ".IssueTokensAsync",
       "norm_label": ".createasync()"
     },
     {
@@ -4951,8 +4996,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_nsstore_application_features_inventory_transfervalidators",
-      "community": 46,
-      "community_name": ".StockedInMainAsync",
+      "community": 7,
+      "community_name": ".IssueTokensAsync",
       "norm_label": "transfervalidators.cs"
     },
     {
@@ -4968,8 +5013,8 @@
       },
       "_origin": "ast",
       "id": "src_nsstore_application_features_inventory_transfervalidators_nsstore_application_features_inventory_createtransferrequestvalidator",
-      "community": 46,
-      "community_name": ".StockedInMainAsync",
+      "community": 7,
+      "community_name": ".IssueTokensAsync",
       "norm_label": "createtransferrequestvalidator"
     },
     {
@@ -5377,8 +5422,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_nsstore_application_features_products_productservice",
-      "community": 24,
-      "community_name": "NsStore.Domain.Enums",
+      "community": 54,
+      "community_name": "ValidationFilter.cs",
       "norm_label": "productservice.cs"
     },
     {
@@ -5782,8 +5827,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_nsstore_application_features_purchases_purchaseservice",
-      "community": 24,
-      "community_name": "NsStore.Domain.Enums",
+      "community": 54,
+      "community_name": "ValidationFilter.cs",
       "norm_label": "purchaseservice.cs"
     },
     {
@@ -5911,8 +5956,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_nsstore_application_features_quotes_quoteservice",
-      "community": 40,
-      "community_name": "NsStore.Application.Common.Models",
+      "community": 24,
+      "community_name": "NsStore.Domain.Enums",
       "norm_label": "quoteservice.cs"
     },
     {
@@ -5995,8 +6040,8 @@
       },
       "_origin": "ast",
       "id": "src_nsstore_application_features_quotes_quoteservice_nsstore_application_features_quotes_quoterequestvalidator",
-      "community": 5,
-      "community_name": "AbstractValidator",
+      "community": 13,
+      "community_name": "ProductService",
       "norm_label": "quoterequestvalidator"
     },
     {
@@ -6191,8 +6236,8 @@
       },
       "_origin": "ast",
       "id": "csharp_namespace:43fc4be13d1c621e",
-      "community": 41,
-      "community_name": "NsStore.Application.Features.Inventory",
+      "community": 40,
+      "community_name": "NsStore.Application.Common.Models",
       "norm_label": "nsstore.application.features.reports"
     },
     {
@@ -6389,8 +6434,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_nsstore_application_features_reports_reportservice",
-      "community": 41,
-      "community_name": "NsStore.Application.Features.Inventory",
+      "community": 54,
+      "community_name": "ValidationFilter.cs",
       "norm_label": "reportservice.cs"
     },
     {
@@ -6647,8 +6692,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_nsstore_application_features_sales_collectdebtrequestvalidator",
-      "community": 57,
-      "community_name": "SaleDtos.cs",
+      "community": 17,
+      "community_name": "IAppDbContext",
       "norm_label": "collectdebtrequestvalidator.cs"
     },
     {
@@ -6680,8 +6725,8 @@
       },
       "_origin": "ast",
       "id": "src_nsstore_application_features_sales_collectdebtrequestvalidator_nsstore_application_features_sales_collectdebtrequestvalidator",
-      "community": 57,
-      "community_name": "SaleDtos.cs",
+      "community": 17,
+      "community_name": "IAppDbContext",
       "norm_label": "collectdebtrequestvalidator"
     },
     {
@@ -6691,8 +6736,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_nsstore_application_features_sales_saledtos",
-      "community": 57,
-      "community_name": "SaleDtos.cs",
+      "community": 17,
+      "community_name": "IAppDbContext",
       "norm_label": "saledtos.cs"
     },
     {
@@ -6708,8 +6753,8 @@
       },
       "_origin": "ast",
       "id": "src_nsstore_application_features_sales_saledtos_nsstore_application_features_sales_saleitemrequest",
-      "community": 57,
-      "community_name": "SaleDtos.cs",
+      "community": 17,
+      "community_name": "IAppDbContext",
       "norm_label": "saleitemrequest"
     },
     {
@@ -6725,8 +6770,8 @@
       },
       "_origin": "ast",
       "id": "src_nsstore_application_features_sales_saledtos_nsstore_application_features_sales_createsalerequest",
-      "community": 57,
-      "community_name": "SaleDtos.cs",
+      "community": 28,
+      "community_name": ".CreateAsync",
       "norm_label": "createsalerequest"
     },
     {
@@ -6742,8 +6787,8 @@
       },
       "_origin": "ast",
       "id": "src_nsstore_application_features_sales_saledtos_nsstore_application_features_sales_registerpaymentrequest",
-      "community": 57,
-      "community_name": "SaleDtos.cs",
+      "community": 17,
+      "community_name": "IAppDbContext",
       "norm_label": "registerpaymentrequest"
     },
     {
@@ -6759,8 +6804,8 @@
       },
       "_origin": "ast",
       "id": "src_nsstore_application_features_sales_saledtos_nsstore_application_features_sales_saleitemdto",
-      "community": 57,
-      "community_name": "SaleDtos.cs",
+      "community": 17,
+      "community_name": "IAppDbContext",
       "norm_label": "saleitemdto"
     },
     {
@@ -6776,8 +6821,8 @@
       },
       "_origin": "ast",
       "id": "src_nsstore_application_features_sales_saledtos_nsstore_application_features_sales_paymentdto",
-      "community": 57,
-      "community_name": "SaleDtos.cs",
+      "community": 17,
+      "community_name": "IAppDbContext",
       "norm_label": "paymentdto"
     },
     {
@@ -6810,8 +6855,8 @@
       },
       "_origin": "ast",
       "id": "src_nsstore_application_features_sales_saledtos_nsstore_application_features_sales_salelistitemdto",
-      "community": 28,
-      "community_name": ".CreateAsync",
+      "community": 59,
+      "community_name": "TokenService",
       "norm_label": "salelistitemdto"
     },
     {
@@ -6827,8 +6872,8 @@
       },
       "_origin": "ast",
       "id": "src_nsstore_application_features_sales_saledtos_nsstore_application_features_sales_salequery",
-      "community": 28,
-      "community_name": ".CreateAsync",
+      "community": 59,
+      "community_name": "TokenService",
       "norm_label": "salequery"
     },
     {
@@ -6844,8 +6889,8 @@
       },
       "_origin": "ast",
       "id": "src_nsstore_application_features_sales_saledtos_nsstore_application_features_sales_clientdebtfilter",
-      "community": 57,
-      "community_name": "SaleDtos.cs",
+      "community": 17,
+      "community_name": "IAppDbContext",
       "norm_label": "clientdebtfilter"
     },
     {
@@ -6861,8 +6906,8 @@
       },
       "_origin": "ast",
       "id": "src_nsstore_application_features_sales_saledtos_nsstore_application_features_sales_clientdebtdto",
-      "community": 57,
-      "community_name": "SaleDtos.cs",
+      "community": 17,
+      "community_name": "IAppDbContext",
       "norm_label": "clientdebtdto"
     },
     {
@@ -6878,8 +6923,8 @@
       },
       "_origin": "ast",
       "id": "src_nsstore_application_features_sales_saledtos_nsstore_application_features_sales_clientdebtquery",
-      "community": 57,
-      "community_name": "SaleDtos.cs",
+      "community": 17,
+      "community_name": "IAppDbContext",
       "norm_label": "clientdebtquery"
     },
     {
@@ -6895,8 +6940,8 @@
       },
       "_origin": "ast",
       "id": "src_nsstore_application_features_sales_saledtos_nsstore_application_features_sales_collectdebtrequest",
-      "community": 57,
-      "community_name": "SaleDtos.cs",
+      "community": 17,
+      "community_name": "IAppDbContext",
       "norm_label": "collectdebtrequest"
     },
     {
@@ -6912,8 +6957,8 @@
       },
       "_origin": "ast",
       "id": "src_nsstore_application_features_sales_saledtos_nsstore_application_features_sales_paymentallocationdto",
-      "community": 57,
-      "community_name": "SaleDtos.cs",
+      "community": 17,
+      "community_name": "IAppDbContext",
       "norm_label": "paymentallocationdto"
     },
     {
@@ -6940,8 +6985,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_nsstore_application_features_sales_saleservice",
-      "community": 24,
-      "community_name": "NsStore.Domain.Enums",
+      "community": 54,
+      "community_name": "ValidationFilter.cs",
       "norm_label": "saleservice.cs"
     },
     {
@@ -6974,8 +7019,8 @@
       },
       "_origin": "ast",
       "id": "src_nsstore_application_features_sales_saleservice_nsstore_application_features_sales_saleservice_listasync",
-      "community": 28,
-      "community_name": ".CreateAsync",
+      "community": 59,
+      "community_name": "TokenService",
       "norm_label": ".listasync()"
     },
     {
@@ -7013,8 +7058,8 @@
       },
       "_origin": "ast",
       "id": "src_nsstore_application_features_sales_saleservice_nsstore_application_features_sales_saleservice_listdebtsasync",
-      "community": 28,
-      "community_name": ".CreateAsync",
+      "community": 59,
+      "community_name": "TokenService",
       "norm_label": ".listdebtsasync()"
     },
     {
@@ -7030,8 +7075,8 @@
       },
       "_origin": "ast",
       "id": "src_nsstore_application_features_sales_saleservice_nsstore_application_features_sales_saleservice_listdebtsbyclientasync",
-      "community": 57,
-      "community_name": "SaleDtos.cs",
+      "community": 28,
+      "community_name": ".CreateAsync",
       "norm_label": ".listdebtsbyclientasync()"
     },
     {
@@ -7047,8 +7092,8 @@
       },
       "_origin": "ast",
       "id": "src_nsstore_application_features_sales_saleservice_nsstore_application_features_sales_saleservice_listbyclientasync",
-      "community": 28,
-      "community_name": ".CreateAsync",
+      "community": 59,
+      "community_name": "TokenService",
       "norm_label": ".listbyclientasync()"
     },
     {
@@ -7194,8 +7239,8 @@
       },
       "_origin": "ast",
       "id": "src_nsstore_application_features_sales_saleservice_nsstore_application_features_sales_saleservice_filter",
-      "community": 28,
-      "community_name": ".CreateAsync",
+      "community": 59,
+      "community_name": "TokenService",
       "norm_label": ".filter()"
     },
     {
@@ -7205,8 +7250,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_nsstore_application_features_sales_saleservice_cs_iqueryable",
-      "community": 28,
-      "community_name": ".CreateAsync",
+      "community": 59,
+      "community_name": "TokenService",
       "norm_label": "iqueryable"
     },
     {
@@ -7222,8 +7267,8 @@
       },
       "_origin": "ast",
       "id": "src_nsstore_application_features_sales_saleservice_nsstore_application_features_sales_saleservice_tolistresultasync",
-      "community": 28,
-      "community_name": ".CreateAsync",
+      "community": 59,
+      "community_name": "TokenService",
       "norm_label": ".tolistresultasync()"
     },
     {
@@ -7240,8 +7285,8 @@
       },
       "_origin": "ast",
       "id": "src_nsstore_application_features_sales_saleservice_nsstore_application_features_sales_salelistrow",
-      "community": 70,
-      "community_name": ".ToDto",
+      "community": 55,
+      "community_name": ".MapAuthEndpoints",
       "norm_label": "salelistrow"
     },
     {
@@ -7257,8 +7302,8 @@
       },
       "_origin": "ast",
       "id": "src_nsstore_application_features_sales_saleservice_nsstore_application_features_sales_salelistrow_todto",
-      "community": 70,
-      "community_name": ".ToDto",
+      "community": 55,
+      "community_name": ".MapAuthEndpoints",
       "norm_label": ".todto()"
     },
     {
@@ -7268,8 +7313,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_nsstore_application_features_sales_saleservice_cs_dateonly",
-      "community": 70,
-      "community_name": ".ToDto",
+      "community": 55,
+      "community_name": ".MapAuthEndpoints",
       "norm_label": "dateonly"
     },
     {
@@ -7290,8 +7335,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_nsstore_application_features_sales_salevalidators",
-      "community": 57,
-      "community_name": "SaleDtos.cs",
+      "community": 17,
+      "community_name": "IAppDbContext",
       "norm_label": "salevalidators.cs"
     },
     {
@@ -7307,8 +7352,8 @@
       },
       "_origin": "ast",
       "id": "src_nsstore_application_features_sales_salevalidators_nsstore_application_features_sales_createsalerequestvalidator",
-      "community": 57,
-      "community_name": "SaleDtos.cs",
+      "community": 17,
+      "community_name": "IAppDbContext",
       "norm_label": "createsalerequestvalidator"
     },
     {
@@ -7324,8 +7369,8 @@
       },
       "_origin": "ast",
       "id": "src_nsstore_application_features_sales_salevalidators_nsstore_application_features_sales_registerpaymentrequestvalidator",
-      "community": 57,
-      "community_name": "SaleDtos.cs",
+      "community": 17,
+      "community_name": "IAppDbContext",
       "norm_label": "registerpaymentrequestvalidator"
     },
     {
@@ -7335,8 +7380,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_nsstore_application_features_settings_settingsservice",
-      "community": 8,
-      "community_name": "NsStore.Application.Common.Interfaces",
+      "community": 4,
+      "community_name": "ReportDtos.cs",
       "norm_label": "settingsservice.cs"
     },
     {
@@ -7351,8 +7396,8 @@
       },
       "_origin": "ast",
       "id": "csharp_namespace:f615cfc777a66be9",
-      "community": 41,
-      "community_name": "NsStore.Application.Features.Inventory",
+      "community": 54,
+      "community_name": "ValidationFilter.cs",
       "norm_label": "nsstore.application.features.settings"
     },
     {
@@ -7542,8 +7587,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_nsstore_application_features_settings_settingsvalidators",
-      "community": 4,
-      "community_name": "ReportDtos.cs",
+      "community": 13,
+      "community_name": "ProductService",
       "norm_label": "settingsvalidators.cs"
     },
     {
@@ -7559,8 +7604,8 @@
       },
       "_origin": "ast",
       "id": "src_nsstore_application_features_settings_settingsvalidators_nsstore_application_features_settings_updatesettingsrequestvalidator",
-      "community": 4,
-      "community_name": "ReportDtos.cs",
+      "community": 13,
+      "community_name": "ProductService",
       "norm_label": "updatesettingsrequestvalidator"
     },
     {
@@ -7586,8 +7631,8 @@
       },
       "_origin": "ast",
       "id": "csharp_namespace:7156291b31e18055",
-      "community": 38,
-      "community_name": "NsStore.Application.Features.Users",
+      "community": 24,
+      "community_name": "NsStore.Domain.Enums",
       "norm_label": "nsstore.application.features.users"
     },
     {
@@ -8098,8 +8143,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_nsstore_domain_common_appclaimtypes",
-      "community": 52,
-      "community_name": "AppClaimTypes.cs",
+      "community": 24,
+      "community_name": "NsStore.Domain.Enums",
       "norm_label": "appclaimtypes.cs"
     },
     {
@@ -8131,8 +8176,8 @@
       },
       "_origin": "ast",
       "id": "src_nsstore_domain_common_appclaimtypes_nsstore_domain_common_appclaimtypes",
-      "community": 52,
-      "community_name": "AppClaimTypes.cs",
+      "community": 24,
+      "community_name": "NsStore.Domain.Enums",
       "norm_label": "appclaimtypes"
     },
     {
@@ -8142,8 +8187,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_nsstore_domain_common_appclaimtypes_cs_string",
-      "community": 52,
-      "community_name": "AppClaimTypes.cs",
+      "community": 24,
+      "community_name": "NsStore.Domain.Enums",
       "norm_label": "string"
     },
     {
@@ -8153,8 +8198,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_nsstore_domain_common_auditableentity",
-      "community": 9,
-      "community_name": "AuditableEntity",
+      "community": 26,
+      "community_name": "AppDbContext",
       "norm_label": "auditableentity.cs"
     },
     {
@@ -8170,8 +8215,8 @@
       },
       "_origin": "ast",
       "id": "src_nsstore_domain_common_auditableentity_nsstore_domain_common_auditableentity",
-      "community": 9,
-      "community_name": "AuditableEntity",
+      "community": 26,
+      "community_name": "AppDbContext",
       "norm_label": "auditableentity"
     },
     {
@@ -8181,8 +8226,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_nsstore_domain_common_auditableentity_cs_datetimeoffset",
-      "community": 9,
-      "community_name": "AuditableEntity",
+      "community": 26,
+      "community_name": "AppDbContext",
       "norm_label": "datetimeoffset"
     },
     {
@@ -8220,8 +8265,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_nsstore_domain_common_errorcodes",
-      "community": 50,
-      "community_name": "ErrorCodes.cs",
+      "community": 24,
+      "community_name": "NsStore.Domain.Enums",
       "norm_label": "errorcodes.cs"
     },
     {
@@ -8237,8 +8282,8 @@
       },
       "_origin": "ast",
       "id": "src_nsstore_domain_common_errorcodes_nsstore_domain_common_errorcodes",
-      "community": 50,
-      "community_name": "ErrorCodes.cs",
+      "community": 24,
+      "community_name": "NsStore.Domain.Enums",
       "norm_label": "errorcodes"
     },
     {
@@ -8248,8 +8293,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_nsstore_domain_common_errorcodes_cs_string",
-      "community": 50,
-      "community_name": "ErrorCodes.cs",
+      "community": 24,
+      "community_name": "NsStore.Domain.Enums",
       "norm_label": "string"
     },
     {
@@ -8298,8 +8343,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_nsstore_domain_entities_appsetting",
-      "community": 56,
-      "community_name": "AppSetting",
+      "community": 26,
+      "community_name": "AppDbContext",
       "norm_label": "appsetting.cs"
     },
     {
@@ -8331,8 +8376,8 @@
       },
       "_origin": "ast",
       "id": "src_nsstore_domain_entities_appsetting_nsstore_domain_entities_appsetting",
-      "community": 56,
-      "community_name": "AppSetting",
+      "community": 26,
+      "community_name": "AppDbContext",
       "norm_label": "appsetting"
     },
     {
@@ -8342,8 +8387,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_nsstore_domain_entities_appsetting_cs_datetimeoffset",
-      "community": 56,
-      "community_name": "AppSetting",
+      "community": 26,
+      "community_name": "AppDbContext",
       "norm_label": "datetimeoffset"
     },
     {
@@ -8359,8 +8404,8 @@
       },
       "_origin": "ast",
       "id": "src_nsstore_domain_entities_appsetting_nsstore_domain_entities_appsettingkeys",
-      "community": 56,
-      "community_name": "AppSetting",
+      "community": 26,
+      "community_name": "AppDbContext",
       "norm_label": "appsettingkeys"
     },
     {
@@ -8370,8 +8415,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_nsstore_domain_entities_appsetting_cs_string",
-      "community": 56,
-      "community_name": "AppSetting",
+      "community": 26,
+      "community_name": "AppDbContext",
       "norm_label": "string"
     },
     {
@@ -8398,8 +8443,8 @@
       },
       "_origin": "ast",
       "id": "src_nsstore_domain_entities_branch_nsstore_domain_entities_branch",
-      "community": 61,
-      "community_name": "Branch",
+      "community": 26,
+      "community_name": "AppDbContext",
       "norm_label": "branch"
     },
     {
@@ -8522,8 +8567,8 @@
       },
       "_origin": "ast",
       "id": "src_nsstore_domain_entities_client_nsstore_domain_entities_client",
-      "community": 17,
-      "community_name": "IAppDbContext",
+      "community": 26,
+      "community_name": "AppDbContext",
       "norm_label": "client"
     },
     {
@@ -8623,8 +8668,8 @@
       },
       "_origin": "ast",
       "id": "src_nsstore_domain_entities_orderquote_nsstore_domain_entities_order",
-      "community": 61,
-      "community_name": "Branch",
+      "community": 26,
+      "community_name": "AppDbContext",
       "norm_label": "order"
     },
     {
@@ -8634,8 +8679,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_nsstore_domain_entities_orderquote_cs_dateonly",
-      "community": 61,
-      "community_name": "Branch",
+      "community": 26,
+      "community_name": "AppDbContext",
       "norm_label": "dateonly"
     },
     {
@@ -8668,8 +8713,8 @@
       },
       "_origin": "ast",
       "id": "src_nsstore_domain_entities_orderquote_nsstore_domain_entities_quote",
-      "community": 61,
-      "community_name": "Branch",
+      "community": 26,
+      "community_name": "AppDbContext",
       "norm_label": "quote"
     },
     {
@@ -8724,8 +8769,8 @@
       },
       "_origin": "ast",
       "id": "src_nsstore_domain_entities_product_nsstore_domain_entities_product_pricefor",
-      "community": 23,
-      "community_name": "SaleTests",
+      "community": 38,
+      "community_name": "NsStore.Application.Features.Users",
       "norm_label": ".pricefor()"
     },
     {
@@ -8752,8 +8797,8 @@
       },
       "_origin": "ast",
       "id": "src_nsstore_domain_entities_purchase_nsstore_domain_entities_purchase",
-      "community": 12,
-      "community_name": "IEntityTypeConfiguration",
+      "community": 38,
+      "community_name": "NsStore.Application.Features.Users",
       "norm_label": "purchase"
     },
     {
@@ -8763,8 +8808,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_nsstore_domain_entities_purchase_cs_dateonly",
-      "community": 12,
-      "community_name": "IEntityTypeConfiguration",
+      "community": 38,
+      "community_name": "NsStore.Application.Features.Users",
       "norm_label": "dateonly"
     },
     {
@@ -8774,8 +8819,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_nsstore_domain_entities_purchase_cs_list",
-      "community": 12,
-      "community_name": "IEntityTypeConfiguration",
+      "community": 38,
+      "community_name": "NsStore.Application.Features.Users",
       "norm_label": "list"
     },
     {
@@ -8869,8 +8914,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_nsstore_domain_entities_sale",
-      "community": 17,
-      "community_name": "IAppDbContext",
+      "community": 26,
+      "community_name": "AppDbContext",
       "norm_label": "sale.cs"
     },
     {
@@ -8886,8 +8931,8 @@
       },
       "_origin": "ast",
       "id": "src_nsstore_domain_entities_sale_nsstore_domain_entities_sale",
-      "community": 17,
-      "community_name": "IAppDbContext",
+      "community": 26,
+      "community_name": "AppDbContext",
       "norm_label": "sale"
     },
     {
@@ -8897,8 +8942,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_nsstore_domain_entities_sale_cs_dateonly",
-      "community": 17,
-      "community_name": "IAppDbContext",
+      "community": 26,
+      "community_name": "AppDbContext",
       "norm_label": "dateonly"
     },
     {
@@ -8908,8 +8953,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_nsstore_domain_entities_sale_cs_list",
-      "community": 17,
-      "community_name": "IAppDbContext",
+      "community": 26,
+      "community_name": "AppDbContext",
       "norm_label": "list"
     },
     {
@@ -8925,8 +8970,8 @@
       },
       "_origin": "ast",
       "id": "src_nsstore_domain_entities_sale_nsstore_domain_entities_sale_registerpayment",
-      "community": 17,
-      "community_name": "IAppDbContext",
+      "community": 26,
+      "community_name": "AppDbContext",
       "norm_label": ".registerpayment()"
     },
     {
@@ -8936,8 +8981,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_nsstore_domain_entities_sale_cs_datetimeoffset",
-      "community": 17,
-      "community_name": "IAppDbContext",
+      "community": 26,
+      "community_name": "AppDbContext",
       "norm_label": "datetimeoffset"
     },
     {
@@ -8953,8 +8998,8 @@
       },
       "_origin": "ast",
       "id": "src_nsstore_domain_entities_sale_nsstore_domain_entities_saleitem",
-      "community": 17,
-      "community_name": "IAppDbContext",
+      "community": 26,
+      "community_name": "AppDbContext",
       "norm_label": "saleitem"
     },
     {
@@ -8970,8 +9015,8 @@
       },
       "_origin": "ast",
       "id": "src_nsstore_domain_entities_sale_nsstore_domain_entities_paymentreceipt",
-      "community": 17,
-      "community_name": "IAppDbContext",
+      "community": 26,
+      "community_name": "AppDbContext",
       "norm_label": "paymentreceipt"
     },
     {
@@ -8987,8 +9032,8 @@
       },
       "_origin": "ast",
       "id": "src_nsstore_domain_entities_sale_nsstore_domain_entities_payment",
-      "community": 17,
-      "community_name": "IAppDbContext",
+      "community": 26,
+      "community_name": "AppDbContext",
       "norm_label": "payment"
     },
     {
@@ -8998,8 +9043,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_nsstore_domain_entities_stocktransfer",
-      "community": 15,
-      "community_name": "StockTransfer",
+      "community": 26,
+      "community_name": "AppDbContext",
       "norm_label": "stocktransfer.cs"
     },
     {
@@ -9015,8 +9060,8 @@
       },
       "_origin": "ast",
       "id": "src_nsstore_domain_entities_stocktransfer_nsstore_domain_entities_stocktransfer",
-      "community": 15,
-      "community_name": "StockTransfer",
+      "community": 26,
+      "community_name": "AppDbContext",
       "norm_label": "stocktransfer"
     },
     {
@@ -9026,8 +9071,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_nsstore_domain_entities_stocktransfer_cs_dateonly",
-      "community": 15,
-      "community_name": "StockTransfer",
+      "community": 26,
+      "community_name": "AppDbContext",
       "norm_label": "dateonly"
     },
     {
@@ -9037,8 +9082,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_nsstore_domain_entities_stocktransfer_cs_list",
-      "community": 15,
-      "community_name": "StockTransfer",
+      "community": 26,
+      "community_name": "AppDbContext",
       "norm_label": "list"
     },
     {
@@ -9054,8 +9099,8 @@
       },
       "_origin": "ast",
       "id": "src_nsstore_domain_entities_stocktransfer_nsstore_domain_entities_stocktransferitem",
-      "community": 15,
-      "community_name": "StockTransfer",
+      "community": 26,
+      "community_name": "AppDbContext",
       "norm_label": "stocktransferitem"
     },
     {
@@ -9104,8 +9149,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_nsstore_domain_enums_enums",
-      "community": 55,
-      "community_name": ".MapAuthEndpoints",
+      "community": 38,
+      "community_name": "NsStore.Application.Features.Users",
       "norm_label": "enums.cs"
     },
     {
@@ -9120,8 +9165,8 @@
       },
       "_origin": "ast",
       "id": "csharp_namespace:99eeacb48c77be54",
-      "community": 24,
-      "community_name": "NsStore.Domain.Enums",
+      "community": 37,
+      "community_name": "NsStore.Infrastructure.Persistence.Migrations",
       "norm_label": "nsstore.domain.enums"
     },
     {
@@ -9137,8 +9182,8 @@
       },
       "_origin": "ast",
       "id": "src_nsstore_domain_enums_enums_nsstore_domain_enums_userrole",
-      "community": 53,
-      "community_name": "PasswordHasher",
+      "community": 46,
+      "community_name": ".StockedInMainAsync",
       "norm_label": "userrole"
     },
     {
@@ -9154,8 +9199,8 @@
       },
       "_origin": "ast",
       "id": "src_nsstore_domain_enums_enums_nsstore_domain_enums_clienttype",
-      "community": 55,
-      "community_name": ".MapAuthEndpoints",
+      "community": 38,
+      "community_name": "NsStore.Application.Features.Users",
       "norm_label": "clienttype"
     },
     {
@@ -9171,8 +9216,8 @@
       },
       "_origin": "ast",
       "id": "src_nsstore_domain_enums_enums_nsstore_domain_enums_invoicetype",
-      "community": 23,
-      "community_name": "SaleTests",
+      "community": 38,
+      "community_name": "NsStore.Application.Features.Users",
       "norm_label": "invoicetype"
     },
     {
@@ -9188,8 +9233,8 @@
       },
       "_origin": "ast",
       "id": "src_nsstore_domain_enums_enums_nsstore_domain_enums_paymentstatus",
-      "community": 55,
-      "community_name": ".MapAuthEndpoints",
+      "community": 38,
+      "community_name": "NsStore.Application.Features.Users",
       "norm_label": "paymentstatus"
     },
     {
@@ -9205,8 +9250,8 @@
       },
       "_origin": "ast",
       "id": "src_nsstore_domain_enums_enums_nsstore_domain_enums_orderstatus",
-      "community": 55,
-      "community_name": ".MapAuthEndpoints",
+      "community": 26,
+      "community_name": "AppDbContext",
       "norm_label": "orderstatus"
     },
     {
@@ -9222,8 +9267,8 @@
       },
       "_origin": "ast",
       "id": "src_nsstore_domain_enums_enums_nsstore_domain_enums_movementtype",
-      "community": 55,
-      "community_name": ".MapAuthEndpoints",
+      "community": 38,
+      "community_name": "NsStore.Application.Features.Users",
       "norm_label": "movementtype"
     },
     {
@@ -9288,8 +9333,8 @@
       },
       "_origin": "ast",
       "id": "src_nsstore_infrastructure_dependencyinjection_nsstore_infrastructure_dependencyinjection",
-      "community": 48,
-      "community_name": ".AddInfrastructure",
+      "community": 52,
+      "community_name": "AppClaimTypes.cs",
       "norm_label": "dependencyinjection"
     },
     {
@@ -9305,8 +9350,8 @@
       },
       "_origin": "ast",
       "id": "src_nsstore_infrastructure_dependencyinjection_nsstore_infrastructure_dependencyinjection_addinfrastructure",
-      "community": 48,
-      "community_name": ".AddInfrastructure",
+      "community": 52,
+      "community_name": "AppClaimTypes.cs",
       "norm_label": ".addinfrastructure()"
     },
     {
@@ -9316,8 +9361,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_nsstore_infrastructure_dependencyinjection_cs_iservicecollection",
-      "community": 48,
-      "community_name": ".AddInfrastructure",
+      "community": 52,
+      "community_name": "AppClaimTypes.cs",
       "norm_label": "iservicecollection"
     },
     {
@@ -9327,8 +9372,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "iconfiguration",
-      "community": 48,
-      "community_name": ".AddInfrastructure",
+      "community": 52,
+      "community_name": "AppClaimTypes.cs",
       "norm_label": "iconfiguration"
     },
     {
@@ -9559,8 +9604,8 @@
       },
       "_origin": "ast",
       "id": "src_nsstore_infrastructure_persistence_appdbcontext_nsstore_infrastructure_persistence_appdbcontext_executeintransactionasync",
-      "community": 22,
-      "community_name": "DemoDataSeeder",
+      "community": 53,
+      "community_name": "PasswordHasher",
       "norm_label": ".executeintransactionasync()"
     },
     {
@@ -9570,8 +9615,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_nsstore_infrastructure_persistence_appdbcontext_cs_func",
-      "community": 22,
-      "community_name": "DemoDataSeeder",
+      "community": 53,
+      "community_name": "PasswordHasher",
       "norm_label": "func"
     },
     {
@@ -9581,8 +9626,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_nsstore_infrastructure_persistence_appdbcontext_cs_cancellationtoken",
-      "community": 22,
-      "community_name": "DemoDataSeeder",
+      "community": 53,
+      "community_name": "PasswordHasher",
       "norm_label": "cancellationtoken"
     },
     {
@@ -9592,8 +9637,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_nsstore_infrastructure_persistence_appdbcontext_cs_task",
-      "community": 22,
-      "community_name": "DemoDataSeeder",
+      "community": 53,
+      "community_name": "PasswordHasher",
       "norm_label": "task"
     },
     {
@@ -9748,8 +9793,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_nsstore_infrastructure_persistence_configurations_branchconfigurations",
-      "community": 14,
-      "community_name": "User",
+      "community": 12,
+      "community_name": "IEntityTypeConfiguration",
       "norm_label": "branchconfigurations.cs"
     },
     {
@@ -9764,8 +9809,8 @@
       },
       "_origin": "ast",
       "id": "csharp_namespace:dddd49b83ad36ddc",
-      "community": 14,
-      "community_name": "User",
+      "community": 12,
+      "community_name": "IEntityTypeConfiguration",
       "norm_label": "nsstore.infrastructure.persistence.configurations"
     },
     {
@@ -9781,8 +9826,8 @@
       },
       "_origin": "ast",
       "id": "src_nsstore_infrastructure_persistence_configurations_branchconfigurations_nsstore_infrastructure_persistence_configurations_branchconfiguration",
-      "community": 61,
-      "community_name": "Branch",
+      "community": 12,
+      "community_name": "IEntityTypeConfiguration",
       "norm_label": "branchconfiguration"
     },
     {
@@ -9792,8 +9837,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "ientitytypeconfiguration",
-      "community": 51,
-      "community_name": "Ports.cs",
+      "community": 12,
+      "community_name": "IEntityTypeConfiguration",
       "norm_label": "ientitytypeconfiguration"
     },
     {
@@ -9809,8 +9854,8 @@
       },
       "_origin": "ast",
       "id": "src_nsstore_infrastructure_persistence_configurations_branchconfigurations_nsstore_infrastructure_persistence_configurations_branchconfiguration_configure",
-      "community": 61,
-      "community_name": "Branch",
+      "community": 12,
+      "community_name": "IEntityTypeConfiguration",
       "norm_label": ".configure()"
     },
     {
@@ -9820,8 +9865,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_nsstore_infrastructure_persistence_configurations_branchconfigurations_cs_entitytypebuilder",
-      "community": 61,
-      "community_name": "Branch",
+      "community": 12,
+      "community_name": "IEntityTypeConfiguration",
       "norm_label": "entitytypebuilder"
     },
     {
@@ -9995,8 +10040,8 @@
       },
       "_origin": "ast",
       "id": "src_nsstore_infrastructure_persistence_configurations_catalogconfigurations_nsstore_infrastructure_persistence_configurations_appsettingconfiguration",
-      "community": 56,
-      "community_name": "AppSetting",
+      "community": 9,
+      "community_name": "AuditableEntity",
       "norm_label": "appsettingconfiguration"
     },
     {
@@ -10012,8 +10057,8 @@
       },
       "_origin": "ast",
       "id": "src_nsstore_infrastructure_persistence_configurations_catalogconfigurations_nsstore_infrastructure_persistence_configurations_appsettingconfiguration_configure",
-      "community": 56,
-      "community_name": "AppSetting",
+      "community": 9,
+      "community_name": "AuditableEntity",
       "norm_label": ".configure()"
     },
     {
@@ -10023,8 +10068,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_nsstore_infrastructure_persistence_configurations_identityconfigurations",
-      "community": 14,
-      "community_name": "User",
+      "community": 12,
+      "community_name": "IEntityTypeConfiguration",
       "norm_label": "identityconfigurations.cs"
     },
     {
@@ -10237,8 +10282,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_nsstore_infrastructure_persistence_configurations_stocktransferconfigurations",
-      "community": 15,
-      "community_name": "StockTransfer",
+      "community": 12,
+      "community_name": "IEntityTypeConfiguration",
       "norm_label": "stocktransferconfigurations.cs"
     },
     {
@@ -10254,8 +10299,8 @@
       },
       "_origin": "ast",
       "id": "src_nsstore_infrastructure_persistence_configurations_stocktransferconfigurations_nsstore_infrastructure_persistence_configurations_stocktransferconfiguration",
-      "community": 15,
-      "community_name": "StockTransfer",
+      "community": 12,
+      "community_name": "IEntityTypeConfiguration",
       "norm_label": "stocktransferconfiguration"
     },
     {
@@ -10271,8 +10316,8 @@
       },
       "_origin": "ast",
       "id": "src_nsstore_infrastructure_persistence_configurations_stocktransferconfigurations_nsstore_infrastructure_persistence_configurations_stocktransferconfiguration_configure",
-      "community": 15,
-      "community_name": "StockTransfer",
+      "community": 12,
+      "community_name": "IEntityTypeConfiguration",
       "norm_label": ".configure()"
     },
     {
@@ -10282,8 +10327,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_nsstore_infrastructure_persistence_configurations_stocktransferconfigurations_cs_entitytypebuilder",
-      "community": 15,
-      "community_name": "StockTransfer",
+      "community": 12,
+      "community_name": "IEntityTypeConfiguration",
       "norm_label": "entitytypebuilder"
     },
     {
@@ -10299,8 +10344,8 @@
       },
       "_origin": "ast",
       "id": "src_nsstore_infrastructure_persistence_configurations_stocktransferconfigurations_nsstore_infrastructure_persistence_configurations_stocktransferitemconfiguration",
-      "community": 15,
-      "community_name": "StockTransfer",
+      "community": 12,
+      "community_name": "IEntityTypeConfiguration",
       "norm_label": "stocktransferitemconfiguration"
     },
     {
@@ -10316,8 +10361,8 @@
       },
       "_origin": "ast",
       "id": "src_nsstore_infrastructure_persistence_configurations_stocktransferconfigurations_nsstore_infrastructure_persistence_configurations_stocktransferitemconfiguration_configure",
-      "community": 15,
-      "community_name": "StockTransfer",
+      "community": 12,
+      "community_name": "IEntityTypeConfiguration",
       "norm_label": ".configure()"
     },
     {
@@ -10389,8 +10434,8 @@
       },
       "_origin": "ast",
       "id": "src_nsstore_infrastructure_persistence_configurations_transactionconfigurations_nsstore_infrastructure_persistence_configurations_purchaseconfiguration",
-      "community": 12,
-      "community_name": "IEntityTypeConfiguration",
+      "community": 38,
+      "community_name": "NsStore.Application.Features.Users",
       "norm_label": "purchaseconfiguration"
     },
     {
@@ -10406,8 +10451,8 @@
       },
       "_origin": "ast",
       "id": "src_nsstore_infrastructure_persistence_configurations_transactionconfigurations_nsstore_infrastructure_persistence_configurations_purchaseconfiguration_configure",
-      "community": 12,
-      "community_name": "IEntityTypeConfiguration",
+      "community": 38,
+      "community_name": "NsStore.Application.Features.Users",
       "norm_label": ".configure()"
     },
     {
@@ -10593,8 +10638,8 @@
       },
       "_origin": "ast",
       "id": "src_nsstore_infrastructure_persistence_configurations_transactionconfigurations_nsstore_infrastructure_persistence_configurations_orderconfiguration",
-      "community": 61,
-      "community_name": "Branch",
+      "community": 12,
+      "community_name": "IEntityTypeConfiguration",
       "norm_label": "orderconfiguration"
     },
     {
@@ -10610,8 +10655,8 @@
       },
       "_origin": "ast",
       "id": "src_nsstore_infrastructure_persistence_configurations_transactionconfigurations_nsstore_infrastructure_persistence_configurations_orderconfiguration_configure",
-      "community": 61,
-      "community_name": "Branch",
+      "community": 12,
+      "community_name": "IEntityTypeConfiguration",
       "norm_label": ".configure()"
     },
     {
@@ -10627,8 +10672,8 @@
       },
       "_origin": "ast",
       "id": "src_nsstore_infrastructure_persistence_configurations_transactionconfigurations_nsstore_infrastructure_persistence_configurations_quoteconfiguration",
-      "community": 61,
-      "community_name": "Branch",
+      "community": 26,
+      "community_name": "AppDbContext",
       "norm_label": "quoteconfiguration"
     },
     {
@@ -10644,8 +10689,8 @@
       },
       "_origin": "ast",
       "id": "src_nsstore_infrastructure_persistence_configurations_transactionconfigurations_nsstore_infrastructure_persistence_configurations_quoteconfiguration_configure",
-      "community": 61,
-      "community_name": "Branch",
+      "community": 26,
+      "community_name": "AppDbContext",
       "norm_label": ".configure()"
     },
     {
@@ -11036,8 +11081,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "dictionary",
-      "community": 22,
-      "community_name": "DemoDataSeeder",
+      "community": 51,
+      "community_name": "Ports.cs",
       "norm_label": "dictionary"
     },
     {
@@ -11053,8 +11098,8 @@
       },
       "_origin": "ast",
       "id": "src_nsstore_infrastructure_persistence_demodataseeder_nsstore_infrastructure_persistence_demodataseeder_seedproductsasync",
-      "community": 22,
-      "community_name": "DemoDataSeeder",
+      "community": 51,
+      "community_name": "Ports.cs",
       "norm_label": ".seedproductsasync()"
     },
     {
@@ -11064,8 +11109,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "products",
-      "community": 22,
-      "community_name": "DemoDataSeeder",
+      "community": 51,
+      "community_name": "Ports.cs",
       "norm_label": "products"
     },
     {
@@ -11075,8 +11120,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "basecosts",
-      "community": 22,
-      "community_name": "DemoDataSeeder",
+      "community": 51,
+      "community_name": "Ports.cs",
       "norm_label": "basecosts"
     },
     {
@@ -11159,8 +11204,8 @@
       },
       "_origin": "ast",
       "id": "src_nsstore_infrastructure_persistence_demodataseeder_nsstore_infrastructure_persistence_demodataseeder_seeddensestockgridasync",
-      "community": 22,
-      "community_name": "DemoDataSeeder",
+      "community": 51,
+      "community_name": "Ports.cs",
       "norm_label": ".seeddensestockgridasync()"
     },
     {
@@ -11170,8 +11215,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "branchid",
-      "community": 22,
-      "community_name": "DemoDataSeeder",
+      "community": 51,
+      "community_name": "Ports.cs",
       "norm_label": "branchid"
     },
     {
@@ -11181,8 +11226,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "productid",
-      "community": 22,
-      "community_name": "DemoDataSeeder",
+      "community": 51,
+      "community_name": "Ports.cs",
       "norm_label": "productid"
     },
     {
@@ -11689,8 +11734,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_nsstore_infrastructure_persistence_designtimedbcontextfactory",
-      "community": 8,
-      "community_name": "NsStore.Application.Common.Interfaces",
+      "community": 37,
+      "community_name": "NsStore.Infrastructure.Persistence.Migrations",
       "norm_label": "designtimedbcontextfactory.cs"
     },
     {
@@ -11762,8 +11807,8 @@
       },
       "_origin": "ast",
       "id": "src_nsstore_infrastructure_persistence_documentnumberservice_nsstore_infrastructure_persistence_documentnumberservice",
-      "community": 64,
-      "community_name": "Ports.cs",
+      "community": 58,
+      "community_name": ".TwoDebtsAsync",
       "norm_label": "documentnumberservice"
     },
     {
@@ -11779,8 +11824,8 @@
       },
       "_origin": "ast",
       "id": "src_nsstore_infrastructure_persistence_documentnumberservice_nsstore_infrastructure_persistence_documentnumberservice_nextasync",
-      "community": 64,
-      "community_name": "Ports.cs",
+      "community": 58,
+      "community_name": ".TwoDebtsAsync",
       "norm_label": ".nextasync()"
     },
     {
@@ -11790,8 +11835,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_nsstore_infrastructure_persistence_documentnumberservice_cs_cancellationtoken",
-      "community": 64,
-      "community_name": "Ports.cs",
+      "community": 58,
+      "community_name": ".TwoDebtsAsync",
       "norm_label": "cancellationtoken"
     },
     {
@@ -11801,8 +11846,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_nsstore_infrastructure_persistence_documentnumberservice_cs_task",
-      "community": 64,
-      "community_name": "Ports.cs",
+      "community": 58,
+      "community_name": ".TwoDebtsAsync",
       "norm_label": "task"
     },
     {
@@ -12719,8 +12764,8 @@
       },
       "_origin": "ast",
       "id": "src_nsstore_infrastructure_persistence_stocklockservice_nsstore_infrastructure_persistence_stocklockservice",
-      "community": 6,
-      "community_name": ".LockAsync",
+      "community": 11,
+      "community_name": ".CreateAsync",
       "norm_label": "stocklockservice"
     },
     {
@@ -12736,8 +12781,8 @@
       },
       "_origin": "ast",
       "id": "src_nsstore_infrastructure_persistence_stocklockservice_nsstore_infrastructure_persistence_stocklockservice_lockasync",
-      "community": 6,
-      "community_name": ".LockAsync",
+      "community": 11,
+      "community_name": ".CreateAsync",
       "norm_label": ".lockasync()"
     },
     {
@@ -12747,8 +12792,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_nsstore_infrastructure_persistence_stocklockservice_cs_ireadonlycollection",
-      "community": 6,
-      "community_name": ".LockAsync",
+      "community": 11,
+      "community_name": ".CreateAsync",
       "norm_label": "ireadonlycollection"
     },
     {
@@ -12758,8 +12803,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_nsstore_infrastructure_persistence_stocklockservice_cs_cancellationtoken",
-      "community": 6,
-      "community_name": ".LockAsync",
+      "community": 11,
+      "community_name": ".CreateAsync",
       "norm_label": "cancellationtoken"
     },
     {
@@ -12769,8 +12814,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_nsstore_infrastructure_persistence_stocklockservice_cs_task",
-      "community": 6,
-      "community_name": ".LockAsync",
+      "community": 11,
+      "community_name": ".CreateAsync",
       "norm_label": "task"
     },
     {
@@ -12780,8 +12825,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_nsstore_infrastructure_security_jwtoptions",
-      "community": 59,
-      "community_name": "TokenService",
+      "community": 6,
+      "community_name": ".LockAsync",
       "norm_label": "jwtoptions.cs"
     },
     {
@@ -12813,8 +12858,8 @@
       },
       "_origin": "ast",
       "id": "src_nsstore_infrastructure_security_jwtoptions_nsstore_infrastructure_security_jwtoptions",
-      "community": 59,
-      "community_name": "TokenService",
+      "community": 6,
+      "community_name": ".LockAsync",
       "norm_label": "jwtoptions"
     },
     {
@@ -12824,8 +12869,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_nsstore_infrastructure_security_jwtoptions_cs_string",
-      "community": 59,
-      "community_name": "TokenService",
+      "community": 6,
+      "community_name": ".LockAsync",
       "norm_label": "string"
     },
     {
@@ -12852,8 +12897,8 @@
       },
       "_origin": "ast",
       "id": "src_nsstore_infrastructure_security_passwordhasher_nsstore_infrastructure_security_passwordhasher",
-      "community": 65,
-      "community_name": "PasswordHasher",
+      "community": 6,
+      "community_name": ".LockAsync",
       "norm_label": "passwordhasher"
     },
     {
@@ -12863,8 +12908,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_nsstore_infrastructure_security_passwordhasher_cs_string",
-      "community": 65,
-      "community_name": "PasswordHasher",
+      "community": 6,
+      "community_name": ".LockAsync",
       "norm_label": "string"
     },
     {
@@ -12874,8 +12919,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_nsstore_infrastructure_security_passwordhasher_cs_int",
-      "community": 65,
-      "community_name": "PasswordHasher",
+      "community": 6,
+      "community_name": ".LockAsync",
       "norm_label": "int"
     },
     {
@@ -12891,8 +12936,8 @@
       },
       "_origin": "ast",
       "id": "src_nsstore_infrastructure_security_passwordhasher_nsstore_infrastructure_security_passwordhasher_hash",
-      "community": 65,
-      "community_name": "PasswordHasher",
+      "community": 6,
+      "community_name": ".LockAsync",
       "norm_label": ".hash()"
     },
     {
@@ -12908,8 +12953,8 @@
       },
       "_origin": "ast",
       "id": "src_nsstore_infrastructure_security_passwordhasher_nsstore_infrastructure_security_passwordhasher_verify",
-      "community": 65,
-      "community_name": "PasswordHasher",
+      "community": 6,
+      "community_name": ".LockAsync",
       "norm_label": ".verify()"
     },
     {
@@ -12936,8 +12981,8 @@
       },
       "_origin": "ast",
       "id": "src_nsstore_infrastructure_security_tokenservice_nsstore_infrastructure_security_tokenservice",
-      "community": 59,
-      "community_name": "TokenService",
+      "community": 6,
+      "community_name": ".LockAsync",
       "norm_label": "tokenservice"
     },
     {
@@ -12953,8 +12998,8 @@
       },
       "_origin": "ast",
       "id": "src_nsstore_infrastructure_security_tokenservice_nsstore_infrastructure_security_tokenservice_createaccesstoken",
-      "community": 59,
-      "community_name": "TokenService",
+      "community": 6,
+      "community_name": ".LockAsync",
       "norm_label": ".createaccesstoken()"
     },
     {
@@ -12970,8 +13015,8 @@
       },
       "_origin": "ast",
       "id": "src_nsstore_infrastructure_security_tokenservice_nsstore_infrastructure_security_tokenservice_createrefreshtoken",
-      "community": 59,
-      "community_name": "TokenService",
+      "community": 6,
+      "community_name": ".LockAsync",
       "norm_label": ".createrefreshtoken()"
     },
     {
@@ -12987,8 +13032,8 @@
       },
       "_origin": "ast",
       "id": "src_nsstore_infrastructure_security_tokenservice_nsstore_infrastructure_security_tokenservice_hashrefreshtoken",
-      "community": 59,
-      "community_name": "TokenService",
+      "community": 6,
+      "community_name": ".LockAsync",
       "norm_label": ".hashrefreshtoken()"
     },
     {
@@ -13004,8 +13049,8 @@
       },
       "_origin": "ast",
       "id": "src_nsstore_infrastructure_security_tokenservice_nsstore_infrastructure_security_tokenservice_signingkey",
-      "community": 59,
-      "community_name": "TokenService",
+      "community": 6,
+      "community_name": ".LockAsync",
       "norm_label": ".signingkey()"
     },
     {
@@ -13015,8 +13060,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "symmetricsecuritykey",
-      "community": 59,
-      "community_name": "TokenService",
+      "community": 6,
+      "community_name": ".LockAsync",
       "norm_label": "symmetricsecuritykey"
     },
     {
@@ -13059,8 +13104,8 @@
       },
       "_origin": "ast",
       "id": "tests_nsstore_application_tests_branchscopingtests_nsstore_application_tests_branchscopingtests",
-      "community": 7,
-      "community_name": ".IssueTokensAsync",
+      "community": 58,
+      "community_name": ".TwoDebtsAsync",
       "norm_label": "branchscopingtests"
     },
     {
@@ -13076,8 +13121,8 @@
       },
       "_origin": "ast",
       "id": "tests_nsstore_application_tests_branchscopingtests_nsstore_application_tests_branchscopingtests_readyproductasync",
-      "community": 7,
-      "community_name": ".IssueTokensAsync",
+      "community": 58,
+      "community_name": ".TwoDebtsAsync",
       "norm_label": ".readyproductasync()"
     },
     {
@@ -13087,8 +13132,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "tests_nsstore_application_tests_branchscopingtests_cs_task",
-      "community": 7,
-      "community_name": ".IssueTokensAsync",
+      "community": 58,
+      "community_name": ".TwoDebtsAsync",
       "norm_label": "task"
     },
     {
@@ -13104,8 +13149,8 @@
       },
       "_origin": "ast",
       "id": "tests_nsstore_application_tests_branchscopingtests_nsstore_application_tests_branchscopingtests_selloneasync",
-      "community": 7,
-      "community_name": ".IssueTokensAsync",
+      "community": 58,
+      "community_name": ".TwoDebtsAsync",
       "norm_label": ".selloneasync()"
     },
     {
@@ -13121,8 +13166,8 @@
       },
       "_origin": "ast",
       "id": "tests_nsstore_application_tests_branchscopingtests_nsstore_application_tests_branchscopingtests_a_sellers_sale_is_stamped_with_their_home_branch",
-      "community": 7,
-      "community_name": ".IssueTokensAsync",
+      "community": 58,
+      "community_name": ".TwoDebtsAsync",
       "norm_label": ".a_sellers_sale_is_stamped_with_their_home_branch()"
     },
     {
@@ -13132,8 +13177,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "tests_nsstore_application_tests_branchscopingtests_cs_fact",
-      "community": 7,
-      "community_name": ".IssueTokensAsync",
+      "community": 58,
+      "community_name": ".TwoDebtsAsync",
       "norm_label": "fact"
     },
     {
@@ -13149,8 +13194,8 @@
       },
       "_origin": "ast",
       "id": "tests_nsstore_application_tests_branchscopingtests_nsstore_application_tests_branchscopingtests_a_seller_cannot_write_into_another_branch",
-      "community": 7,
-      "community_name": ".IssueTokensAsync",
+      "community": 58,
+      "community_name": ".TwoDebtsAsync",
       "norm_label": ".a_seller_cannot_write_into_another_branch()"
     },
     {
@@ -13166,8 +13211,8 @@
       },
       "_origin": "ast",
       "id": "tests_nsstore_application_tests_branchscopingtests_nsstore_application_tests_branchscopingtests_an_admin_switching_branches_writes_into_the_branch_they_switched_to",
-      "community": 7,
-      "community_name": ".IssueTokensAsync",
+      "community": 58,
+      "community_name": ".TwoDebtsAsync",
       "norm_label": ".an_admin_switching_branches_writes_into_the_branch_they_switched_to()"
     },
     {
@@ -13183,8 +13228,8 @@
       },
       "_origin": "ast",
       "id": "tests_nsstore_application_tests_branchscopingtests_nsstore_application_tests_branchscopingtests_a_sale_in_one_branch_leaves_the_other_branchs_stock_untouched",
-      "community": 7,
-      "community_name": ".IssueTokensAsync",
+      "community": 58,
+      "community_name": ".TwoDebtsAsync",
       "norm_label": ".a_sale_in_one_branch_leaves_the_other_branchs_stock_untouched()"
     },
     {
@@ -13200,8 +13245,8 @@
       },
       "_origin": "ast",
       "id": "tests_nsstore_application_tests_branchscopingtests_nsstore_application_tests_branchscopingtests_stock_available_in_another_branch_does_not_make_a_sale_possible",
-      "community": 7,
-      "community_name": ".IssueTokensAsync",
+      "community": 58,
+      "community_name": ".TwoDebtsAsync",
       "norm_label": ".stock_available_in_another_branch_does_not_make_a_sale_possible()"
     },
     {
@@ -13217,8 +13262,8 @@
       },
       "_origin": "ast",
       "id": "tests_nsstore_application_tests_branchscopingtests_nsstore_application_tests_branchscopingtests_product_listings_report_the_quantity_of_the_active_branch",
-      "community": 7,
-      "community_name": ".IssueTokensAsync",
+      "community": 58,
+      "community_name": ".TwoDebtsAsync",
       "norm_label": ".product_listings_report_the_quantity_of_the_active_branch()"
     },
     {
@@ -13234,8 +13279,8 @@
       },
       "_origin": "ast",
       "id": "tests_nsstore_application_tests_branchscopingtests_nsstore_application_tests_branchscopingtests_a_credit_can_be_collected_at_a_different_branch_than_the_sale",
-      "community": 7,
-      "community_name": ".IssueTokensAsync",
+      "community": 58,
+      "community_name": ".TwoDebtsAsync",
       "norm_label": ".a_credit_can_be_collected_at_a_different_branch_than_the_sale()"
     },
     {
@@ -13245,8 +13290,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "tests_nsstore_application_tests_branchservicetests",
-      "community": 24,
-      "community_name": "NsStore.Domain.Enums",
+      "community": 54,
+      "community_name": "ValidationFilter.cs",
       "norm_label": "branchservicetests.cs"
     },
     {
@@ -13414,8 +13459,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "tests_nsstore_application_tests_clientservicetests",
-      "community": 24,
-      "community_name": "NsStore.Domain.Enums",
+      "community": 37,
+      "community_name": "NsStore.Infrastructure.Persistence.Migrations",
       "norm_label": "clientservicetests.cs"
     },
     {
@@ -13719,8 +13764,8 @@
       },
       "_origin": "ast",
       "id": "tests_nsstore_application_tests_collectiontests_nsstore_application_tests_collectiontests",
-      "community": 58,
-      "community_name": ".TwoDebtsAsync",
+      "community": 15,
+      "community_name": "StockTransfer",
       "norm_label": "collectiontests"
     },
     {
@@ -13730,8 +13775,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "decimal",
-      "community": 58,
-      "community_name": ".TwoDebtsAsync",
+      "community": 15,
+      "community_name": "StockTransfer",
       "norm_label": "decimal"
     },
     {
@@ -13747,8 +13792,8 @@
       },
       "_origin": "ast",
       "id": "tests_nsstore_application_tests_collectiontests_nsstore_application_tests_collectiontests_readyproductasync",
-      "community": 58,
-      "community_name": ".TwoDebtsAsync",
+      "community": 15,
+      "community_name": "StockTransfer",
       "norm_label": ".readyproductasync()"
     },
     {
@@ -13758,8 +13803,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "tests_nsstore_application_tests_collectiontests_cs_task",
-      "community": 58,
-      "community_name": ".TwoDebtsAsync",
+      "community": 15,
+      "community_name": "StockTransfer",
       "norm_label": "task"
     },
     {
@@ -13775,8 +13820,8 @@
       },
       "_origin": "ast",
       "id": "tests_nsstore_application_tests_collectiontests_nsstore_application_tests_collectiontests_twodebtsasync",
-      "community": 58,
-      "community_name": ".TwoDebtsAsync",
+      "community": 15,
+      "community_name": "StockTransfer",
       "norm_label": ".twodebtsasync()"
     },
     {
@@ -13786,8 +13831,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "older",
-      "community": 58,
-      "community_name": ".TwoDebtsAsync",
+      "community": 15,
+      "community_name": "StockTransfer",
       "norm_label": "older"
     },
     {
@@ -13797,8 +13842,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "newer",
-      "community": 58,
-      "community_name": ".TwoDebtsAsync",
+      "community": 15,
+      "community_name": "StockTransfer",
       "norm_label": "newer"
     },
     {
@@ -13814,8 +13859,8 @@
       },
       "_origin": "ast",
       "id": "tests_nsstore_application_tests_collectiontests_nsstore_application_tests_collectiontests_an_amount_matching_the_oldest_debt_settles_it_and_leaves_the_newer_untouched",
-      "community": 58,
-      "community_name": ".TwoDebtsAsync",
+      "community": 15,
+      "community_name": "StockTransfer",
       "norm_label": ".an_amount_matching_the_oldest_debt_settles_it_and_leaves_the_newer_untouched()"
     },
     {
@@ -13825,8 +13870,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "tests_nsstore_application_tests_collectiontests_cs_fact",
-      "community": 58,
-      "community_name": ".TwoDebtsAsync",
+      "community": 15,
+      "community_name": "StockTransfer",
       "norm_label": "fact"
     },
     {
@@ -13842,8 +13887,8 @@
       },
       "_origin": "ast",
       "id": "tests_nsstore_application_tests_collectiontests_nsstore_application_tests_collectiontests_a_partial_amount_spills_from_the_oldest_debt_into_the_next",
-      "community": 58,
-      "community_name": ".TwoDebtsAsync",
+      "community": 15,
+      "community_name": "StockTransfer",
       "norm_label": ".a_partial_amount_spills_from_the_oldest_debt_into_the_next()"
     },
     {
@@ -13859,8 +13904,8 @@
       },
       "_origin": "ast",
       "id": "tests_nsstore_application_tests_collectiontests_nsstore_application_tests_collectiontests_collecting_the_whole_balance_clears_the_client_off_the_collections_list",
-      "community": 58,
-      "community_name": ".TwoDebtsAsync",
+      "community": 15,
+      "community_name": "StockTransfer",
       "norm_label": ".collecting_the_whole_balance_clears_the_client_off_the_collections_list()"
     },
     {
@@ -13876,8 +13921,8 @@
       },
       "_origin": "ast",
       "id": "tests_nsstore_application_tests_collectiontests_nsstore_application_tests_collectiontests_collecting_more_than_the_client_owes_is_rejected_and_writes_nothing",
-      "community": 58,
-      "community_name": ".TwoDebtsAsync",
+      "community": 15,
+      "community_name": "StockTransfer",
       "norm_label": ".collecting_more_than_the_client_owes_is_rejected_and_writes_nothing()"
     },
     {
@@ -13893,8 +13938,8 @@
       },
       "_origin": "ast",
       "id": "tests_nsstore_application_tests_collectiontests_nsstore_application_tests_collectiontests_collecting_from_a_client_with_nothing_outstanding_is_rejected",
-      "community": 58,
-      "community_name": ".TwoDebtsAsync",
+      "community": 15,
+      "community_name": "StockTransfer",
       "norm_label": ".collecting_from_a_client_with_nothing_outstanding_is_rejected()"
     },
     {
@@ -13910,8 +13955,8 @@
       },
       "_origin": "ast",
       "id": "tests_nsstore_application_tests_collectiontests_nsstore_application_tests_collectiontests_the_receipt_is_numbered_per_branch_and_can_be_reissued",
-      "community": 58,
-      "community_name": ".TwoDebtsAsync",
+      "community": 15,
+      "community_name": "StockTransfer",
       "norm_label": ".the_receipt_is_numbered_per_branch_and_can_be_reissued()"
     },
     {
@@ -13927,8 +13972,8 @@
       },
       "_origin": "ast",
       "id": "tests_nsstore_application_tests_collectiontests_nsstore_application_tests_collectiontests_a_credit_sale_made_at_one_branch_can_be_collected_at_another",
-      "community": 58,
-      "community_name": ".TwoDebtsAsync",
+      "community": 15,
+      "community_name": "StockTransfer",
       "norm_label": ".a_credit_sale_made_at_one_branch_can_be_collected_at_another()"
     },
     {
@@ -13955,8 +14000,8 @@
       },
       "_origin": "ast",
       "id": "tests_nsstore_application_tests_crossbranchavailabilitytests_nsstore_application_tests_crossbranchavailabilitytests",
-      "community": 7,
-      "community_name": ".IssueTokensAsync",
+      "community": 48,
+      "community_name": ".AddInfrastructure",
       "norm_label": "crossbranchavailabilitytests"
     },
     {
@@ -13972,8 +14017,8 @@
       },
       "_origin": "ast",
       "id": "tests_nsstore_application_tests_crossbranchavailabilitytests_nsstore_application_tests_crossbranchavailabilitytests_stockedinmainasync",
-      "community": 7,
-      "community_name": ".IssueTokensAsync",
+      "community": 48,
+      "community_name": ".AddInfrastructure",
       "norm_label": ".stockedinmainasync()"
     },
     {
@@ -13983,8 +14028,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "tests_nsstore_application_tests_crossbranchavailabilitytests_cs_task",
-      "community": 7,
-      "community_name": ".IssueTokensAsync",
+      "community": 48,
+      "community_name": ".AddInfrastructure",
       "norm_label": "task"
     },
     {
@@ -14000,8 +14045,8 @@
       },
       "_origin": "ast",
       "id": "tests_nsstore_application_tests_crossbranchavailabilitytests_nsstore_application_tests_crossbranchavailabilitytests_availability_reports_every_active_branch_including_the_empty_ones",
-      "community": 7,
-      "community_name": ".IssueTokensAsync",
+      "community": 48,
+      "community_name": ".AddInfrastructure",
       "norm_label": ".availability_reports_every_active_branch_including_the_empty_ones()"
     },
     {
@@ -14011,8 +14056,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "tests_nsstore_application_tests_crossbranchavailabilitytests_cs_fact",
-      "community": 7,
-      "community_name": ".IssueTokensAsync",
+      "community": 48,
+      "community_name": ".AddInfrastructure",
       "norm_label": "fact"
     },
     {
@@ -14028,8 +14073,8 @@
       },
       "_origin": "ast",
       "id": "tests_nsstore_application_tests_crossbranchavailabilitytests_nsstore_application_tests_crossbranchavailabilitytests_becomesouthseller",
-      "community": 7,
-      "community_name": ".IssueTokensAsync",
+      "community": 48,
+      "community_name": ".AddInfrastructure",
       "norm_label": ".becomesouthseller()"
     },
     {
@@ -14045,8 +14090,8 @@
       },
       "_origin": "ast",
       "id": "tests_nsstore_application_tests_crossbranchavailabilitytests_nsstore_application_tests_crossbranchavailabilitytests_a_seller_standing_in_an_empty_branch_can_still_see_where_the_stock_is",
-      "community": 7,
-      "community_name": ".IssueTokensAsync",
+      "community": 48,
+      "community_name": ".AddInfrastructure",
       "norm_label": ".a_seller_standing_in_an_empty_branch_can_still_see_where_the_stock_is()"
     },
     {
@@ -14062,8 +14107,8 @@
       },
       "_origin": "ast",
       "id": "tests_nsstore_application_tests_crossbranchavailabilitytests_nsstore_application_tests_crossbranchavailabilitytests_product_search_carries_both_the_local_and_the_system_wide_quantity",
-      "community": 7,
-      "community_name": ".IssueTokensAsync",
+      "community": 48,
+      "community_name": ".AddInfrastructure",
       "norm_label": ".product_search_carries_both_the_local_and_the_system_wide_quantity()"
     },
     {
@@ -14079,8 +14124,8 @@
       },
       "_origin": "ast",
       "id": "tests_nsstore_application_tests_crossbranchavailabilitytests_nsstore_application_tests_crossbranchavailabilitytests_stock_can_be_read_for_another_branch_without_switching_to_it",
-      "community": 7,
-      "community_name": ".IssueTokensAsync",
+      "community": 48,
+      "community_name": ".AddInfrastructure",
       "norm_label": ".stock_can_be_read_for_another_branch_without_switching_to_it()"
     },
     {
@@ -14096,8 +14141,8 @@
       },
       "_origin": "ast",
       "id": "tests_nsstore_application_tests_crossbranchavailabilitytests_nsstore_application_tests_crossbranchavailabilitytests_a_seller_asking_for_another_branchs_sales_gets_their_own_instead",
-      "community": 7,
-      "community_name": ".IssueTokensAsync",
+      "community": 48,
+      "community_name": ".AddInfrastructure",
       "norm_label": ".a_seller_asking_for_another_branchs_sales_gets_their_own_instead()"
     },
     {
@@ -14113,8 +14158,8 @@
       },
       "_origin": "ast",
       "id": "tests_nsstore_application_tests_crossbranchavailabilitytests_nsstore_application_tests_crossbranchavailabilitytests_an_admin_asking_for_no_branch_sees_every_branchs_sales",
-      "community": 7,
-      "community_name": ".IssueTokensAsync",
+      "community": 48,
+      "community_name": ".AddInfrastructure",
       "norm_label": ".an_admin_asking_for_no_branch_sees_every_branchs_sales()"
     },
     {
@@ -14141,8 +14186,8 @@
       },
       "_origin": "ast",
       "id": "tests_nsstore_application_tests_documentnumberingtests_nsstore_application_tests_documentnumberingtests",
-      "community": 62,
-      "community_name": "DocumentNumberingTests",
+      "community": 45,
+      "community_name": "TestHarness",
       "norm_label": "documentnumberingtests"
     },
     {
@@ -14158,8 +14203,8 @@
       },
       "_origin": "ast",
       "id": "tests_nsstore_application_tests_documentnumberingtests_nsstore_application_tests_documentnumberingtests_readyproductasync",
-      "community": 62,
-      "community_name": "DocumentNumberingTests",
+      "community": 45,
+      "community_name": "TestHarness",
       "norm_label": ".readyproductasync()"
     },
     {
@@ -14169,8 +14214,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "tests_nsstore_application_tests_documentnumberingtests_cs_task",
-      "community": 62,
-      "community_name": "DocumentNumberingTests",
+      "community": 45,
+      "community_name": "TestHarness",
       "norm_label": "task"
     },
     {
@@ -14186,8 +14231,8 @@
       },
       "_origin": "ast",
       "id": "tests_nsstore_application_tests_documentnumberingtests_nsstore_application_tests_documentnumberingtests_sellasync",
-      "community": 62,
-      "community_name": "DocumentNumberingTests",
+      "community": 45,
+      "community_name": "TestHarness",
       "norm_label": ".sellasync()"
     },
     {
@@ -14203,8 +14248,8 @@
       },
       "_origin": "ast",
       "id": "tests_nsstore_application_tests_documentnumberingtests_nsstore_application_tests_documentnumberingtests_the_first_sale_of_a_branch_is_numbered_one",
-      "community": 62,
-      "community_name": "DocumentNumberingTests",
+      "community": 45,
+      "community_name": "TestHarness",
       "norm_label": ".the_first_sale_of_a_branch_is_numbered_one()"
     },
     {
@@ -14214,8 +14259,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "tests_nsstore_application_tests_documentnumberingtests_cs_fact",
-      "community": 62,
-      "community_name": "DocumentNumberingTests",
+      "community": 45,
+      "community_name": "TestHarness",
       "norm_label": "fact"
     },
     {
@@ -14231,8 +14276,8 @@
       },
       "_origin": "ast",
       "id": "tests_nsstore_application_tests_documentnumberingtests_nsstore_application_tests_documentnumberingtests_numbers_increment_within_a_branch",
-      "community": 62,
-      "community_name": "DocumentNumberingTests",
+      "community": 45,
+      "community_name": "TestHarness",
       "norm_label": ".numbers_increment_within_a_branch()"
     },
     {
@@ -14248,8 +14293,8 @@
       },
       "_origin": "ast",
       "id": "tests_nsstore_application_tests_documentnumberingtests_nsstore_application_tests_documentnumberingtests_each_branch_keeps_its_own_series",
-      "community": 62,
-      "community_name": "DocumentNumberingTests",
+      "community": 45,
+      "community_name": "TestHarness",
       "norm_label": ".each_branch_keeps_its_own_series()"
     },
     {
@@ -14265,8 +14310,8 @@
       },
       "_origin": "ast",
       "id": "tests_nsstore_application_tests_documentnumberingtests_nsstore_application_tests_documentnumberingtests_sales_and_purchases_count_separately",
-      "community": 62,
-      "community_name": "DocumentNumberingTests",
+      "community": 45,
+      "community_name": "TestHarness",
       "norm_label": ".sales_and_purchases_count_separately()"
     },
     {
@@ -14282,8 +14327,8 @@
       },
       "_origin": "ast",
       "id": "tests_nsstore_application_tests_documentnumberingtests_nsstore_application_tests_documentnumberingtests_a_failed_sale_does_not_burn_a_number",
-      "community": 62,
-      "community_name": "DocumentNumberingTests",
+      "community": 45,
+      "community_name": "TestHarness",
       "norm_label": ".a_failed_sale_does_not_burn_a_number()"
     },
     {
@@ -14299,8 +14344,8 @@
       },
       "_origin": "ast",
       "id": "tests_nsstore_application_tests_documentnumberingtests_nsstore_application_tests_documentnumberingtests_the_service_hands_out_consecutive_numbers_per_kind",
-      "community": 62,
-      "community_name": "DocumentNumberingTests",
+      "community": 45,
+      "community_name": "TestHarness",
       "norm_label": ".the_service_hands_out_consecutive_numbers_per_kind()"
     },
     {
@@ -14316,8 +14361,8 @@
       },
       "_origin": "ast",
       "id": "tests_nsstore_application_tests_documentnumberingtests_nsstore_application_tests_saledtoassertions",
-      "community": 71,
-      "community_name": "SaleDtoAssertions",
+      "community": 28,
+      "community_name": ".CreateAsync",
       "norm_label": "saledtoassertions"
     },
     {
@@ -14333,8 +14378,8 @@
       },
       "_origin": "ast",
       "id": "tests_nsstore_application_tests_documentnumberingtests_nsstore_application_tests_saledtoassertions_branchsequenceordefault",
-      "community": 71,
-      "community_name": "SaleDtoAssertions",
+      "community": 28,
+      "community_name": ".CreateAsync",
       "norm_label": ".branchsequenceordefault()"
     },
     {
@@ -14618,8 +14663,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "tests_nsstore_application_tests_purchaseandpricingtests",
-      "community": 24,
-      "community_name": "NsStore.Domain.Enums",
+      "community": 41,
+      "community_name": "NsStore.Application.Features.Inventory",
       "norm_label": "purchaseandpricingtests.cs"
     },
     {
@@ -14770,8 +14815,8 @@
       },
       "_origin": "ast",
       "id": "tests_nsstore_application_tests_reportservicetests_nsstore_application_tests_reportservicetests",
-      "community": 2,
-      "community_name": ".CreateProductAsync",
+      "community": 50,
+      "community_name": "ErrorCodes.cs",
       "norm_label": "reportservicetests"
     },
     {
@@ -14787,8 +14832,8 @@
       },
       "_origin": "ast",
       "id": "tests_nsstore_application_tests_reportservicetests_nsstore_application_tests_reportservicetests_readyproductasync",
-      "community": 2,
-      "community_name": ".CreateProductAsync",
+      "community": 50,
+      "community_name": "ErrorCodes.cs",
       "norm_label": ".readyproductasync()"
     },
     {
@@ -14798,8 +14843,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "tests_nsstore_application_tests_reportservicetests_cs_task",
-      "community": 2,
-      "community_name": ".CreateProductAsync",
+      "community": 50,
+      "community_name": "ErrorCodes.cs",
       "norm_label": "task"
     },
     {
@@ -14815,8 +14860,8 @@
       },
       "_origin": "ast",
       "id": "tests_nsstore_application_tests_reportservicetests_nsstore_application_tests_reportservicetests_the_statement_lists_only_what_the_client_still_owes",
-      "community": 2,
-      "community_name": ".CreateProductAsync",
+      "community": 50,
+      "community_name": "ErrorCodes.cs",
       "norm_label": ".the_statement_lists_only_what_the_client_still_owes()"
     },
     {
@@ -14826,8 +14871,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "tests_nsstore_application_tests_reportservicetests_cs_fact",
-      "community": 2,
-      "community_name": ".CreateProductAsync",
+      "community": 50,
+      "community_name": "ErrorCodes.cs",
       "norm_label": "fact"
     },
     {
@@ -14843,8 +14888,8 @@
       },
       "_origin": "ast",
       "id": "tests_nsstore_application_tests_reportservicetests_nsstore_application_tests_reportservicetests_the_statement_credits_each_sale_with_the_instalments_already_paid",
-      "community": 2,
-      "community_name": ".CreateProductAsync",
+      "community": 50,
+      "community_name": "ErrorCodes.cs",
       "norm_label": ".the_statement_credits_each_sale_with_the_instalments_already_paid()"
     },
     {
@@ -14860,8 +14905,8 @@
       },
       "_origin": "ast",
       "id": "tests_nsstore_application_tests_reportservicetests_nsstore_application_tests_reportservicetests_a_statement_for_an_unknown_client_is_a_not_found",
-      "community": 2,
-      "community_name": ".CreateProductAsync",
+      "community": 50,
+      "community_name": "ErrorCodes.cs",
       "norm_label": ".a_statement_for_an_unknown_client_is_a_not_found()"
     },
     {
@@ -14877,8 +14922,8 @@
       },
       "_origin": "ast",
       "id": "tests_nsstore_application_tests_reportservicetests_nsstore_application_tests_reportservicetests_a_client_with_no_debt_gets_an_empty_statement_rather_than_an_error",
-      "community": 2,
-      "community_name": ".CreateProductAsync",
+      "community": 50,
+      "community_name": "ErrorCodes.cs",
       "norm_label": ".a_client_with_no_debt_gets_an_empty_statement_rather_than_an_error()"
     },
     {
@@ -14894,8 +14939,8 @@
       },
       "_origin": "ast",
       "id": "tests_nsstore_application_tests_reportservicetests_nsstore_application_tests_reportservicetests_report_totals_cover_the_whole_filtered_set_not_just_the_printed_page",
-      "community": 2,
-      "community_name": ".CreateProductAsync",
+      "community": 50,
+      "community_name": "ErrorCodes.cs",
       "norm_label": ".report_totals_cover_the_whole_filtered_set_not_just_the_printed_page()"
     },
     {
@@ -15193,8 +15238,8 @@
       },
       "_origin": "ast",
       "id": "tests_nsstore_application_tests_testharness_nsstore_application_tests_testharness",
-      "community": 7,
-      "community_name": ".IssueTokensAsync",
+      "community": 58,
+      "community_name": ".TwoDebtsAsync",
       "norm_label": "testharness"
     },
     {
@@ -15204,8 +15249,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "idisposable",
-      "community": 7,
-      "community_name": ".IssueTokensAsync",
+      "community": 58,
+      "community_name": ".TwoDebtsAsync",
       "norm_label": "idisposable"
     },
     {
@@ -15215,8 +15260,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "sqliteconnection",
-      "community": 7,
-      "community_name": ".IssueTokensAsync",
+      "community": 58,
+      "community_name": ".TwoDebtsAsync",
       "norm_label": "sqliteconnection"
     },
     {
@@ -15226,8 +15271,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "tests_nsstore_application_tests_testharness_cs_long",
-      "community": 7,
-      "community_name": ".IssueTokensAsync",
+      "community": 58,
+      "community_name": ".TwoDebtsAsync",
       "norm_label": "long"
     },
     {
@@ -15237,8 +15282,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "tests_nsstore_application_tests_testharness_cs_dateonly",
-      "community": 7,
-      "community_name": ".IssueTokensAsync",
+      "community": 58,
+      "community_name": ".TwoDebtsAsync",
       "norm_label": "dateonly"
     },
     {
@@ -15254,8 +15299,8 @@
       },
       "_origin": "ast",
       "id": "tests_nsstore_application_tests_testharness_nsstore_application_tests_testharness_seed",
-      "community": 7,
-      "community_name": ".IssueTokensAsync",
+      "community": 58,
+      "community_name": ".TwoDebtsAsync",
       "norm_label": ".seed()"
     },
     {
@@ -15282,8 +15327,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "tests_nsstore_application_tests_testharness_cs_task",
-      "community": 6,
-      "community_name": ".LockAsync",
+      "community": 11,
+      "community_name": ".CreateAsync",
       "norm_label": "task"
     },
     {
@@ -15299,8 +15344,8 @@
       },
       "_origin": "ast",
       "id": "tests_nsstore_application_tests_testharness_nsstore_application_tests_testharness_dispose",
-      "community": 7,
-      "community_name": ".IssueTokensAsync",
+      "community": 58,
+      "community_name": ".TwoDebtsAsync",
       "norm_label": ".dispose()"
     },
     {
@@ -15316,8 +15361,8 @@
       },
       "_origin": "ast",
       "id": "tests_nsstore_application_tests_testharness_nsstore_application_tests_fakecurrentuser",
-      "community": 53,
-      "community_name": "PasswordHasher",
+      "community": 46,
+      "community_name": ".StockedInMainAsync",
       "norm_label": "fakecurrentuser"
     },
     {
@@ -15333,8 +15378,8 @@
       },
       "_origin": "ast",
       "id": "tests_nsstore_application_tests_testharness_nsstore_application_tests_faketimeprovider",
-      "community": 7,
-      "community_name": ".IssueTokensAsync",
+      "community": 58,
+      "community_name": ".TwoDebtsAsync",
       "norm_label": "faketimeprovider"
     },
     {
@@ -15344,8 +15389,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "timeprovider",
-      "community": 7,
-      "community_name": ".IssueTokensAsync",
+      "community": 58,
+      "community_name": ".TwoDebtsAsync",
       "norm_label": "timeprovider"
     },
     {
@@ -15355,8 +15400,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "tests_nsstore_application_tests_testharness_cs_datetimeoffset",
-      "community": 7,
-      "community_name": ".IssueTokensAsync",
+      "community": 58,
+      "community_name": ".TwoDebtsAsync",
       "norm_label": "datetimeoffset"
     },
     {
@@ -15372,8 +15417,8 @@
       },
       "_origin": "ast",
       "id": "tests_nsstore_application_tests_testharness_nsstore_application_tests_faketimeprovider_getutcnow",
-      "community": 7,
-      "community_name": ".IssueTokensAsync",
+      "community": 58,
+      "community_name": ".TwoDebtsAsync",
       "norm_label": ".getutcnow()"
     },
     {
@@ -15389,8 +15434,8 @@
       },
       "_origin": "ast",
       "id": "tests_nsstore_application_tests_testharness_nsstore_application_tests_noopstocklock",
-      "community": 6,
-      "community_name": ".LockAsync",
+      "community": 11,
+      "community_name": ".CreateAsync",
       "norm_label": "noopstocklock"
     },
     {
@@ -15406,8 +15451,8 @@
       },
       "_origin": "ast",
       "id": "tests_nsstore_application_tests_testharness_nsstore_application_tests_noopstocklock_lockasync",
-      "community": 6,
-      "community_name": ".LockAsync",
+      "community": 11,
+      "community_name": ".CreateAsync",
       "norm_label": ".lockasync()"
     },
     {
@@ -15417,8 +15462,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "tests_nsstore_application_tests_testharness_cs_ireadonlycollection",
-      "community": 6,
-      "community_name": ".LockAsync",
+      "community": 11,
+      "community_name": ".CreateAsync",
       "norm_label": "ireadonlycollection"
     },
     {
@@ -15428,8 +15473,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "tests_nsstore_application_tests_testharness_cs_cancellationtoken",
-      "community": 6,
-      "community_name": ".LockAsync",
+      "community": 11,
+      "community_name": ".CreateAsync",
       "norm_label": "cancellationtoken"
     },
     {
@@ -15456,8 +15501,8 @@
       },
       "_origin": "ast",
       "id": "tests_nsstore_application_tests_transferservicetests_nsstore_application_tests_transferservicetests",
-      "community": 45,
-      "community_name": "TestHarness",
+      "community": 58,
+      "community_name": ".TwoDebtsAsync",
       "norm_label": "transferservicetests"
     },
     {
@@ -15473,8 +15518,8 @@
       },
       "_origin": "ast",
       "id": "tests_nsstore_application_tests_transferservicetests_nsstore_application_tests_transferservicetests_stockedinmainasync",
-      "community": 45,
-      "community_name": "TestHarness",
+      "community": 58,
+      "community_name": ".TwoDebtsAsync",
       "norm_label": ".stockedinmainasync()"
     },
     {
@@ -15484,8 +15529,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "tests_nsstore_application_tests_transferservicetests_cs_task",
-      "community": 45,
-      "community_name": "TestHarness",
+      "community": 58,
+      "community_name": ".TwoDebtsAsync",
       "norm_label": "task"
     },
     {
@@ -15501,8 +15546,8 @@
       },
       "_origin": "ast",
       "id": "tests_nsstore_application_tests_transferservicetests_nsstore_application_tests_transferservicetests_transferasync",
-      "community": 45,
-      "community_name": "TestHarness",
+      "community": 58,
+      "community_name": ".TwoDebtsAsync",
       "norm_label": ".transferasync()"
     },
     {
@@ -15518,8 +15563,8 @@
       },
       "_origin": "ast",
       "id": "tests_nsstore_application_tests_transferservicetests_nsstore_application_tests_transferservicetests_quantityasync",
-      "community": 45,
-      "community_name": "TestHarness",
+      "community": 58,
+      "community_name": ".TwoDebtsAsync",
       "norm_label": ".quantityasync()"
     },
     {
@@ -15535,8 +15580,8 @@
       },
       "_origin": "ast",
       "id": "tests_nsstore_application_tests_transferservicetests_nsstore_application_tests_transferservicetests_a_transfer_moves_both_rows_and_writes_exactly_two_movements",
-      "community": 45,
-      "community_name": "TestHarness",
+      "community": 58,
+      "community_name": ".TwoDebtsAsync",
       "norm_label": ".a_transfer_moves_both_rows_and_writes_exactly_two_movements()"
     },
     {
@@ -15546,8 +15591,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "tests_nsstore_application_tests_transferservicetests_cs_fact",
-      "community": 45,
-      "community_name": "TestHarness",
+      "community": 58,
+      "community_name": ".TwoDebtsAsync",
       "norm_label": "fact"
     },
     {
@@ -15563,8 +15608,8 @@
       },
       "_origin": "ast",
       "id": "tests_nsstore_application_tests_transferservicetests_nsstore_application_tests_transferservicetests_insufficient_stock_at_the_origin_leaves_the_destination_untouched",
-      "community": 45,
-      "community_name": "TestHarness",
+      "community": 58,
+      "community_name": ".TwoDebtsAsync",
       "norm_label": ".insufficient_stock_at_the_origin_leaves_the_destination_untouched()"
     },
     {
@@ -15580,8 +15625,8 @@
       },
       "_origin": "ast",
       "id": "tests_nsstore_application_tests_transferservicetests_nsstore_application_tests_transferservicetests_transferring_a_branch_to_itself_is_rejected",
-      "community": 45,
-      "community_name": "TestHarness",
+      "community": 58,
+      "community_name": ".TwoDebtsAsync",
       "norm_label": ".transferring_a_branch_to_itself_is_rejected()"
     },
     {
@@ -15597,8 +15642,8 @@
       },
       "_origin": "ast",
       "id": "tests_nsstore_application_tests_transferservicetests_nsstore_application_tests_transferservicetests_a_seller_cannot_dispatch_from_a_branch_that_is_not_theirs",
-      "community": 45,
-      "community_name": "TestHarness",
+      "community": 58,
+      "community_name": ".TwoDebtsAsync",
       "norm_label": ".a_seller_cannot_dispatch_from_a_branch_that_is_not_theirs()"
     },
     {
@@ -15614,8 +15659,8 @@
       },
       "_origin": "ast",
       "id": "tests_nsstore_application_tests_transferservicetests_nsstore_application_tests_transferservicetests_the_same_product_on_several_lines_moves_once",
-      "community": 45,
-      "community_name": "TestHarness",
+      "community": 58,
+      "community_name": ".TwoDebtsAsync",
       "norm_label": ".the_same_product_on_several_lines_moves_once()"
     },
     {
@@ -15631,8 +15676,8 @@
       },
       "_origin": "ast",
       "id": "tests_nsstore_application_tests_transferservicetests_nsstore_application_tests_transferservicetests_transfers_take_their_correlative_from_the_origin_branch",
-      "community": 45,
-      "community_name": "TestHarness",
+      "community": 58,
+      "community_name": ".TwoDebtsAsync",
       "norm_label": ".transfers_take_their_correlative_from_the_origin_branch()"
     },
     {
@@ -15648,8 +15693,8 @@
       },
       "_origin": "ast",
       "id": "tests_nsstore_application_tests_transferservicetests_nsstore_application_tests_transferservicetests_a_branch_list_shows_what_it_sent_and_what_it_received",
-      "community": 45,
-      "community_name": "TestHarness",
+      "community": 58,
+      "community_name": ".TwoDebtsAsync",
       "norm_label": ".a_branch_list_shows_what_it_sent_and_what_it_received()"
     },
     {
@@ -15665,8 +15710,8 @@
       },
       "_origin": "ast",
       "id": "tests_nsstore_application_tests_transferservicetests_nsstore_application_tests_transferservicetests_the_kardex_identity_still_holds_after_a_transfer",
-      "community": 45,
-      "community_name": "TestHarness",
+      "community": 58,
+      "community_name": ".TwoDebtsAsync",
       "norm_label": ".the_kardex_identity_still_holds_after_a_transfer()"
     },
     {
@@ -17313,6 +17358,17 @@
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_nsstore_api_endpoints_productendpoints",
+      "target": "csharp_namespace:15a4edc4a80b6617",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/NsStore.Api/Endpoints/QueryEnum.cs",
+      "source_location": "L3",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "src_nsstore_api_endpoints_queryenum",
       "target": "csharp_namespace:15a4edc4a80b6617",
       "confidence_score": 1.0
     },
@@ -18983,6 +19039,45 @@
       "relation": "imports",
       "context": "import",
       "confidence": "EXTRACTED",
+      "source_file": "src/NsStore.Api/Endpoints/QueryEnum.cs",
+      "source_location": "L1",
+      "weight": 1.0,
+      "metadata": {
+        "using_kind": "namespace",
+        "target_fqn": "NsStore.Application.Common",
+        "scope_kind": "file"
+      },
+      "_origin": "ast",
+      "source": "src_nsstore_api_endpoints_queryenum",
+      "target": "csharp_namespace:7c5554109ae51efb",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/NsStore.Api/Endpoints/QueryEnum.cs",
+      "source_location": "L15",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "src_nsstore_api_endpoints_queryenum",
+      "target": "src_nsstore_api_endpoints_queryenum_nsstore_api_endpoints_queryenum",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "src/NsStore.Api/Endpoints/QueryEnum.cs",
+      "source_location": "L18",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "src_nsstore_api_endpoints_queryenum_nsstore_api_endpoints_queryenum",
+      "target": "src_nsstore_api_endpoints_queryenum_nsstore_api_endpoints_queryenum_parse",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
       "source_file": "src/NsStore.Api/Endpoints/SettingsReportEndpoints.cs",
       "source_location": "L5",
       "weight": 1.0,
@@ -19500,7 +19595,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.8,
       "source_file": "src/NsStore.Api/Endpoints/TradeEndpoints.cs",
-      "source_location": "L83",
+      "source_location": "L88",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_nsstore_api_endpoints_tradeendpoints_nsstore_api_endpoints_saleendpoints_mapsaleendpoints",
@@ -19512,7 +19607,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.8,
       "source_file": "src/NsStore.Api/Endpoints/TradeEndpoints.cs",
-      "source_location": "L99",
+      "source_location": "L104",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_nsstore_api_endpoints_tradeendpoints_nsstore_api_endpoints_saleendpoints_mapsaleendpoints",
@@ -19524,7 +19619,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.8,
       "source_file": "src/NsStore.Api/Endpoints/TradeEndpoints.cs",
-      "source_location": "L92",
+      "source_location": "L97",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_nsstore_api_endpoints_tradeendpoints_nsstore_api_endpoints_saleendpoints_mapsaleendpoints",
@@ -19536,7 +19631,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.8,
       "source_file": "src/NsStore.Api/Endpoints/TradeEndpoints.cs",
-      "source_location": "L88",
+      "source_location": "L93",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_nsstore_api_endpoints_tradeendpoints_nsstore_api_endpoints_saleendpoints_mapsaleendpoints",
@@ -19548,7 +19643,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.8,
       "source_file": "src/NsStore.Api/Endpoints/TradeEndpoints.cs",
-      "source_location": "L95",
+      "source_location": "L100",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_nsstore_api_endpoints_tradeendpoints_nsstore_api_endpoints_saleendpoints_mapsaleendpoints",
@@ -19572,7 +19667,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.8,
       "source_file": "src/NsStore.Api/Endpoints/TradeEndpoints.cs",
-      "source_location": "L66",
+      "source_location": "L68",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_nsstore_api_endpoints_tradeendpoints_nsstore_api_endpoints_saleendpoints_mapsaleendpoints",
@@ -19584,7 +19679,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.8,
       "source_file": "src/NsStore.Api/Endpoints/TradeEndpoints.cs",
-      "source_location": "L78",
+      "source_location": "L80",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_nsstore_api_endpoints_tradeendpoints_nsstore_api_endpoints_saleendpoints_mapsaleendpoints",
@@ -19596,7 +19691,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.8,
       "source_file": "src/NsStore.Api/Endpoints/TradeEndpoints.cs",
-      "source_location": "L106",
+      "source_location": "L111",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_nsstore_api_endpoints_tradeendpoints_nsstore_api_endpoints_saleendpoints_mapsaleendpoints",
@@ -56355,5 +56450,5 @@
       "source_file": "docker-compose.yml"
     }
   ],
-  "built_at_commit": "7921af6a78f4bcd6583166a8c713cf66390c1224"
+  "built_at_commit": "a42fb739a7337e77944e145897733c178b32ab04"
 }

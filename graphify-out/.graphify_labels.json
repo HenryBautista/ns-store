@@ -55,14 +55,14 @@
   "53": "PasswordHasher",
   "54": "ValidationFilter.cs",
   "55": ".MapAuthEndpoints",
-  "56": "AppSetting",
-  "57": "SaleDtos.cs",
+  "56": "Ports.cs",
+  "57": "TradeEndpoints.cs",
   "58": ".TwoDebtsAsync",
   "59": "TokenService",
-  "60": ".IssueTokensAsync",
-  "61": "Branch",
-  "62": "DocumentNumberingTests",
-  "63": "PageRequest",
-  "64": "Ports.cs",
-  "65": "PasswordHasher"
+  "60": "NsStore.Application.Features.Users",
+  "61": "DependencyInjection",
+  "62": "AppClaimTypes.cs",
+  "63": "ErrorCodes.cs",
+  "64": "SaleDtoAssertions",
+  "65": "IEndpointRouteBuilder"
 }

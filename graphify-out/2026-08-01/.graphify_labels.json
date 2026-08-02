@@ -55,20 +55,6 @@
   "53": "PasswordHasher",
   "54": "ValidationFilter.cs",
   "55": ".MapAuthEndpoints",
-  "56": "AppSetting",
-  "57": "SaleDtos.cs",
   "58": ".TwoDebtsAsync",
-  "59": "TokenService",
-  "60": ".IssueTokensAsync",
-  "61": "Branch",
-  "62": "DocumentNumberingTests",
-  "63": "PageRequest",
-  "64": "Ports.cs",
-  "65": "PasswordHasher",
-  "66": ".MapAuthEndpoints",
-  "67": ".ExecuteInTransactionAsync",
-  "68": "DependencyInjection",
-  "69": "LoginRequest",
-  "70": ".ToDto",
-  "71": "SaleDtoAssertions"
+  "59": "TokenService"
 }
