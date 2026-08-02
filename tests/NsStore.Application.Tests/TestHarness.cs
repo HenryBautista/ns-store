@@ -6,6 +6,7 @@ using NsStore.Application.Features.Clients;
 using NsStore.Application.Features.Inventory;
 using NsStore.Application.Features.Products;
 using NsStore.Application.Features.Purchases;
+using NsStore.Application.Features.Reports;
 using NsStore.Application.Features.Sales;
 using NsStore.Application.Features.Settings;
 using NsStore.Domain.Entities;
@@ -47,9 +48,10 @@ public sealed class TestHarness : IDisposable
         // piece most likely to carry an off-by-one.
         DocumentNumbers = new DocumentNumberService(Db);
         Purchases = new PurchaseService(Db, Inventory, Branches, StockLock, DocumentNumbers, CurrentUser, Clock);
-        Sales = new SaleService(Db, Inventory, Branches, StockLock, DocumentNumbers, CurrentUser, Clock);
+        Sales = new SaleService(Db, Inventory, Branches, StockLock, DocumentNumbers, Settings, CurrentUser, Clock);
         Transfers = new TransferService(Db, Inventory, Branches, StockLock, DocumentNumbers, CurrentUser, Clock);
         Clients = new ClientService(Db, Clock);
+        Reports = new ReportService(Db, Sales, Purchases, Inventory, Settings, Clients, CurrentUser, Clock);
 
         Seed();
     }
@@ -72,6 +74,7 @@ public sealed class TestHarness : IDisposable
     public SaleService Sales { get; }
     public TransferService Transfers { get; }
     public ClientService Clients { get; }
+    public ReportService Reports { get; }
 
     public DateOnly Today => DateOnly.FromDateTime(Clock.GetUtcNow().UtcDateTime);
 
@@ -97,7 +100,8 @@ public sealed class TestHarness : IDisposable
         Db.AppSettings.AddRange(
             new AppSetting { Key = AppSettingKeys.VatRate, Value = "16" },
             new AppSetting { Key = AppSettingKeys.DefaultMarginPct, Value = "30" },
-            new AppSetting { Key = AppSettingKeys.Currency, Value = "BOB" });
+            new AppSetting { Key = AppSettingKeys.Currency, Value = "BOB" },
+            new AppSetting { Key = AppSettingKeys.OverdueDays, Value = "15" });
 
         Db.Suppliers.Add(new Supplier { Id = 1, Name = "Distribuidora Central" });
         Db.Clients.Add(new Client { Id = 1, Type = ClientType.Individual, Name = "Juan", LastName = "Perez" });

@@ -24,6 +24,7 @@ public interface IAppDbContext
     DbSet<Sale> Sales { get; }
     DbSet<SaleItem> SaleItems { get; }
     DbSet<Payment> Payments { get; }
+    DbSet<PaymentReceipt> PaymentReceipts { get; }
     DbSet<Order> Orders { get; }
     DbSet<Quote> Quotes { get; }
     DbSet<StockTransfer> StockTransfers { get; }

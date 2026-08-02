@@ -23,6 +23,7 @@ public class DocumentNumberService(AppDbContext db) : IDocumentNumberService
             DocumentKind.Sale => "sale_sequence",
             DocumentKind.Purchase => "purchase_sequence",
             DocumentKind.Transfer => "transfer_sequence",
+            DocumentKind.Receipt => "receipt_sequence",
             _ => throw new ArgumentOutOfRangeException(nameof(kind), kind, "Unknown document kind")
         };
 
@@ -51,6 +52,7 @@ public class DocumentNumberService(AppDbContext db) : IDocumentNumberService
         {
             DocumentKind.Sale => ++branch.SaleSequence,
             DocumentKind.Purchase => ++branch.PurchaseSequence,
+            DocumentKind.Receipt => ++branch.ReceiptSequence,
             _ => ++branch.TransferSequence
         };
 

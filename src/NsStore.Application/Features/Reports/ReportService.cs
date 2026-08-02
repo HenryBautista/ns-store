@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using NsStore.Application.Common;
 using NsStore.Application.Common.Interfaces;
 using NsStore.Application.Common.Models;
+using NsStore.Application.Features.Clients;
 using NsStore.Application.Features.Inventory;
 using NsStore.Application.Features.Purchases;
 using NsStore.Application.Features.Sales;
@@ -16,6 +17,7 @@ public class ReportService(
     PurchaseService purchases,
     InventoryService inventory,
     SettingsService settings,
+    ClientService clients,
     ICurrentUser currentUser,
     TimeProvider clock)
 {
@@ -32,14 +34,22 @@ public class ReportService(
             new SaleQuery(search, range.From, range.To, null, 1, ReportPageSize, branchId),
             cancellationToken);
 
+        // Totals come from the whole filtered set, not from page.Items: the rows are capped at
+        // ReportPageSize, and a sheet that says "347 sales" over the sum of 200 of them is worse
+        // than one that says nothing.
+        var totals = await SaleTotalsAsync(
+            new SaleQuery(search, range.From, range.To, null, 1, ReportPageSize, branchId),
+            debtsOnly: false,
+            cancellationToken);
+
         return new SalesReportDto(
             range.From,
             range.To,
             page.Total,
-            page.Items.Sum(s => s.TotalQuantity),
-            page.Items.Sum(s => s.TotalAmount),
-            page.Items.Sum(s => s.TotalPaid),
-            page.Items.Sum(s => s.Balance),
+            totals.Quantity,
+            totals.Amount,
+            totals.Paid,
+            totals.Balance,
             page.Items);
     }
 
@@ -53,12 +63,42 @@ public class ReportService(
             new PurchaseQuery(search, range.From, range.To, 1, ReportPageSize, branchId),
             cancellationToken);
 
+        // Same reason as the sales report: the rows are capped, the footer must not be.
+        var scoped = currentUser.ResolveScopedBranch(branchId);
+        var all = db.Purchases.AsNoTracking().AsQueryable();
+
+        if (!string.IsNullOrWhiteSpace(search))
+        {
+            var pattern = $"%{search.Trim().ToLower()}%";
+            all = all.Where(p => EF.Functions.Like(p.Supplier.Name.ToLower(), pattern));
+        }
+
+        if (range.From is { } purchasesFrom)
+        {
+            all = all.Where(p => p.PurchaseDate >= purchasesFrom);
+        }
+
+        if (range.To is { } purchasesTo)
+        {
+            all = all.Where(p => p.PurchaseDate <= purchasesTo);
+        }
+
+        if (scoped is { } scopedBranch)
+        {
+            all = all.Where(p => p.BranchId == scopedBranch);
+        }
+
+        var totals = await all
+            .GroupBy(_ => 1)
+            .Select(g => new { Quantity = g.Sum(p => p.TotalQuantity), Amount = g.Sum(p => p.TotalAmount) })
+            .FirstOrDefaultAsync(cancellationToken);
+
         return new PurchasesReportDto(
             range.From,
             range.To,
             page.Total,
-            page.Items.Sum(p => p.TotalQuantity),
-            page.Items.Sum(p => p.TotalAmount),
+            totals?.Quantity ?? 0,
+            totals?.Amount ?? 0m,
             page.Items);
     }
 
@@ -79,7 +119,155 @@ public class ReportService(
             new SaleQuery(search, null, null, null, 1, ReportPageSize, branchId),
             cancellationToken);
 
-        return new DebtsReportDto(page.Total, page.Items.Sum(s => s.Balance), page.Items);
+        var totals = await SaleTotalsAsync(
+            new SaleQuery(search, null, null, null, 1, ReportPageSize, branchId),
+            debtsOnly: true,
+            cancellationToken);
+
+        return new DebtsReportDto(page.Total, totals.Balance, page.Items);
+    }
+
+    /// <summary>
+    /// Sums the filtered set server-side, independent of the row cap the sheet prints.
+    /// </summary>
+    /// <remarks>
+    /// Reimplements the filter rather than reusing <c>SaleService.Filter</c>, which is private and
+    /// paging-shaped. Keep the two in step: a divergence shows up as a footer that disagrees with
+    /// the rows above it.
+    /// </remarks>
+    private async Task<(int Quantity, decimal Amount, decimal Paid, decimal Balance)> SaleTotalsAsync(
+        SaleQuery query,
+        bool debtsOnly,
+        CancellationToken cancellationToken)
+    {
+        var scoped = currentUser.ResolveScopedBranch(query.BranchId);
+        var sales = db.Sales.AsNoTracking().AsQueryable();
+
+        if (!string.IsNullOrWhiteSpace(query.Search))
+        {
+            var pattern = $"%{query.Search.Trim().ToLower()}%";
+            sales = sales.Where(s =>
+                EF.Functions.Like(s.Client.Name.ToLower(), pattern) ||
+                (s.Client.LastName != null && EF.Functions.Like(s.Client.LastName.ToLower(), pattern)) ||
+                (s.Client.MotherLastName != null && EF.Functions.Like(s.Client.MotherLastName.ToLower(), pattern)));
+        }
+
+        if (query.From is { } from)
+        {
+            sales = sales.Where(s => s.SaleDate >= from);
+        }
+
+        if (query.To is { } to)
+        {
+            sales = sales.Where(s => s.SaleDate <= to);
+        }
+
+        if (scoped is { } branchId)
+        {
+            sales = sales.Where(s => s.BranchId == branchId);
+        }
+
+        if (debtsOnly)
+        {
+            sales = sales.Where(s => s.PaymentStatus == PaymentStatus.Credit && s.TotalPaid < s.TotalAmount);
+        }
+
+        var totals = await sales
+            .GroupBy(_ => 1)
+            .Select(g => new
+            {
+                Quantity = g.Sum(s => s.TotalQuantity),
+                Amount = g.Sum(s => s.TotalAmount),
+                Paid = g.Sum(s => s.TotalPaid)
+            })
+            .FirstOrDefaultAsync(cancellationToken);
+
+        return totals is null
+            ? (0, 0m, 0m, 0m)
+            : (totals.Quantity, totals.Amount, totals.Paid, totals.Amount - totals.Paid);
+    }
+
+    /// <summary>
+    /// Everything one client still owes, with the instalments already credited to each sale.
+    /// </summary>
+    /// <remarks>
+    /// Filters on the balance rather than <c>PaymentStatus == Credit</c> as the debts list does: if
+    /// a sale ever ended up flagged paid while still carrying a balance, the customer's own
+    /// statement is the last place that should quietly hide it.
+    /// </remarks>
+    public async Task<ClientStatementDto> GetClientStatementAsync(long clientId, CancellationToken cancellationToken = default)
+    {
+        var client = await clients.GetAsync(clientId, cancellationToken);
+        var overdueDays = (await settings.GetAsync(cancellationToken)).OverdueDays;
+        var today = DateOnly.FromDateTime(clock.GetUtcNow().UtcDateTime);
+        var branchId = currentUser.ResolveScopedBranch();
+
+        var rows = await db.Sales.AsNoTracking()
+            .Where(s => s.ClientId == clientId
+                && s.TotalPaid < s.TotalAmount
+                && (branchId == null || s.BranchId == branchId))
+            .OrderBy(s => s.SaleDate)
+            .ThenBy(s => s.Id)
+            .Select(s => new
+            {
+                s.Id,
+                s.Number,
+                BranchCode = s.Branch.Code,
+                s.SaleDate,
+                s.InvoiceType,
+                s.TotalAmount,
+                s.TotalPaid,
+                Payments = s.Payments
+                    .OrderBy(p => p.PaymentDate)
+                    .ThenBy(p => p.Id)
+                    .Select(p => new PaymentDto(
+                        p.Id,
+                        p.SaleId,
+                        p.BranchId,
+                        p.Amount,
+                        p.PaymentDate,
+                        p.CreatedAt,
+                        db.Users.Where(u => u.Id == p.CreatedBy).Select(u => u.Username).FirstOrDefault()))
+                    .ToList()
+            })
+            .ToListAsync(cancellationToken);
+
+        var lastPayment = rows
+            .SelectMany(r => r.Payments)
+            .Select(p => (DateOnly?)p.PaymentDate)
+            .DefaultIfEmpty(null)
+            .Max();
+
+        var sales = rows.Select(r =>
+        {
+            var since = r.Payments.Count > 0 ? r.Payments.Max(p => p.PaymentDate) : r.SaleDate;
+            var days = Math.Max(0, today.DayNumber - since.DayNumber);
+
+            return new ClientStatementSaleDto(
+                r.Id,
+                r.Number,
+                r.BranchCode,
+                r.SaleDate,
+                r.InvoiceType,
+                r.TotalAmount,
+                r.TotalPaid,
+                r.TotalAmount - r.TotalPaid,
+                days,
+                days > overdueDays,
+                r.Payments);
+        }).ToList();
+
+        return new ClientStatementDto(
+            client,
+            today,
+            overdueDays,
+            sales.Count,
+            sales.Sum(s => s.TotalAmount),
+            sales.Sum(s => s.TotalPaid),
+            sales.Sum(s => s.Balance),
+            sales.Count > 0 ? sales.Min(s => s.SaleDate) : null,
+            lastPayment,
+            sales);
     }
 
     /// <summary>Prices are global; only the quantity column is branch-specific.</summary>

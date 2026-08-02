@@ -35,6 +35,8 @@ public class Branch : AuditableEntity
 
     public long TransferSequence { get; set; }
 
+    public long ReceiptSequence { get; set; }
+
     /// <summary>The single definition of the printed folio format, so it is unit-testable.</summary>
     public string FormatDocumentNumber(long sequence) => $"{Code}-{sequence:D6}";
 }

@@ -91,12 +91,47 @@ public class SaleItem
     public decimal Subtotal { get; set; }
 }
 
+/// <summary>
+/// One act of collection: the customer hands over an amount, which is spread across whichever of
+/// their sales still carry a balance. Exists so the paper the customer walks away with has a stable
+/// identity — without it a collection is only a scatter of <see cref="Payment"/> rows that nothing
+/// ties together, and a lost receipt could never be reissued.
+/// </summary>
+public class PaymentReceipt : AuditableEntity
+{
+    public long ClientId { get; set; }
+    public Client Client { get; set; } = null!;
+
+    /// <summary>The branch whose till took the money — not necessarily the one that sold.</summary>
+    public long BranchId { get; set; }
+
+    public Branch Branch { get; set; } = null!;
+
+    /// <summary>Per-branch correlative, same mechanism as a sale's.</summary>
+    public long BranchSequence { get; set; }
+
+    /// <summary>The rendered folio, e.g. <c>MAIN-000012</c>. Stored, so renaming a branch never rewrites it.</summary>
+    public string Number { get; set; } = null!;
+
+    public DateOnly ReceiptDate { get; set; }
+    public decimal TotalAmount { get; set; }
+    public List<Payment> Payments { get; set; } = [];
+}
+
 /// <summary>Installment ("abono") against a credit sale — traceability the legacy lacked.</summary>
 public class Payment
 {
     public long Id { get; set; }
     public long SaleId { get; set; }
     public Sale Sale { get; set; } = null!;
+
+    /// <summary>
+    /// The collection this instalment belonged to. Nullable: payments taken one sale at a time
+    /// (the POS initial payment, the per-sale collect screen) issue no receipt.
+    /// </summary>
+    public long? ReceiptId { get; set; }
+
+    public PaymentReceipt? Receipt { get; set; }
 
     /// <summary>The branch that received the money — the till it has to balance against.</summary>
     public long BranchId { get; set; }

@@ -225,4 +225,76 @@ public class SaleServiceTests
         Assert.Equal(4, row.TotalSold);
         Assert.Equal(6, row.Available);
     }
+
+    [Fact]
+    public async Task Debts_by_client_aggregate_every_unpaid_sale_into_one_row()
+    {
+        using var harness = new TestHarness();
+        var productId = await ReadyProductAsync(harness, quantity: 20);
+
+        await harness.Sales.CreateAsync(new CreateSaleRequest(
+            harness.Today, 1, InvoiceType.WithoutInvoice, PaymentStatus.Credit, 0m,
+            [new SaleItemRequest(productId, 1)]));
+
+        // 130 of 260, not an arbitrary part-payment: on SQLite the ck_sales_total_paid_within_total
+        // check compares decimals as TEXT (see DemoDataSeeder), so '30' > '260' would reject a
+        // perfectly valid sale. Same-width operands keep the string order honest.
+        await harness.Sales.CreateAsync(new CreateSaleRequest(
+            harness.Today, 1, InvoiceType.WithoutInvoice, PaymentStatus.Credit, 130m,
+            [new SaleItemRequest(productId, 2)]));
+
+        // Settled: must not pull the client's row, nor inflate its totals.
+        await harness.Sales.CreateAsync(new CreateSaleRequest(
+            harness.Today, 1, InvoiceType.WithoutInvoice, PaymentStatus.Paid, null,
+            [new SaleItemRequest(productId, 1)]));
+
+        var debts = await harness.Sales.ListDebtsByClientAsync(new ClientDebtQuery(null));
+
+        var row = Assert.Single(debts.Items);
+        Assert.Equal(1, row.ClientId);
+        Assert.Equal(2, row.SaleCount);
+        Assert.Equal(390m, row.TotalAmount);
+        Assert.Equal(130m, row.TotalPaid);
+        Assert.Equal(260m, row.Balance);
+    }
+
+    [Fact]
+    public async Task An_instalment_restarts_the_clock_on_an_old_debt()
+    {
+        using var harness = new TestHarness();
+        var productId = await ReadyProductAsync(harness, quantity: 20);
+
+        var oldSale = await harness.Sales.CreateAsync(new CreateSaleRequest(
+            harness.Today.AddDays(-60), 1, InvoiceType.WithoutInvoice, PaymentStatus.Credit, 0m,
+            [new SaleItemRequest(productId, 1)]));
+
+        var before = await harness.Sales.ListDebtsByClientAsync(new ClientDebtQuery(null));
+        Assert.Equal(60, before.Items[0].DaysOutstanding);
+        Assert.True(before.Items[0].IsOverdue);
+
+        await harness.Sales.RegisterPaymentAsync(oldSale.Id, new RegisterPaymentRequest(10m, harness.Today));
+
+        var after = await harness.Sales.ListDebtsByClientAsync(new ClientDebtQuery(null));
+        Assert.Equal(0, after.Items[0].DaysOutstanding);
+        Assert.False(after.Items[0].IsOverdue);
+        Assert.Equal(harness.Today, after.Items[0].LastPaymentDate);
+    }
+
+    [Fact]
+    public async Task Debts_by_client_can_be_narrowed_to_the_overdue_side_of_the_due_date()
+    {
+        using var harness = new TestHarness();
+        var productId = await ReadyProductAsync(harness, quantity: 20);
+
+        // Seeded overdue_days is 15, so 40 days old is overdue and today's is not.
+        await harness.Sales.CreateAsync(new CreateSaleRequest(
+            harness.Today.AddDays(-40), 1, InvoiceType.WithoutInvoice, PaymentStatus.Credit, 0m,
+            [new SaleItemRequest(productId, 1)]));
+
+        var overdue = await harness.Sales.ListDebtsByClientAsync(new ClientDebtQuery(null, ClientDebtFilter.Overdue));
+        Assert.Single(overdue.Items);
+
+        var current = await harness.Sales.ListDebtsByClientAsync(new ClientDebtQuery(null, ClientDebtFilter.Current));
+        Assert.Empty(current.Items);
+    }
 }

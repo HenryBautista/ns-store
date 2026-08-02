@@ -75,7 +75,8 @@ public class DatabaseInitializer(
         {
             [AppSettingKeys.VatRate] = "16",
             [AppSettingKeys.DefaultMarginPct] = "30",
-            [AppSettingKeys.Currency] = "BOB"
+            [AppSettingKeys.Currency] = "BOB",
+            [AppSettingKeys.OverdueDays] = "15"
         };
 
         foreach (var (key, value) in defaults.Where(d => !existing.Contains(d.Key)))

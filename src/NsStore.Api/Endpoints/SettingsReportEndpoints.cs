@@ -61,6 +61,10 @@ public static class ReportEndpoints
                 Results.Ok(await reports.GetWarrantyNoteAsync(saleId, ct)))
             .WithSummary("Warranty note data for a sale (standard or credit variant)");
 
+        group.MapGet("/client-statement/{clientId:long}", async (long clientId, ReportService reports, CancellationToken ct) =>
+                Results.Ok(await reports.GetClientStatementAsync(clientId, ct)))
+            .WithSummary("Statement of account for one client: unpaid sales and the instalments credited to them");
+
         group.MapGet("/order/{id:long}", async (long id, OrderService orders, CancellationToken ct) =>
             Results.Ok(await orders.GetAsync(id, ct)));
 
