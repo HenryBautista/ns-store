@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using NsStore.Application.Common;
 
 namespace NsStore.Application.Common.Models;
 
@@ -21,6 +22,13 @@ public record PageRequest(string? Search = null, int Page = 1, int PageSize = 25
     public int Skip => (NormalizedPage - 1) * NormalizedPageSize;
 
     public string? TrimmedSearch => string.IsNullOrWhiteSpace(Search) ? null : Search.Trim();
+
+    /// <summary>
+    /// The LIKE pattern every collection filters with. Folded to lower case and stripped of accents
+    /// so it lines up with <see cref="SearchText.Unaccent"/> applied to the column.
+    /// </summary>
+    public string? SearchPattern =>
+        TrimmedSearch is { } search ? $"%{SearchText.Normalize(search)}%" : null;
 }
 
 public static class QueryableExtensions

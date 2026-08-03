@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using NsStore.Application.Common;
 using NsStore.Application.Common.Interfaces;
 using NsStore.Application.Common.Models;
@@ -18,12 +18,11 @@ public class ProductService(IAppDbContext db, SettingsService settingsService, I
     {
         var scope = currentUser.ResolveReadableBranch(branchId);
         var query = db.Products.AsNoTracking().AsQueryable();
-        if (request.TrimmedSearch is { } search)
+        if (request.SearchPattern is { } pattern)
         {
-            var pattern = $"%{search.ToLower()}%";
             query = query.Where(p =>
-                EF.Functions.Like(p.Name.ToLower(), pattern) ||
-                (p.PartNumber != null && EF.Functions.Like(p.PartNumber.ToLower(), pattern)));
+                EF.Functions.Like(SearchText.Unaccent(p.Name).ToLower(), pattern) ||
+                (p.PartNumber != null && EF.Functions.Like(SearchText.Unaccent(p.PartNumber).ToLower(), pattern)));
         }
 
         return await query

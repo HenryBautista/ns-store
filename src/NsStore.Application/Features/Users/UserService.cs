@@ -13,14 +13,12 @@ public class UserService(IAppDbContext db, IPasswordHasher passwordHasher, ICurr
     public async Task<PagedResult<UserDto>> ListAsync(PageRequest request, CancellationToken cancellationToken = default)
     {
         var query = db.Users.AsNoTracking().Include(u => u.Branch).AsQueryable();
-        var search = request.TrimmedSearch;
-        if (search is not null)
+        if (request.SearchPattern is { } pattern)
         {
-            var pattern = $"%{search.ToLower()}%";
             query = query.Where(u =>
-                EF.Functions.Like(u.Username.ToLower(), pattern) ||
-                EF.Functions.Like(u.FirstName.ToLower(), pattern) ||
-                EF.Functions.Like(u.LastName.ToLower(), pattern));
+                EF.Functions.Like(SearchText.Unaccent(u.Username).ToLower(), pattern) ||
+                EF.Functions.Like(SearchText.Unaccent(u.FirstName).ToLower(), pattern) ||
+                EF.Functions.Like(SearchText.Unaccent(u.LastName).ToLower(), pattern));
         }
 
         var page = await query

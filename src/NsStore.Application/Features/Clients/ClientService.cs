@@ -13,15 +13,14 @@ public class ClientService(IAppDbContext db, TimeProvider clock)
     public async Task<PagedResult<ClientDto>> ListAsync(PageRequest request, CancellationToken cancellationToken = default)
     {
         var query = db.Clients.AsNoTracking().AsQueryable();
-        if (request.TrimmedSearch is { } search)
+        if (request.SearchPattern is { } pattern)
         {
-            var pattern = $"%{search.ToLower()}%";
             query = query.Where(c =>
-                EF.Functions.Like(c.Name.ToLower(), pattern) ||
-                (c.LastName != null && EF.Functions.Like(c.LastName.ToLower(), pattern)) ||
-                (c.MotherLastName != null && EF.Functions.Like(c.MotherLastName.ToLower(), pattern)) ||
-                (c.Ci != null && EF.Functions.Like(c.Ci.ToLower(), pattern)) ||
-                (c.Nit != null && EF.Functions.Like(c.Nit.ToLower(), pattern)));
+                EF.Functions.Like(SearchText.Unaccent(c.Name).ToLower(), pattern) ||
+                (c.LastName != null && EF.Functions.Like(SearchText.Unaccent(c.LastName).ToLower(), pattern)) ||
+                (c.MotherLastName != null && EF.Functions.Like(SearchText.Unaccent(c.MotherLastName).ToLower(), pattern)) ||
+                (c.Ci != null && EF.Functions.Like(SearchText.Unaccent(c.Ci).ToLower(), pattern)) ||
+                (c.Nit != null && EF.Functions.Like(SearchText.Unaccent(c.Nit).ToLower(), pattern)));
         }
 
         var page = await query

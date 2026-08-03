@@ -20,9 +20,9 @@ public class InventoryService(
         var request = query.ToPageRequest();
 
         var products = db.Products.AsNoTracking().AsQueryable();
-        if (request.TrimmedSearch is { } search)
+        if (request.SearchPattern is { } pattern)
         {
-            products = products.Where(p => EF.Functions.Like(p.Name.ToLower(), $"%{search.ToLower()}%"));
+            products = products.Where(p => EF.Functions.Like(SearchText.Unaccent(p.Name).ToLower(), pattern));
         }
 
         return await ProjectStockAsync(products.OrderBy(p => p.Name), branchId, request, cancellationToken);
@@ -76,9 +76,16 @@ public class InventoryService(
                 p.Id,
                 p.Name,
                 p.PartNumber,
+                p.IsSerialized,
                 TrademarkName = p.Trademark != null ? p.Trademark.Name : null,
                 CategoryName = p.Category != null ? p.Category.Name : null,
                 Quantity = p.StockLevels.Where(s => s.BranchId == branchId).Sum(s => (int?)s.Quantity) ?? 0,
+                // How much of that quantity the branch can put a serial to. Same correlated-subquery
+                // shape as LastCost, so the page still costs one round trip.
+                SerializedQuantity = db.ProductSerials
+                    .Count(s => s.ProductId == p.Id
+                        && s.BranchId == branchId
+                        && s.Status == ProductSerialStatus.InStock),
                 // FirstOrDefault rather than Max: the pair is unique so it is the same value, and
                 // SQLite refuses to aggregate DateTimeOffset, which would break the test suite.
                 UpdatedAt = p.StockLevels.Where(s => s.BranchId == branchId)
@@ -110,7 +117,9 @@ public class InventoryService(
                 r.Quantity,
                 r.LastCost,
                 decimal.Round(r.Quantity * (r.LastCost ?? 0m), 2, MidpointRounding.AwayFromZero),
-                r.UpdatedAt))
+                r.UpdatedAt,
+                r.IsSerialized,
+                r.SerializedQuantity))
             .ToList();
 
         return new PagedResult<StockLevelDto>(items, page.Page, page.PageSize, page.Total);
@@ -222,9 +231,9 @@ public class InventoryService(
         var request = query.ToPageRequest();
 
         var products = db.Products.AsNoTracking().AsQueryable();
-        if (request.TrimmedSearch is { } search)
+        if (request.SearchPattern is { } pattern)
         {
-            products = products.Where(p => EF.Functions.Like(p.Name.ToLower(), $"%{search.ToLower()}%"));
+            products = products.Where(p => EF.Functions.Like(SearchText.Unaccent(p.Name).ToLower(), pattern));
         }
 
         return await products

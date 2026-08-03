@@ -372,6 +372,41 @@ public class SerializedInventoryTests
         Assert.Equal(ErrorCodes.SerialCountMismatch, exception.ErrorCode);
     }
 
+    /* ------------------------------------------------------------- the stock list */
+
+    /// <summary>
+    /// The stock row has to say how much of what it holds can be named, or the screen cannot offer
+    /// the serials without a call per product — and cannot tell a tracked product mid-adoption from
+    /// an untracked one.
+    /// </summary>
+    [Fact]
+    public async Task A_stock_row_reports_how_many_of_its_units_carry_a_serial()
+    {
+        using var harness = new TestHarness();
+        var tracked = await harness.CreateProductAsync();
+        var plain = await harness.CreateProductAsync("Cable HDMI");
+
+        // One unit was on the shelf before tracking began, then the shop adopts it and buys two
+        // named ones: mid-adoption, which is exactly when the two numbers differ.
+        await BuyAsync(harness, tracked, 1);
+        var product = await harness.Products.GetAsync(tracked);
+        await harness.Products.UpdateAsync(tracked, new ProductRequest(
+            product.Name, product.PartNumber, product.Description, IsSerialized: true, null, null, null));
+        await BuyAsync(harness, tracked, 2, "SN-1", "SN-2");
+        await BuyAsync(harness, plain, 5);
+
+        var rows = (await harness.Inventory.ListStockAsync(new StockQuery(null))).Items;
+
+        var trackedRow = Assert.Single(rows, r => r.ProductId == tracked);
+        Assert.True(trackedRow.IsSerialized);
+        Assert.Equal(3, trackedRow.Quantity);
+        Assert.Equal(2, trackedRow.SerializedQuantity);
+
+        var plainRow = Assert.Single(rows, r => r.ProductId == plain);
+        Assert.False(plainRow.IsSerialized);
+        Assert.Equal(0, plainRow.SerializedQuantity);
+    }
+
     /* ------------------------------------------------------------ invariant */
 
     [Fact]

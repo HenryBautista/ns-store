@@ -1,5 +1,6 @@
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
+using NsStore.Application.Common;
 using NsStore.Application.Common.Interfaces;
 using NsStore.Application.Features.Branches;
 using NsStore.Application.Features.Clients;
@@ -23,13 +24,27 @@ public sealed class TestHarness : IDisposable
 {
     private readonly SqliteConnection _connection;
 
-    public TestHarness(long userId = 1, UserRole role = UserRole.Admin, long branchId = MainBranchId)
+    /// <param name="now">
+    /// Overrides the fixed clock. Only the timezone tests need it: the default sits at midday UTC,
+    /// which is the same calendar day in Bolivia, so every other test is unaffected by the offset.
+    /// </param>
+    public TestHarness(
+        long userId = 1,
+        UserRole role = UserRole.Admin,
+        long branchId = MainBranchId,
+        DateTimeOffset? now = null)
     {
         CurrentUser = new FakeCurrentUser(userId, role, branchId);
-        Clock = new FakeTimeProvider(new DateTimeOffset(2026, 7, 24, 12, 0, 0, TimeSpan.Zero));
+        Clock = new FakeTimeProvider(now ?? new DateTimeOffset(2026, 7, 24, 12, 0, 0, TimeSpan.Zero));
 
         _connection = new SqliteConnection("DataSource=:memory:");
         _connection.Open();
+
+        // Postgres gets unaccent() from an extension; SQLite gets it from here. Registering it means
+        // the search tests run the same predicate production runs, rather than a provider fork.
+        _connection.CreateFunction<string?, string?>(
+            "unaccent",
+            value => value is null ? null : SearchText.StripDiacritics(value));
 
         var options = new DbContextOptionsBuilder<AppDbContext>()
             .UseSqlite(_connection)
@@ -78,7 +93,8 @@ public sealed class TestHarness : IDisposable
     public ClientService Clients { get; }
     public ReportService Reports { get; }
 
-    public DateOnly Today => DateOnly.FromDateTime(Clock.GetUtcNow().UtcDateTime);
+    /// <summary>The day at the counter, which is what every date the business stores means.</summary>
+    public DateOnly Today => Clock.Today();
 
     private void Seed()
     {

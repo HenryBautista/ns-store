@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using NsStore.Application.Common;
 using NsStore.Application.Common.Interfaces;
 using NsStore.Domain.Entities;
 
@@ -34,6 +35,15 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
+
+        // Accent-insensitive search. The extension is a Postgres annotation the migration turns into
+        // CREATE EXTENSION; the Sqlite provider ignores it and the test harness registers a function
+        // of the same name, so one predicate serves both providers.
+        modelBuilder.HasPostgresExtension("unaccent");
+        modelBuilder
+            .HasDbFunction(typeof(SearchText).GetMethod(nameof(SearchText.Unaccent), [typeof(string)])!)
+            .HasName("unaccent");
+
         base.OnModelCreating(modelBuilder);
     }
 

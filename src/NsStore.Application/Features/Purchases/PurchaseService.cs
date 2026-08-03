@@ -32,9 +32,9 @@ public class PurchaseService(
             purchases = purchases.Where(p => p.BranchId == scoped);
         }
 
-        if (request.TrimmedSearch is { } search)
+        if (request.SearchPattern is { } pattern)
         {
-            purchases = purchases.Where(p => EF.Functions.Like(p.Supplier.Name.ToLower(), $"%{search.ToLower()}%"));
+            purchases = purchases.Where(p => EF.Functions.Like(SearchText.Unaccent(p.Supplier.Name).ToLower(), pattern));
         }
 
         if (query.From is { } from)

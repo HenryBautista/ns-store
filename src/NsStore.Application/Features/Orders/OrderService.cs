@@ -15,12 +15,11 @@ public class OrderService(IAppDbContext db, ICurrentUser currentUser, TimeProvid
         var request = new PageRequest(query.Search, query.Page, query.PageSize);
         var orders = db.Orders.AsNoTracking().AsQueryable();
 
-        if (request.TrimmedSearch is { } search)
+        if (request.SearchPattern is { } pattern)
         {
-            var pattern = $"%{search.ToLower()}%";
             orders = orders.Where(o =>
-                EF.Functions.Like(o.ClientName.ToLower(), pattern) ||
-                EF.Functions.Like(o.ProductDescription.ToLower(), pattern));
+                EF.Functions.Like(SearchText.Unaccent(o.ClientName).ToLower(), pattern) ||
+                EF.Functions.Like(SearchText.Unaccent(o.ProductDescription).ToLower(), pattern));
         }
 
         if (query.Date is { } date)

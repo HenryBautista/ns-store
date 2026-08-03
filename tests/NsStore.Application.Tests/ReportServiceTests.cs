@@ -101,6 +101,30 @@ public class ReportServiceTests
         Assert.Null(statement.OldestSaleDate);
     }
 
+    /// <summary>
+    /// 01:30 UTC is 21:30 the previous evening in Bolivia — the window where the shop is still open
+    /// but UTC has already turned the page. The dashboard has to answer for the counter's day, not
+    /// the server's, or the last hours of every day's takings vanish from it.
+    /// </summary>
+    [Fact]
+    public async Task An_evening_sale_still_counts_as_todays_on_the_dashboard()
+    {
+        using var harness = new TestHarness(now: new DateTimeOffset(2026, 7, 24, 1, 30, 0, TimeSpan.Zero));
+        var productId = await ReadyProductAsync(harness);
+
+        Assert.Equal(new DateOnly(2026, 7, 23), harness.Today);
+
+        await harness.Sales.CreateAsync(new CreateSaleRequest(
+            harness.Today, 1, InvoiceType.WithoutInvoice, PaymentStatus.Paid, null,
+            [new SaleItemRequest(productId, 1)]));
+
+        var dashboard = await harness.Reports.GetDashboardAsync();
+
+        Assert.Equal(new DateOnly(2026, 7, 23), dashboard.Date);
+        Assert.Equal(1, dashboard.SalesTodayCount);
+        Assert.Equal(100m, dashboard.SalesTodayAmount);
+    }
+
     [Fact]
     public async Task Report_totals_cover_the_whole_filtered_set_not_just_the_printed_page()
     {
