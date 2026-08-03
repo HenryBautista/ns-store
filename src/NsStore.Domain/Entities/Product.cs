@@ -8,7 +8,12 @@ public class Product : AuditableEntity
     public string Name { get; set; } = null!;
     public string? PartNumber { get; set; }
     public string? Description { get; set; }
-    public string? SerialNumber { get; set; }
+
+    /// <summary>
+    /// Opt-in per-unit tracking. Turning it on never demands a back-fill of what is already in
+    /// stock — those units simply stay unidentified and sell freely until they rotate out.
+    /// </summary>
+    public bool IsSerialized { get; set; }
 
     public long? TrademarkId { get; set; }
     public Trademark? Trademark { get; set; }
@@ -25,6 +30,9 @@ public class Product : AuditableEntity
 
     /// <summary>One row per branch. A projection that reads a quantity must say which branch.</summary>
     public List<StockLevel> StockLevels { get; set; } = [];
+
+    /// <summary>Every unit ever tracked, whatever its status. Empty unless <see cref="IsSerialized"/>.</summary>
+    public List<ProductSerial> Serials { get; set; } = [];
 
     public decimal PriceFor(InvoiceType invoiceType) =>
         invoiceType == InvoiceType.WithInvoice ? PriceWithInvoice : PriceWithoutInvoice;

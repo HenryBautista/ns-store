@@ -108,11 +108,23 @@ public sealed class TestHarness : IDisposable
         Db.SaveChanges();
     }
 
-    public async Task<long> CreateProductAsync(string name = "SSD 1TB")
+    public async Task<long> CreateProductAsync(string name = "SSD 1TB", bool serialized = false)
     {
-        var product = await Products.CreateAsync(new ProductRequest(name, null, null, null, null, null, null));
+        var product = await Products.CreateAsync(
+            new ProductRequest(name, null, null, serialized, null, null, null));
         return product.Id;
     }
+
+    /// <summary>How many units the branch holds that carry a serial — the <c>S</c> in the pick rule.</summary>
+    public Task<int> SerialCountAsync(long productId, long branchId, ProductSerialStatus status = ProductSerialStatus.InStock) =>
+        Db.ProductSerials.CountAsync(s => s.ProductId == productId && s.BranchId == branchId && s.Status == status);
+
+    public async Task<string[]> InStockSerialsAsync(long productId, long branchId) =>
+        await Db.ProductSerials
+            .Where(s => s.ProductId == productId && s.BranchId == branchId && s.Status == ProductSerialStatus.InStock)
+            .OrderBy(s => s.SerialNumber)
+            .Select(s => s.SerialNumber)
+            .ToArrayAsync();
 
     public void Dispose()
     {

@@ -89,6 +89,12 @@ public class SaleItem
     public decimal UnitPrice { get; set; }
 
     public decimal Subtotal { get; set; }
+
+    /// <summary>
+    /// The individual units that left on this line. Empty for untracked products, and for tracked
+    /// ones that still hold stock counted before tracking was switched on.
+    /// </summary>
+    public List<ProductSerial> Serials { get; set; } = [];
 }
 
 /// <summary>

@@ -46,3 +46,29 @@ public enum MovementType
     TransferIn,
     TransferOut
 }
+
+/// <summary>
+/// Lifecycle of one physical unit. <c>Removed</c> is terminal like <c>Sold</c>: a written-off unit
+/// keeps its number so it can never be re-registered.
+/// </summary>
+public enum ProductSerialStatus
+{
+    InStock,
+    Sold,
+    Removed
+}
+
+/// <summary>
+/// What happened to a unit. Kept apart from <see cref="MovementType"/> on purpose: <c>Registered</c>
+/// moves no quantity at all, and the kardex sums over <see cref="MovementType"/> — folding these in
+/// would corrupt the in/out identity a transfer relies on.
+/// </summary>
+public enum SerialEventType
+{
+    Received,
+    Registered,
+    Sold,
+    Removed,
+    TransferredOut,
+    TransferredIn
+}

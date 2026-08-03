@@ -51,7 +51,7 @@ public class ProductService(IAppDbContext db, SettingsService settingsService, I
             Name = request.Name.Trim(),
             PartNumber = request.PartNumber?.Trim(),
             Description = request.Description?.Trim(),
-            SerialNumber = request.SerialNumber?.Trim(),
+            IsSerialized = request.IsSerialized,
             TrademarkId = request.TrademarkId,
             CategoryId = request.CategoryId,
             WarrantyTermId = request.WarrantyTermId,
@@ -76,10 +76,23 @@ public class ProductService(IAppDbContext db, SettingsService settingsService, I
         var product = await FindAsync(id, cancellationToken);
         await EnsureReferencesExistAsync(request, cancellationToken);
 
+        // Turning tracking ON is always allowed: existing stock simply stays unidentified and sells
+        // freely until it rotates out, which is the whole point of not demanding a stock count.
+        // Turning it OFF is not, while identified units remain — they would be orphaned, and the
+        // sold ones are warranty evidence that must keep its meaning.
+        if (product.IsSerialized && !request.IsSerialized &&
+            await db.ProductSerials.AnyAsync(
+                s => s.ProductId == id && s.Status == ProductSerialStatus.InStock, cancellationToken))
+        {
+            throw new ConflictException(
+                ErrorCodes.SerializationInUse,
+                $"Product {id} still holds serialized units in stock");
+        }
+
         product.Name = request.Name.Trim();
         product.PartNumber = request.PartNumber?.Trim();
         product.Description = request.Description?.Trim();
-        product.SerialNumber = request.SerialNumber?.Trim();
+        product.IsSerialized = request.IsSerialized;
         product.TrademarkId = request.TrademarkId;
         product.CategoryId = request.CategoryId;
         product.WarrantyTermId = request.WarrantyTermId;
@@ -179,7 +192,7 @@ public class ProductService(IAppDbContext db, SettingsService settingsService, I
             p.Name,
             p.PartNumber,
             p.Description,
-            p.SerialNumber,
+            p.IsSerialized,
             p.TrademarkId,
             p.Trademark != null ? p.Trademark.Name : null,
             p.CategoryId,
@@ -189,5 +202,6 @@ public class ProductService(IAppDbContext db, SettingsService settingsService, I
             p.PriceWithInvoice,
             p.PriceWithoutInvoice,
             p.StockLevels.Where(s => s.BranchId == branchId).Sum(s => (int?)s.Quantity) ?? 0,
-            p.StockLevels.Sum(s => (int?)s.Quantity) ?? 0);
+            p.StockLevels.Sum(s => (int?)s.Quantity) ?? 0,
+            p.Serials.Count(s => s.BranchId == branchId && s.Status == ProductSerialStatus.InStock));
 }

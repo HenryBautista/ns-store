@@ -9,7 +9,6 @@ public class ProductRequestValidator : AbstractValidator<ProductRequest>
         RuleFor(x => x.Name).NotEmpty().MaximumLength(160);
         RuleFor(x => x.PartNumber).MaximumLength(80);
         RuleFor(x => x.Description).MaximumLength(400);
-        RuleFor(x => x.SerialNumber).MaximumLength(80);
     }
 }
 

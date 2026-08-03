@@ -2,7 +2,13 @@ using NsStore.Domain.Enums;
 
 namespace NsStore.Application.Features.Sales;
 
-public record SaleItemRequest(long ProductId, int Quantity);
+/// <summary>
+/// <paramref name="SerialNumbers"/> names the exact units leaving stock. Optional so every existing
+/// positional caller keeps compiling, and because a serialized product may still hold units that
+/// were counted before tracking was switched on — see <see cref="Inventory.SerialService"/> for how
+/// many must be named.
+/// </summary>
+public record SaleItemRequest(long ProductId, int Quantity, IReadOnlyList<string>? SerialNumbers = null);
 
 public record CreateSaleRequest(
     DateOnly SaleDate,
@@ -14,13 +20,17 @@ public record CreateSaleRequest(
 
 public record RegisterPaymentRequest(decimal Amount, DateOnly? PaymentDate);
 
-/// <summary>Warranty-note data travels with the line: the printed note lists each product's warranty.</summary>
+/// <summary>
+/// Warranty-note data travels with the line: the printed note lists each product's warranty and,
+/// for tracked products, the serial of every unit the customer is walking out with. That printed
+/// serial is what a later warranty claim is checked against, so it is evidence, not decoration.
+/// </summary>
 public record SaleItemDto(
     long Id,
     long ProductId,
     string ProductName,
     string? PartNumber,
-    string? SerialNumber,
+    IReadOnlyList<string> SerialNumbers,
     string? WarrantyTermDescription,
     int Quantity,
     decimal UnitPrice,
