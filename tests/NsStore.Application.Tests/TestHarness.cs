@@ -44,6 +44,7 @@ public sealed class TestHarness : IDisposable
         Branches = new BranchService(Db, Clock);
         Products = new ProductService(Db, Settings, CurrentUser, Clock);
         Inventory = new InventoryService(Db, CurrentUser, StockLock, Clock);
+        Serials = new SerialService(Db, CurrentUser, StockLock, Clock);
         // The real numbering service, not a fake: it detects the provider, and numbering is the
         // piece most likely to carry an off-by-one.
         DocumentNumbers = new DocumentNumberService(Db);
@@ -70,6 +71,7 @@ public sealed class TestHarness : IDisposable
     public BranchService Branches { get; }
     public ProductService Products { get; }
     public InventoryService Inventory { get; }
+    public SerialService Serials { get; }
     public PurchaseService Purchases { get; }
     public SaleService Sales { get; }
     public TransferService Transfers { get; }

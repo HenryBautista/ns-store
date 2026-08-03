@@ -4,6 +4,7 @@ using NsStore.Application.Common.Models;
 using NsStore.Application.Features.Inventory;
 using NsStore.Application.Features.Products;
 using NsStore.Application.Features.Sales;
+using NsStore.Domain.Enums;
 
 namespace NsStore.Api.Endpoints;
 
@@ -81,6 +82,47 @@ public static class InventoryEndpoints
                 Results.Ok(await inventory.AdjustAsync(request, ct)))
             .RequireAuthorization(AuthPolicies.AdminOnly)
             .WithValidation<StockAdjustmentRequest>();
+
+        stock.MapGet("/serials", async (
+                long? productId,
+                long? branchId,
+                string? status,
+                string? search,
+                int? page,
+                int? pageSize,
+                SerialService serials,
+                CancellationToken ct) =>
+            Results.Ok(await serials.ListAsync(
+                new SerialQuery(
+                    productId,
+                    branchId,
+                    QueryEnum.Parse<ProductSerialStatus>(status, "status") ?? ProductSerialStatus.InStock,
+                    search,
+                    page ?? 1,
+                    pageSize ?? 25),
+                ct)))
+            .WithSummary("Units of a product held by a branch, defaulting to what is still in stock. Status is spelled inStock, sold or removed");
+
+        // No branch guard, for the same reason as /availability: a unit sold at one counter gets
+        // claimed at another, and this is the read the whole feature exists for.
+        stock.MapGet("/serials/lookup", async (string serial, SerialService serials, CancellationToken ct) =>
+                Results.Ok(await serials.LookupAsync(serial, ct)))
+            .WithSummary("Whether a serial is one of ours, and which sale it left on. 404 means we never sold it");
+
+        stock.MapGet("/serials/{id:long}/history", async (long id, SerialService serials, CancellationToken ct) =>
+                Results.Ok(await serials.GetHistoryAsync(id, ct)))
+            .WithSummary("Everywhere a unit has been");
+
+        stock.MapGet("/serials/drift", async (SerialService serials, CancellationToken ct) =>
+                Results.Ok(await serials.GetDriftAsync(ct)))
+            .RequireAuthorization(AuthPolicies.AdminOnly)
+            .WithSummary("Branch/product pairs holding more identified units than stock. Should always be empty");
+
+        stock.MapPost("/serials", async (RegisterSerialsRequest request, SerialService serials, CancellationToken ct) =>
+                Results.Ok(await serials.RegisterAsync(request, ct)))
+            .RequireAuthorization(AuthPolicies.AdminOnly)
+            .WithValidation<RegisterSerialsRequest>()
+            .WithSummary("Name units the branch already counted. Moves no stock — it is how a product finishes becoming fully tracked");
 
         stock.MapGet("/transfers", async (
                 DateOnly? from,
