@@ -54,9 +54,9 @@ public class SerialService(IAppDbContext db, ICurrentUser currentUser, IStockLoc
             serials = serials.Where(s => s.Status == status);
         }
 
-        if (request.TrimmedSearch is { } search)
+        if (request.SearchPattern is { } pattern)
         {
-            serials = serials.Where(s => EF.Functions.Like(s.SerialNumber.ToLower(), $"%{search.ToLower()}%"));
+            serials = serials.Where(s => EF.Functions.Like(SearchText.Unaccent(s.SerialNumber).ToLower(), pattern));
         }
 
         return await serials

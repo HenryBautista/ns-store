@@ -8,6 +8,9 @@ namespace NsStore.Application.Features.Inventory;
 /// <paramref name="InventoryValue"/> is <c>Quantity × LastCost</c> — the valuation rule. Both are
 /// null/zero until the product has purchase history. They travel with the row so listing stock
 /// does not need one price-suggestion call per product.
+/// <paramref name="SerializedQuantity"/> is how many of the <paramref name="Quantity"/> units the
+/// branch can name, so a stock row can say "8 of 10 identified" without a second call; the two
+/// differ while a tracked product is still being adopted.
 /// </summary>
 public record StockLevelDto(
     long ProductId,
@@ -20,7 +23,9 @@ public record StockLevelDto(
     int Quantity,
     decimal? LastCost,
     decimal InventoryValue,
-    DateTimeOffset UpdatedAt);
+    DateTimeOffset UpdatedAt,
+    bool IsSerialized,
+    int SerializedQuantity);
 
 public record InventoryMovementDto(
     long Id,

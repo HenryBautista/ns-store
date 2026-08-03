@@ -67,7 +67,7 @@ public class SaleService(
     {
         var branchId = currentUser.ResolveScopedBranch(query.BranchId);
         var overdueDays = (await settings.GetAsync(cancellationToken)).OverdueDays;
-        var today = DateOnly.FromDateTime(clock.GetUtcNow().UtcDateTime);
+        var today = clock.Today();
 
         var request = new PageRequest(query.Search, query.Page, query.PageSize);
 
@@ -427,7 +427,7 @@ public class SaleService(
 
             var now = clock.GetUtcNow();
             var amount = decimal.Round(request.Amount, 2, MidpointRounding.AwayFromZero);
-            var paymentDate = request.PaymentDate ?? DateOnly.FromDateTime(now.UtcDateTime);
+            var paymentDate = request.PaymentDate ?? clock.Today();
 
             var payment = sale.RegisterPayment(amount, paymentDate, branchId, currentUser.UserId, now);
             db.Payments.Add(payment);
@@ -495,7 +495,7 @@ public class SaleService(
             }
 
             var now = clock.GetUtcNow();
-            var paymentDate = request.PaymentDate ?? DateOnly.FromDateTime(now.UtcDateTime);
+            var paymentDate = request.PaymentDate ?? clock.Today();
 
             // Taken inside the transaction and never cached outside it: ExecuteInTransactionAsync
             // may retry the whole action, and a retry has to read a fresh number.
@@ -664,13 +664,12 @@ public class SaleService(
 
     private static IQueryable<Sale> Filter(IQueryable<Sale> sales, SaleQuery query, PageRequest request)
     {
-        if (request.TrimmedSearch is { } search)
+        if (request.SearchPattern is { } pattern)
         {
-            var pattern = $"%{search.ToLower()}%";
             sales = sales.Where(s =>
-                EF.Functions.Like(s.Client.Name.ToLower(), pattern) ||
-                (s.Client.LastName != null && EF.Functions.Like(s.Client.LastName.ToLower(), pattern)) ||
-                (s.Client.MotherLastName != null && EF.Functions.Like(s.Client.MotherLastName.ToLower(), pattern)));
+                EF.Functions.Like(SearchText.Unaccent(s.Client.Name).ToLower(), pattern) ||
+                (s.Client.LastName != null && EF.Functions.Like(SearchText.Unaccent(s.Client.LastName).ToLower(), pattern)) ||
+                (s.Client.MotherLastName != null && EF.Functions.Like(SearchText.Unaccent(s.Client.MotherLastName).ToLower(), pattern)));
         }
 
         if (query.From is { } from)
@@ -712,7 +711,7 @@ public class SaleService(
         CancellationToken cancellationToken)
     {
         var overdueDays = (await settings.GetAsync(cancellationToken)).OverdueDays;
-        var today = DateOnly.FromDateTime(clock.GetUtcNow().UtcDateTime);
+        var today = clock.Today();
 
         var page = await sales.Select(ProjectToRow).ToPagedResultAsync(request, cancellationToken);
 

@@ -12,9 +12,9 @@ public class TrademarkService(IAppDbContext db, TimeProvider clock)
     public async Task<PagedResult<TrademarkDto>> ListAsync(PageRequest request, CancellationToken cancellationToken = default)
     {
         var query = db.Trademarks.AsNoTracking().AsQueryable();
-        if (request.TrimmedSearch is { } search)
+        if (request.SearchPattern is { } pattern)
         {
-            query = query.Where(t => EF.Functions.Like(t.Name.ToLower(), $"%{search.ToLower()}%"));
+            query = query.Where(t => EF.Functions.Like(SearchText.Unaccent(t.Name).ToLower(), pattern));
         }
 
         var page = await query.OrderBy(t => t.Name).ToPagedResultAsync(request, cancellationToken);
@@ -76,9 +76,9 @@ public class CategoryService(IAppDbContext db, TimeProvider clock)
     public async Task<PagedResult<CategoryDto>> ListAsync(PageRequest request, CancellationToken cancellationToken = default)
     {
         var query = db.Categories.AsNoTracking().AsQueryable();
-        if (request.TrimmedSearch is { } search)
+        if (request.SearchPattern is { } pattern)
         {
-            query = query.Where(c => EF.Functions.Like(c.Name.ToLower(), $"%{search.ToLower()}%"));
+            query = query.Where(c => EF.Functions.Like(SearchText.Unaccent(c.Name).ToLower(), pattern));
         }
 
         var page = await query.OrderBy(c => c.Name).ToPagedResultAsync(request, cancellationToken);
@@ -140,9 +140,9 @@ public class WarrantyTermService(IAppDbContext db, TimeProvider clock)
     public async Task<PagedResult<WarrantyTermDto>> ListAsync(PageRequest request, CancellationToken cancellationToken = default)
     {
         var query = db.WarrantyTerms.AsNoTracking().AsQueryable();
-        if (request.TrimmedSearch is { } search)
+        if (request.SearchPattern is { } pattern)
         {
-            query = query.Where(w => EF.Functions.Like(w.Description.ToLower(), $"%{search.ToLower()}%"));
+            query = query.Where(w => EF.Functions.Like(SearchText.Unaccent(w.Description).ToLower(), pattern));
         }
 
         var page = await query.OrderBy(w => w.Description).ToPagedResultAsync(request, cancellationToken);
@@ -204,9 +204,9 @@ public class SupplierService(IAppDbContext db, TimeProvider clock)
     public async Task<PagedResult<SupplierDto>> ListAsync(PageRequest request, CancellationToken cancellationToken = default)
     {
         var query = db.Suppliers.AsNoTracking().AsQueryable();
-        if (request.TrimmedSearch is { } search)
+        if (request.SearchPattern is { } pattern)
         {
-            query = query.Where(s => EF.Functions.Like(s.Name.ToLower(), $"%{search.ToLower()}%"));
+            query = query.Where(s => EF.Functions.Like(SearchText.Unaccent(s.Name).ToLower(), pattern));
         }
 
         var page = await query.OrderBy(s => s.Name).ToPagedResultAsync(request, cancellationToken);

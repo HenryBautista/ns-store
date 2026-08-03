@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using NsStore.Application.Common;
 using NsStore.Application.Common.Interfaces;
 using NsStore.Domain.Entities;
 using NsStore.Domain.Enums;
@@ -61,8 +62,8 @@ public class DemoDataSeeder(
     private const int LowStockProductCount = 8;
     private const int OutOfStockProductCount = 5;
 
-    /// <summary>Bolivia has no DST, so a fixed offset is exact rather than an approximation.</summary>
-    private static readonly TimeSpan BoliviaOffset = TimeSpan.FromHours(-4);
+    /// <summary>The one definition of the store's offset, shared with every "today" the app computes.</summary>
+    private static readonly TimeSpan BoliviaOffset = BusinessClock.Offset;
 
     public async Task SeedAsync(CancellationToken cancellationToken = default)
     {
@@ -161,7 +162,7 @@ public class DemoDataSeeder(
         // Created inside the action: the Npgsql execution strategy may retry the whole unit of work,
         // and a Random carried in from outside would resume mid-sequence.
         var random = new Random(RandomSeed);
-        var today = DateOnly.FromDateTime(clock.GetUtcNow().UtcDateTime);
+        var today = clock.Today();
         var start = today.AddMonths(-6);
 
         var branches = await SeedBranchesAsync(cancellationToken);

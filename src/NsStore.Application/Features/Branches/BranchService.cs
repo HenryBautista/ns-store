@@ -12,12 +12,11 @@ public class BranchService(IAppDbContext db, TimeProvider clock)
     public async Task<PagedResult<BranchDto>> ListAsync(PageRequest request, CancellationToken cancellationToken = default)
     {
         var query = db.Branches.AsNoTracking().AsQueryable();
-        if (request.TrimmedSearch is { } search)
+        if (request.SearchPattern is { } pattern)
         {
-            var pattern = $"%{search.ToLower()}%";
             query = query.Where(b =>
-                EF.Functions.Like(b.Code.ToLower(), pattern) ||
-                EF.Functions.Like(b.Name.ToLower(), pattern));
+                EF.Functions.Like(SearchText.Unaccent(b.Code).ToLower(), pattern) ||
+                EF.Functions.Like(SearchText.Unaccent(b.Name).ToLower(), pattern));
         }
 
         return await query

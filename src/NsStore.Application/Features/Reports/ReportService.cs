@@ -69,8 +69,8 @@ public class ReportService(
 
         if (!string.IsNullOrWhiteSpace(search))
         {
-            var pattern = $"%{search.Trim().ToLower()}%";
-            all = all.Where(p => EF.Functions.Like(p.Supplier.Name.ToLower(), pattern));
+            var pattern = $"%{SearchText.Normalize(search.Trim())}%";
+            all = all.Where(p => EF.Functions.Like(SearchText.Unaccent(p.Supplier.Name).ToLower(), pattern));
         }
 
         if (range.From is { } purchasesFrom)
@@ -145,11 +145,11 @@ public class ReportService(
 
         if (!string.IsNullOrWhiteSpace(query.Search))
         {
-            var pattern = $"%{query.Search.Trim().ToLower()}%";
+            var pattern = $"%{SearchText.Normalize(query.Search.Trim())}%";
             sales = sales.Where(s =>
-                EF.Functions.Like(s.Client.Name.ToLower(), pattern) ||
-                (s.Client.LastName != null && EF.Functions.Like(s.Client.LastName.ToLower(), pattern)) ||
-                (s.Client.MotherLastName != null && EF.Functions.Like(s.Client.MotherLastName.ToLower(), pattern)));
+                EF.Functions.Like(SearchText.Unaccent(s.Client.Name).ToLower(), pattern) ||
+                (s.Client.LastName != null && EF.Functions.Like(SearchText.Unaccent(s.Client.LastName).ToLower(), pattern)) ||
+                (s.Client.MotherLastName != null && EF.Functions.Like(SearchText.Unaccent(s.Client.MotherLastName).ToLower(), pattern)));
         }
 
         if (query.From is { } from)
@@ -199,7 +199,7 @@ public class ReportService(
     {
         var client = await clients.GetAsync(clientId, cancellationToken);
         var overdueDays = (await settings.GetAsync(cancellationToken)).OverdueDays;
-        var today = DateOnly.FromDateTime(clock.GetUtcNow().UtcDateTime);
+        var today = clock.Today();
         var branchId = currentUser.ResolveScopedBranch();
 
         var rows = await db.Sales.AsNoTracking()
@@ -277,7 +277,8 @@ public class ReportService(
         var query = db.Products.AsNoTracking().AsQueryable();
         if (!string.IsNullOrWhiteSpace(search))
         {
-            query = query.Where(p => EF.Functions.Like(p.Name.ToLower(), $"%{search.Trim().ToLower()}%"));
+            var pattern = $"%{SearchText.Normalize(search.Trim())}%";
+            query = query.Where(p => EF.Functions.Like(SearchText.Unaccent(p.Name).ToLower(), pattern));
         }
 
         var items = await query
@@ -313,7 +314,7 @@ public class ReportService(
     public async Task<DashboardDto> GetDashboardAsync(long? branchId = null, CancellationToken cancellationToken = default)
     {
         var scope = currentUser.ResolveScopedBranch(branchId);
-        var today = DateOnly.FromDateTime(clock.GetUtcNow().UtcDateTime);
+        var today = clock.Today();
         var monthStart = new DateOnly(today.Year, today.Month, 1);
 
         var salesToday = await db.Sales.AsNoTracking()

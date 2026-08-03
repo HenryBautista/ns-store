@@ -49,9 +49,9 @@ public class QuoteService(IAppDbContext db, ICurrentUser currentUser, TimeProvid
         var request = new PageRequest(query.Search, query.Page, query.PageSize);
         var quotes = db.Quotes.AsNoTracking().AsQueryable();
 
-        if (request.TrimmedSearch is { } search)
+        if (request.SearchPattern is { } pattern)
         {
-            quotes = quotes.Where(q => EF.Functions.Like(q.ClientName.ToLower(), $"%{search.ToLower()}%"));
+            quotes = quotes.Where(q => EF.Functions.Like(SearchText.Unaccent(q.ClientName).ToLower(), pattern));
         }
 
         if (query.Date is { } date)
