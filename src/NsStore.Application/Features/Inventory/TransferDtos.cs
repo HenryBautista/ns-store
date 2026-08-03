@@ -2,7 +2,12 @@ using NsStore.Application.Common.Models;
 
 namespace NsStore.Application.Features.Inventory;
 
-public record TransferItemRequest(long ProductId, int Quantity);
+/// <summary>
+/// <paramref name="SerialNumbers"/> names the units that travel, so the destination knows which
+/// physical items it now holds. Subject to the same pick rule as a sale: anonymous stock moves
+/// freely, fully tracked stock must be named.
+/// </summary>
+public record TransferItemRequest(long ProductId, int Quantity, IReadOnlyList<string>? SerialNumbers = null);
 
 /// <summary>
 /// The one write that names its branches explicitly, because it is intrinsically two-branch.
@@ -20,7 +25,8 @@ public record TransferItemDto(
     long ProductId,
     string ProductName,
     string? PartNumber,
-    int Quantity);
+    int Quantity,
+    IReadOnlyList<string> SerialNumbers);
 
 public record TransferDto(
     long Id,

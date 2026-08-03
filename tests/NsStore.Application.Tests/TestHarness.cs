@@ -43,14 +43,14 @@ public sealed class TestHarness : IDisposable
         Settings = new SettingsService(Db, CurrentUser, Clock);
         Branches = new BranchService(Db, Clock);
         Products = new ProductService(Db, Settings, CurrentUser, Clock);
-        Inventory = new InventoryService(Db, CurrentUser, StockLock, Clock);
         Serials = new SerialService(Db, CurrentUser, StockLock, Clock);
+        Inventory = new InventoryService(Db, Serials, CurrentUser, StockLock, Clock);
         // The real numbering service, not a fake: it detects the provider, and numbering is the
         // piece most likely to carry an off-by-one.
         DocumentNumbers = new DocumentNumberService(Db);
-        Purchases = new PurchaseService(Db, Inventory, Branches, StockLock, DocumentNumbers, CurrentUser, Clock);
-        Sales = new SaleService(Db, Inventory, Branches, StockLock, DocumentNumbers, Settings, CurrentUser, Clock);
-        Transfers = new TransferService(Db, Inventory, Branches, StockLock, DocumentNumbers, CurrentUser, Clock);
+        Purchases = new PurchaseService(Db, Inventory, Serials, Branches, StockLock, DocumentNumbers, CurrentUser, Clock);
+        Sales = new SaleService(Db, Inventory, Serials, Branches, StockLock, DocumentNumbers, Settings, CurrentUser, Clock);
+        Transfers = new TransferService(Db, Inventory, Serials, Branches, StockLock, DocumentNumbers, CurrentUser, Clock);
         Clients = new ClientService(Db, Clock);
         Reports = new ReportService(Db, Sales, Purchases, Inventory, Settings, Clients, CurrentUser, Clock);
 

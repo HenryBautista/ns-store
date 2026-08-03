@@ -225,7 +225,15 @@ public class SerialService(IAppDbContext db, ICurrentUser currentUser, IStockLoc
 
     /// <summary>Pairs holding more identified units than stock. Healthy systems return nothing.</summary>
     public async Task<IReadOnlyList<SerialDriftDto>> GetDriftAsync(CancellationToken cancellationToken = default) =>
+        // Filtered before the projection, not after: a predicate over a projected subquery is not
+        // something either provider will translate.
         await db.StockLevels.AsNoTracking()
+            .Where(s => db.ProductSerials.Count(x =>
+                x.ProductId == s.ProductId &&
+                x.BranchId == s.BranchId &&
+                x.Status == ProductSerialStatus.InStock) > s.Quantity)
+            .OrderBy(s => s.BranchId)
+            .ThenBy(s => s.Product.Name)
             .Select(s => new SerialDriftDto(
                 s.BranchId,
                 s.Branch.Code,
@@ -236,9 +244,6 @@ public class SerialService(IAppDbContext db, ICurrentUser currentUser, IStockLoc
                     x.ProductId == s.ProductId &&
                     x.BranchId == s.BranchId &&
                     x.Status == ProductSerialStatus.InStock)))
-            .Where(d => d.SerializedQuantity > d.Quantity)
-            .OrderBy(d => d.BranchId)
-            .ThenBy(d => d.ProductName)
             .ToListAsync(cancellationToken);
 
     /// <summary>
@@ -304,6 +309,15 @@ public class SerialService(IAppDbContext db, ICurrentUser currentUser, IStockLoc
         var names = NormalizeBatch(serialNumbers ?? []);
 
         var onHand = await StockQuantityAsync(branchId, product.Id, cancellationToken);
+
+        if (quantity > onHand)
+        {
+            // Doomed for want of stock, not for want of serials. Stay quiet and let
+            // StockLevel.Apply say INSUFFICIENT_STOCK, which is the answer a seller can act on —
+            // "at most 0 serials" would just describe the symptom.
+            return [];
+        }
+
         var identified = await IdentifiedCountAsync(branchId, product.Id, cancellationToken);
         var anonymous = onHand - identified;
 
@@ -400,7 +414,11 @@ public class SerialService(IAppDbContext db, ICurrentUser currentUser, IStockLoc
         }
     }
 
-    private static List<string> NormalizeBatch(IReadOnlyList<string> serialNumbers)
+    /// <summary>
+    /// Trims and rejects blanks and repeats. Callers spanning several lines run it over the whole
+    /// request first, so the same serial cannot be claimed twice by two lines of one document.
+    /// </summary>
+    internal static List<string> NormalizeBatch(IReadOnlyList<string> serialNumbers)
     {
         var names = serialNumbers.Select(Normalize).ToList();
 

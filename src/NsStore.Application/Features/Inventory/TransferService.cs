@@ -16,6 +16,7 @@ namespace NsStore.Application.Features.Inventory;
 public class TransferService(
     IAppDbContext db,
     InventoryService inventory,
+    SerialService serials,
     BranchService branches,
     IStockLockService stockLock,
     IDocumentNumberService documentNumbers,
@@ -62,30 +63,65 @@ public class TransferService(
             .ToPagedResultAsync(request, cancellationToken);
     }
 
-    public async Task<TransferDto> GetAsync(long id, CancellationToken cancellationToken = default) =>
-        await db.StockTransfers.AsNoTracking()
+    public async Task<TransferDto> GetAsync(long id, CancellationToken cancellationToken = default)
+    {
+        var transfer = await db.StockTransfers.AsNoTracking()
             .Where(t => t.Id == id)
-            .Select(t => new TransferDto(
-                t.Id,
-                t.Number,
-                t.TransferDate,
-                t.OriginBranchId,
-                t.OriginBranch.Code,
-                t.DestinationBranchId,
-                t.DestinationBranch.Code,
-                t.TotalQuantity,
-                t.Notes,
-                t.CreatedBy,
-                db.Users.Where(u => u.Id == t.CreatedBy).Select(u => u.Username).FirstOrDefault(),
-                t.CreatedAt,
-                t.Items.Select(i => new TransferItemDto(
+            .Select(t => new
+            {
+                Transfer = t,
+                OriginCode = t.OriginBranch.Code,
+                DestinationCode = t.DestinationBranch.Code,
+                CreatedByName = db.Users.Where(u => u.Id == t.CreatedBy).Select(u => u.Username).FirstOrDefault(),
+                Items = t.Items.Select(i => new
+                {
                     i.Id,
                     i.ProductId,
-                    i.Product.Name,
+                    ProductName = i.Product.Name,
                     i.Product.PartNumber,
-                    i.Quantity)).ToList()))
+                    i.Quantity
+                }).ToList()
+            })
             .FirstOrDefaultAsync(cancellationToken)
-        ?? throw new NotFoundException(nameof(StockTransfer), id);
+            ?? throw new NotFoundException(nameof(StockTransfer), id);
+
+        // Read from the history rather than the units themselves: a unit only knows where it stands
+        // now, so after a second hop it could no longer say it travelled on this note. Fetched
+        // separately because nesting it inside the line projection needs SQL APPLY, which SQLite —
+        // the test provider — does not have.
+        var moved = (await db.ProductSerialEvents.AsNoTracking()
+            .Where(e =>
+                e.ReferenceType == "transfer" &&
+                e.ReferenceId == id &&
+                e.EventType == SerialEventType.TransferredOut)
+            .Select(e => new { e.Serial.ProductId, e.Serial.SerialNumber })
+            .ToListAsync(cancellationToken))
+            .GroupBy(e => e.ProductId)
+            .ToDictionary(
+                g => g.Key,
+                g => (IReadOnlyList<string>)[.. g.Select(e => e.SerialNumber).Order()]);
+
+        return new TransferDto(
+            transfer.Transfer.Id,
+            transfer.Transfer.Number,
+            transfer.Transfer.TransferDate,
+            transfer.Transfer.OriginBranchId,
+            transfer.OriginCode,
+            transfer.Transfer.DestinationBranchId,
+            transfer.DestinationCode,
+            transfer.Transfer.TotalQuantity,
+            transfer.Transfer.Notes,
+            transfer.Transfer.CreatedBy,
+            transfer.CreatedByName,
+            transfer.Transfer.CreatedAt,
+            [.. transfer.Items.Select(i => new TransferItemDto(
+                i.Id,
+                i.ProductId,
+                i.ProductName,
+                i.PartNumber,
+                i.Quantity,
+                moved.GetValueOrDefault(i.ProductId, [])))]);
+    }
 
     /// <summary>
     /// One transaction: lock both sides, decrement the origin, increment the destination, write two
@@ -145,6 +181,22 @@ public class TransferService(
 
             var now = clock.GetUtcNow();
 
+            // Judged at the origin and per product, for the same reason as a sale.
+            SerialService.NormalizeBatch([.. request.Items.SelectMany(i => i.SerialNumbers ?? [])]);
+
+            var serialsByProduct = request.Items
+                .GroupBy(i => i.ProductId)
+                .ToDictionary(
+                    g => g.Key,
+                    g => (IReadOnlyList<string>)[.. g.SelectMany(i => i.SerialNumbers ?? [])]);
+
+            var travelling = new Dictionary<long, List<ProductSerial>>();
+            foreach (var (productId, quantity) in quantities)
+            {
+                travelling[productId] = [.. await serials.ResolveOutboundAsync(
+                    originBranchId, products[productId], quantity, serialsByProduct.GetValueOrDefault(productId), ct)];
+            }
+
             // Counter after the stock locks; see the ordering rule on IDocumentNumberService.
             var origin = await db.Branches.FirstAsync(b => b.Id == originBranchId, ct);
             var sequence = await documentNumbers.NextAsync(originBranchId, DocumentKind.Transfer, ct);
@@ -197,6 +249,17 @@ public class TransferService(
                     ReferenceType = "transfer",
                     ReferenceId = transfer.Id
                 });
+            }
+
+            // Two entries per unit, mirroring the two ledger movements: dispatched from one counter,
+            // received at another, which is what the note on each side has to show.
+            foreach (var serial in travelling.Values.SelectMany(s => s))
+            {
+                serials.RecordEvent(serial, SerialEventType.TransferredOut, originBranchId, "transfer", transfer.Id);
+                serials.RecordEvent(serial, SerialEventType.TransferredIn, destinationBranchId, "transfer", transfer.Id);
+
+                // The unit stays in stock; only where it stands changes.
+                serial.MarkTransferred(destinationBranchId, now);
             }
 
             await db.SaveChangesAsync(ct);

@@ -7,7 +7,12 @@ using NsStore.Domain.Enums;
 
 namespace NsStore.Application.Features.Inventory;
 
-public class InventoryService(IAppDbContext db, ICurrentUser currentUser, IStockLockService stockLock, TimeProvider clock)
+public class InventoryService(
+    IAppDbContext db,
+    SerialService serials,
+    ICurrentUser currentUser,
+    IStockLockService stockLock,
+    TimeProvider clock)
 {
     public async Task<PagedResult<StockLevelDto>> ListStockAsync(StockQuery query, CancellationToken cancellationToken = default)
     {
@@ -161,6 +166,12 @@ public class InventoryService(IAppDbContext db, ICurrentUser currentUser, IStock
                 ?? throw new NotFoundException(nameof(Product), request.ProductId);
 
             var now = clock.GetUtcNow();
+
+            // Resolved against the level as it stands, so it must happen before Apply moves it.
+            var outbound = request.QuantityDelta < 0
+                ? await serials.ResolveOutboundAsync(branchId, product, -request.QuantityDelta, request.SerialNumbers, ct)
+                : [];
+
             var stock = await GetOrCreateStockLevelAsync(branchId, product.Id, now, ct);
             stock.Apply(request.QuantityDelta, now);
 
@@ -173,6 +184,23 @@ public class InventoryService(IAppDbContext db, ICurrentUser currentUser, IStock
                 ReferenceType = "manual",
                 Notes = request.Notes?.Trim()
             });
+
+            if (request.QuantityDelta > 0)
+            {
+                var inbound = await serials.CreateInboundAsync(
+                    branchId, product, request.QuantityDelta, request.SerialNumbers, purchaseItemId: null, now, ct);
+
+                foreach (var serial in inbound)
+                {
+                    serials.RecordEvent(serial, SerialEventType.Received, branchId, "manual", referenceId: null, request.Notes?.Trim());
+                }
+            }
+
+            foreach (var serial in outbound)
+            {
+                serial.MarkRemoved(now);
+                serials.RecordEvent(serial, SerialEventType.Removed, branchId, "manual", referenceId: null, request.Notes?.Trim());
+            }
 
             await db.SaveChangesAsync(ct);
 

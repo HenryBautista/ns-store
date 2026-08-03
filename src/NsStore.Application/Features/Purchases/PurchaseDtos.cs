@@ -2,7 +2,16 @@ using NsStore.Domain.Enums;
 
 namespace NsStore.Application.Features.Purchases;
 
-public record PurchaseItemRequest(long ProductId, int Quantity, decimal UnitPrice);
+/// <summary>
+/// <paramref name="SerialNumbers"/> is mandatory and exact for a tracked product — goods arriving
+/// today have no excuse for a missing serial, unlike the stock that was already on the shelf when
+/// tracking was switched on. Optional in the signature only so existing positional callers compile.
+/// </summary>
+public record PurchaseItemRequest(
+    long ProductId,
+    int Quantity,
+    decimal UnitPrice,
+    IReadOnlyList<string>? SerialNumbers = null);
 
 public record CreatePurchaseRequest(
     DateOnly PurchaseDate,
@@ -17,7 +26,8 @@ public record PurchaseItemDto(
     string ProductName,
     int Quantity,
     decimal UnitPrice,
-    decimal Subtotal);
+    decimal Subtotal,
+    IReadOnlyList<string> SerialNumbers);
 
 public record PurchaseDto(
     long Id,
