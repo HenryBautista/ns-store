@@ -12,6 +12,7 @@ namespace NsStore.Application.Features.Purchases;
 public class PurchaseService(
     IAppDbContext db,
     InventoryService inventory,
+    SerialService serials,
     BranchService branches,
     IStockLockService stockLock,
     IDocumentNumberService documentNumbers,
@@ -90,7 +91,8 @@ public class PurchaseService(
                     i.Product.Name,
                     i.Quantity,
                     i.UnitPrice,
-                    i.Subtotal)).ToList()))
+                    i.Subtotal,
+                    i.Serials.OrderBy(s => s.SerialNumber).Select(s => s.SerialNumber).ToList())).ToList()))
             .FirstOrDefaultAsync(cancellationToken)
         ?? throw new NotFoundException(nameof(Purchase), id);
 
@@ -152,6 +154,10 @@ public class PurchaseService(
                 PaymentStatus = request.PaymentStatus
             };
 
+            // Across the whole document, not per line: two lines of the same product must not both
+            // claim one serial.
+            SerialService.NormalizeBatch([.. request.Items.SelectMany(i => i.SerialNumbers ?? [])]);
+
             foreach (var item in request.Items)
             {
                 var subtotal = decimal.Round(item.UnitPrice * item.Quantity, 2, MidpointRounding.AwayFromZero);
@@ -188,6 +194,19 @@ public class PurchaseService(
                         ReferenceType = "purchase",
                         ReferenceId = purchase.Id
                     });
+                }
+            }
+
+            // Purchase.Items was built from request.Items in order, so the two line up. Attaching by
+            // navigation lets EF fix up the FK — no second SaveChanges to fish ids out.
+            foreach (var (item, line) in request.Items.Zip(purchase.Items))
+            {
+                var created = await serials.CreateInboundAsync(
+                    branchId, products[item.ProductId], item.Quantity, item.SerialNumbers, line.Id, now, ct);
+
+                foreach (var serial in created)
+                {
+                    serials.RecordEvent(serial, SerialEventType.Received, branchId, "purchase", purchase.Id);
                 }
             }
 

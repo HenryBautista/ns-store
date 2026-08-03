@@ -37,7 +37,17 @@ public record InventoryMovementDto(
     DateTimeOffset CreatedAt);
 
 /// <summary><paramref name="BranchId"/> defaults to the caller's active branch; an admin may target another.</summary>
-public record StockAdjustmentRequest(long ProductId, int QuantityDelta, string? Notes, long? BranchId = null);
+/// <summary>
+/// <paramref name="SerialNumbers"/> names the units the correction brings in or writes off. Inbound
+/// on a tracked product needs exactly one per unit, or stock could grow anonymously forever and the
+/// pick rule would never tighten; outbound follows the same rule as a sale.
+/// </summary>
+public record StockAdjustmentRequest(
+    long ProductId,
+    int QuantityDelta,
+    string? Notes,
+    long? BranchId = null,
+    IReadOnlyList<string>? SerialNumbers = null);
 
 /// <summary>
 /// One branch's holding of a product. Returned for every active branch, to every authenticated

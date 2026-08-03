@@ -43,13 +43,14 @@ public sealed class TestHarness : IDisposable
         Settings = new SettingsService(Db, CurrentUser, Clock);
         Branches = new BranchService(Db, Clock);
         Products = new ProductService(Db, Settings, CurrentUser, Clock);
-        Inventory = new InventoryService(Db, CurrentUser, StockLock, Clock);
+        Serials = new SerialService(Db, CurrentUser, StockLock, Clock);
+        Inventory = new InventoryService(Db, Serials, CurrentUser, StockLock, Clock);
         // The real numbering service, not a fake: it detects the provider, and numbering is the
         // piece most likely to carry an off-by-one.
         DocumentNumbers = new DocumentNumberService(Db);
-        Purchases = new PurchaseService(Db, Inventory, Branches, StockLock, DocumentNumbers, CurrentUser, Clock);
-        Sales = new SaleService(Db, Inventory, Branches, StockLock, DocumentNumbers, Settings, CurrentUser, Clock);
-        Transfers = new TransferService(Db, Inventory, Branches, StockLock, DocumentNumbers, CurrentUser, Clock);
+        Purchases = new PurchaseService(Db, Inventory, Serials, Branches, StockLock, DocumentNumbers, CurrentUser, Clock);
+        Sales = new SaleService(Db, Inventory, Serials, Branches, StockLock, DocumentNumbers, Settings, CurrentUser, Clock);
+        Transfers = new TransferService(Db, Inventory, Serials, Branches, StockLock, DocumentNumbers, CurrentUser, Clock);
         Clients = new ClientService(Db, Clock);
         Reports = new ReportService(Db, Sales, Purchases, Inventory, Settings, Clients, CurrentUser, Clock);
 
@@ -70,6 +71,7 @@ public sealed class TestHarness : IDisposable
     public BranchService Branches { get; }
     public ProductService Products { get; }
     public InventoryService Inventory { get; }
+    public SerialService Serials { get; }
     public PurchaseService Purchases { get; }
     public SaleService Sales { get; }
     public TransferService Transfers { get; }
@@ -108,11 +110,23 @@ public sealed class TestHarness : IDisposable
         Db.SaveChanges();
     }
 
-    public async Task<long> CreateProductAsync(string name = "SSD 1TB")
+    public async Task<long> CreateProductAsync(string name = "SSD 1TB", bool serialized = false)
     {
-        var product = await Products.CreateAsync(new ProductRequest(name, null, null, null, null, null, null));
+        var product = await Products.CreateAsync(
+            new ProductRequest(name, null, null, serialized, null, null, null));
         return product.Id;
     }
+
+    /// <summary>How many units the branch holds that carry a serial — the <c>S</c> in the pick rule.</summary>
+    public Task<int> SerialCountAsync(long productId, long branchId, ProductSerialStatus status = ProductSerialStatus.InStock) =>
+        Db.ProductSerials.CountAsync(s => s.ProductId == productId && s.BranchId == branchId && s.Status == status);
+
+    public async Task<string[]> InStockSerialsAsync(long productId, long branchId) =>
+        await Db.ProductSerials
+            .Where(s => s.ProductId == productId && s.BranchId == branchId && s.Status == ProductSerialStatus.InStock)
+            .OrderBy(s => s.SerialNumber)
+            .Select(s => s.SerialNumber)
+            .ToArrayAsync();
 
     public void Dispose()
     {

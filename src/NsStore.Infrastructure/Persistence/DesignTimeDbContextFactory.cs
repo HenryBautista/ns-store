@@ -24,6 +24,8 @@ public class DesignTimeDbContextFactory : IDesignTimeDbContextFactory<AppDbConte
                 npgsql.MapEnum<PaymentStatus>("payment_status");
                 npgsql.MapEnum<OrderStatus>("order_status");
                 npgsql.MapEnum<MovementType>("movement_type");
+                npgsql.MapEnum<ProductSerialStatus>("product_serial_status");
+                npgsql.MapEnum<SerialEventType>("serial_event_type");
             })
             .UseSnakeCaseNamingConvention()
             .Options;

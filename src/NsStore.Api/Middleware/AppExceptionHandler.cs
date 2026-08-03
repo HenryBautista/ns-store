@@ -66,12 +66,18 @@ public class AppExceptionHandler(IProblemDetailsService problemDetailsService, I
         _ => (StatusCodes.Status500InternalServerError, ErrorCodes.InternalError, "An unexpected error occurred")
     };
 
+    /// <summary>
+    /// Only reached by <see cref="DomainRuleException"/> — an <see cref="AppException"/> already
+    /// carries its own status. So of the serial codes only SERIAL_NOT_AVAILABLE belongs here, being
+    /// the one an entity raises; listing the rest would be dead code.
+    /// </summary>
     private static int DomainStatus(string errorCode) => errorCode switch
     {
         ErrorCodes.InsufficientStock or
         ErrorCodes.PaymentExceedsBalance or
         ErrorCodes.AdvanceExceedsPrice or
         ErrorCodes.SameBranchTransfer or
+        ErrorCodes.SerialNotAvailable or
         ErrorCodes.Conflict => StatusCodes.Status409Conflict,
         _ => StatusCodes.Status400BadRequest
     };

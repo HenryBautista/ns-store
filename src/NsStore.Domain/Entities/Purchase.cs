@@ -39,4 +39,7 @@ public class PurchaseItem
     public decimal UnitPrice { get; set; }
 
     public decimal Subtotal { get; set; }
+
+    /// <summary>The individual units this line brought in. Empty unless the product is tracked.</summary>
+    public List<ProductSerial> Serials { get; set; } = [];
 }

@@ -14,6 +14,7 @@ namespace NsStore.Application.Features.Sales;
 public class SaleService(
     IAppDbContext db,
     InventoryService inventory,
+    SerialService serials,
     BranchService branches,
     IStockLockService stockLock,
     IDocumentNumberService documentNumbers,
@@ -191,7 +192,7 @@ public class SaleService(
                     i.ProductId,
                     i.Product.Name,
                     i.Product.PartNumber,
-                    i.Product.SerialNumber,
+                    i.Serials.OrderBy(x => x.SerialNumber).Select(x => x.SerialNumber).ToList(),
                     i.Product.WarrantyTerm != null ? i.Product.WarrantyTerm.Description : null,
                     i.Quantity,
                     i.UnitPrice,
@@ -249,7 +250,7 @@ public class SaleService(
                 i.ProductId,
                 i.Product.Name,
                 i.Product.PartNumber,
-                i.Product.SerialNumber,
+                i.Serials.OrderBy(x => x.SerialNumber).Select(x => x.SerialNumber).ToList(),
                 i.Product.WarrantyTerm != null ? i.Product.WarrantyTerm.Description : null,
                 i.Quantity,
                 i.UnitPrice,
@@ -300,6 +301,25 @@ public class SaleService(
             }
 
             var now = clock.GetUtcNow();
+
+            // Serials are judged per product, not per line: T and S are per (branch, product), so
+            // two lines of one product could each pass the pick rule alone yet overdraw together.
+            // Across the whole request, so one serial cannot be claimed by two lines.
+            SerialService.NormalizeBatch([.. request.Items.SelectMany(i => i.SerialNumbers ?? [])]);
+
+            var serialsByProduct = request.Items
+                .GroupBy(i => i.ProductId)
+                .ToDictionary(
+                    g => g.Key,
+                    g => (IReadOnlyList<string>)[.. g.SelectMany(i => i.SerialNumbers ?? [])]);
+
+            // Resolved before the counter is drawn, so a sale rejected for its serials burns no folio.
+            var resolved = new Dictionary<long, List<ProductSerial>>();
+            foreach (var (productId, quantity) in quantities)
+            {
+                resolved[productId] = [.. await serials.ResolveOutboundAsync(
+                    branchId, products[productId], quantity, serialsByProduct.GetValueOrDefault(productId), ct)];
+            }
 
             // After the stock locks, never before: the branch counter is the second lockable
             // resource, and taking it last keeps a branch's sales from serialising any longer than
@@ -360,6 +380,20 @@ public class SaleService(
                     ReferenceType = "sale",
                     ReferenceId = sale.Id
                 });
+            }
+
+            // sale.Items was built from request.Items in order, so each line keeps the serials that
+            // arrived on it — the warranty note has to say which unit went out on which line.
+            foreach (var (item, line) in request.Items.Zip(sale.Items))
+            {
+                foreach (var name in item.SerialNumbers ?? [])
+                {
+                    var serial = resolved[item.ProductId]
+                        .First(s => string.Equals(s.SerialNumber, name.Trim(), StringComparison.OrdinalIgnoreCase));
+
+                    serial.MarkSold(line, now);
+                    serials.RecordEvent(serial, SerialEventType.Sold, branchId, "sale", sale.Id);
+                }
             }
 
             var initialPaid = ResolveInitialPaid(request, sale.TotalAmount);

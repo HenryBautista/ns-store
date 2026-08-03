@@ -18,6 +18,8 @@ public interface IAppDbContext
     DbSet<Product> Products { get; }
     DbSet<StockLevel> StockLevels { get; }
     DbSet<InventoryMovement> InventoryMovements { get; }
+    DbSet<ProductSerial> ProductSerials { get; }
+    DbSet<ProductSerialEvent> ProductSerialEvents { get; }
     DbSet<Client> Clients { get; }
     DbSet<Purchase> Purchases { get; }
     DbSet<PurchaseItem> PurchaseItems { get; }

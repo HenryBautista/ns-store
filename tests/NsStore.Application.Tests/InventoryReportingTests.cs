@@ -124,7 +124,7 @@ public class InventoryReportingTests
         await harness.Db.SaveChangesAsync();
 
         var product = await harness.Products.CreateAsync(
-            new ProductRequest("SSD 1TB", "SA400S37", null, null, TrademarkId: 1, null, null));
+            new ProductRequest("SSD 1TB", "SA400S37", null, IsSerialized: false, TrademarkId: 1, null, null));
 
         var row = Assert.Single((await harness.Inventory.GetKardexAsync(new KardexQuery(null))).Items);
 
