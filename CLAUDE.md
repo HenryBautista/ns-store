@@ -2,17 +2,58 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Part of a three-repo system
+
+This repo is the API. The SPA is [`ns-store-ui`](https://github.com/HenryBautista/ns-store-ui),
+and the documentation and process live in
+[`ns-store-docs`](https://github.com/HenryBautista/ns-store-docs), which is also the umbrella
+folder the other two are cloned into:
+
+```
+ns-store-project/     ← ns-store-docs
+├── docs/
+├── ns-store/         ← this repo
+└── ns-store-ui/
+```
+
+**Cloned standalone?** Clone `ns-store-docs` and put this repo inside it. Otherwise the umbrella
+`CLAUDE.md`, the delivery checklist and the `/entrega` and `/hallazgo` commands are not loaded, and
+the registers below stay invisible.
+
+### Updating the registers is part of finishing
+
+Every session starts with no memory. Without these, it rediscovers the same things, relitigates
+decisions already made, and loses the findings it deliberately left out of scope.
+
+| Register | Write to it when | Invariant |
+|---|---|---|
+| [Findings](https://github.com/HenryBautista/ns-store-docs/blob/main/docs/06-deuda-tecnica.md) | You spot a bug, debt or improvement you are **not** fixing now | `DT-nn` ids are stable — never renumbered or recycled. Nothing is deleted; status changes |
+| [Delivery log](https://github.com/HenryBautista/ns-store-docs/blob/main/docs/07-bitacora.md) | You close a delivery | **Append only.** A published entry is never edited, not even to correct it — write a new one saying what changed |
+| [Decisions](https://github.com/HenryBautista/ns-store-docs/blob/main/docs/08-decisiones.md) | You make or reverse an architectural decision | A live decision is not edited to change your mind: mark it *reversed by* the new entry |
+
+Plus the [ES↔EN glossary](https://github.com/HenryBautista/ns-store-docs/blob/main/docs/01-vision-general.md):
+a new business term gets a row, with its English identifier, **before** it is written into the
+code. The domain is thought in Spanish and the code is English; without the bridge fixed up front,
+two sessions name the same concept differently.
+
+Run `/entrega` from the umbrella folder to close a delivery: it runs the real definition of done,
+records what came out of the work, and writes the log entry pinning both repos' branch and SHA.
+
+> ⚠️ **`DT-10` is open: the schema documentation stopped at the initial migration.** Branches,
+> stock transfers, payment receipts and serialized inventory are built and undocumented — and
+> `docs/01-vision-general.md` §5 asserts there is *no* multi-branch, which is false. Verify against
+> the code before trusting any doc about schema, branches, receipts or serials.
+
 ## What this is
 
-Backend-only rewrite of the legacy NS_Store (WPF + SQL Server) store / POS / inventory system:
-ASP.NET Core 10 minimal APIs on PostgreSQL 17, EF Core 10 + Npgsql. No frontend exists yet.
+The API half of a rewrite of the legacy NS_Store (WPF + SQL Server) store / POS / inventory system:
+ASP.NET Core 10 minimal APIs on PostgreSQL 17, EF Core 10 + Npgsql. The SPA that consumes it is
+`ns-store-ui`.
 
 Language convention: **all code, identifiers, schema and API contracts are English.** The API is
-locale-agnostic — it returns codes, enums, ids and numbers, never Spanish display copy. The SPA (not
-built) maps `errorCode` values to Spanish.
-
-Note: `README.md` links to a `docs/` folder that was deliberately moved out of this repository; those
-links are dead here.
+locale-agnostic — it returns codes, enums, ids and numbers, never Spanish display copy. The SPA maps
+`errorCode` values to Spanish, so **a new `errorCode` here is incomplete until `ns-store-ui` has a
+message for it** (`src/shared/domain/labels.ts`).
 
 ## Commands
 

@@ -1,10 +1,15 @@
 # NS Store
 
 Modern web rewrite of the legacy NS_Store (WPF + SQL Server) store / POS / inventory system.
-This repository currently contains the **backend**: an ASP.NET Core (.NET 10) Web API on PostgreSQL.
+This repository is the **backend**: an ASP.NET Core (.NET 10) Web API on PostgreSQL. The SPA that
+consumes it lives in [`ns-store-ui`](https://github.com/HenryBautista/ns-store-ui).
 
-Business and design documentation lives in [`docs/`](docs/README.md) (legacy analysis, Spanish) and
-[`docs/new-app/`](docs/new-app/README.md) (plan for this build, English).
+Business and design documentation lives in a separate repository,
+[`ns-store-docs`](https://github.com/HenryBautista/ns-store-docs): the
+[legacy analysis](https://github.com/HenryBautista/ns-store-docs/blob/main/docs/README.md)
+(Spanish) and the [plan for this build](https://github.com/HenryBautista/ns-store-docs/blob/main/docs/new-app/README.md)
+(English). That repo is also the umbrella folder this one is meant to be cloned into — see
+`CLAUDE.md`.
 
 > Convention: **all code, identifiers, schema and API contracts in English**; only end-user-facing
 > text is Spanish, and it lives in the frontend i18n files. The API is locale-agnostic — it returns
@@ -142,6 +147,5 @@ Collections accept `?search=&page=&pageSize=` and return `{ items, page, pageSiz
 
 ## Not built yet
 
-- Frontend SPA (React + TypeScript + Vite) — see [`docs/new-app/03-frontend.md`](docs/new-app/03-frontend.md).
 - Server-side PDF rendering: report endpoints return structured data for printable views.
 - API integration tests with Testcontainers (Phase 9 of the roadmap).
