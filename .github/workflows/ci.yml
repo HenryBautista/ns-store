@@ -26,18 +26,18 @@ jobs:
           key: nuget-${{ hashFiles('**/*.csproj') }}
           restore-keys: nuget-
 
-      - run: dotnet restore
-      - run: dotnet build --no-restore -c Release
-      - run: dotnet test --no-build -c Release
+      - uses: extractions/setup-just@v3
 
-      # The guard that keeps the schema honest: any entity or EF-configuration change without a
-      # matching migration fails here rather than at startup on the server.
-      - name: Verify the model has no pending migrations
-        run: |
-          dotnet tool install --global dotnet-ef
-          dotnet ef migrations has-pending-model-changes \
-            --project src/NsStore.Infrastructure \
-            --startup-project src/NsStore.Api
+      - run: dotnet restore
+      - run: dotnet tool restore
+
+      # One command, the same one run locally. build + test + the schema guard that fails here on
+      # any entity or EF-configuration change without a matching migration, rather than at startup
+      # on the server. Adding a step here without adding it to the Justfile is how CI and the dev
+      # loop drift apart — put it in the Justfile.
+      - run: just check
+        env:
+          CONFIGURATION: Release
 
   build-image:
     needs: test

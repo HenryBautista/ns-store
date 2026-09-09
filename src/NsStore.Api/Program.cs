@@ -105,7 +105,7 @@ if (trustForwardedHeaders)
 
         // The proxy is a sibling container on a bridge network with no fixed address, so the
         // loopback-only default would reject it.
-        options.KnownNetworks.Clear();
+        options.KnownIPNetworks.Clear();
         options.KnownProxies.Clear();
     });
 }

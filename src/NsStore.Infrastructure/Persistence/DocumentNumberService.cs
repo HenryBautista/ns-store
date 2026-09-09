@@ -33,11 +33,17 @@ public class DocumentNumberService(AppDbContext db) : IDocumentNumberService
             // SELECT ... FOR UPDATE. Different branches never contend.
             // The column name is chosen from the closed set above, never from caller input.
             // The "Value" alias is what EF requires to shape a scalar SqlQuery result.
+            // EF1002 flags interpolation into raw SQL. Here `column` comes from the closed switch
+            // above and never from caller input, and `branchId` is a real parameter ({0}), so the
+            // injection surface the rule warns about does not exist. Suppressed at the call site
+            // rather than repo-wide, so a genuine one still fails the build.
+#pragma warning disable EF1002
             var next = await db.Database
                 .SqlQueryRaw<long>(
                     $"UPDATE branches SET {column} = {column} + 1 WHERE id = {{0}} RETURNING {column} AS \"Value\"",
                     branchId)
                 .ToListAsync(cancellationToken);
+#pragma warning restore EF1002
 
             return next.Count > 0
                 ? next[0]

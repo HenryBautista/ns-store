@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="coverlet.collector" Version="6.0.4" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
+    <PackageReference Include="xunit" Version="2.9.3" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="3.1.4" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="Xunit" />
+  </ItemGroup>
+
+  <!-- All four so every layer's assembly is loadable here. Referencing them does not weaken the
+       rules being tested: the assertions are about what each assembly itself references. -->
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\NsStore.Api\NsStore.Api.csproj" />
+    <ProjectReference Include="..\..\src\NsStore.Application\NsStore.Application.csproj" />
+    <ProjectReference Include="..\..\src\NsStore.Domain\NsStore.Domain.csproj" />
+    <ProjectReference Include="..\..\src\NsStore.Infrastructure\NsStore.Infrastructure.csproj" />
+  </ItemGroup>
+
+</Project>
