@@ -4,12 +4,11 @@ Modern web rewrite of the legacy NS_Store (WPF + SQL Server) store / POS / inven
 This repository is the **backend**: an ASP.NET Core (.NET 10) Web API on PostgreSQL. The SPA that
 consumes it lives in [`ns-store-ui`](https://github.com/HenryBautista/ns-store-ui).
 
-Business and design documentation lives in a separate repository,
-[`ns-store-docs`](https://github.com/HenryBautista/ns-store-docs): the
-[legacy analysis](https://github.com/HenryBautista/ns-store-docs/blob/main/docs/README.md)
-(Spanish) and the [plan for this build](https://github.com/HenryBautista/ns-store-docs/blob/main/docs/new-app/README.md)
-(English). That repo is also the umbrella folder this one is meant to be cloned into — see
-`CLAUDE.md`.
+Domain vocabulary, architectural decisions and known findings live in [`.agent/`](.agent/), next to
+the code they describe; [`AGENTS.md`](AGENTS.md) is the entry point. The analysis of the legacy WPF
+system is frozen in the archived
+[`ns-store-docs`](https://github.com/HenryBautista/ns-store-docs) repository — it is a historical
+specification and does not describe how anything is built today.
 
 > Convention: **all code, identifiers, schema and API contracts in English**; only end-user-facing
 > text is Spanish, and it lives in the frontend i18n files. The API is locale-agnostic — it returns

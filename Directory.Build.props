@@ -9,4 +9,17 @@
     <InvariantGlobalization>true</InvariantGlobalization>
   </PropertyGroup>
 
+  <!--
+    A warning nobody has to act on is a warning everybody learns to scroll past. Warnings are
+    errors here, which is only sustainable because the repo starts from zero of them: the two that
+    existed on 2026-09-08 were fixed (ASPDEPR005) or suppressed at the call site with a
+    justification (EF1002). Do not add a blanket NoWarn to get a build green — suppress the one
+    occurrence where you can explain why it is wrong, or fix it.
+  -->
+  <PropertyGroup>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <EnableNETAnalyzers>true</EnableNETAnalyzers>
+    <AnalysisLevel>latest</AnalysisLevel>
+  </PropertyGroup>
+
 </Project>

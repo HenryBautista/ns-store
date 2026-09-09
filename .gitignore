@@ -1,3 +1,10 @@
+## Per-ticket working memory. Written constantly, read once, dies with the pull request.
+## Committing it would turn scratch notes into permanent context cost for every future session.
+.work/
+
+## Per-machine agent permissions. .claude/commands/ IS committed: it is the shared harness.
+.claude/settings.local.json
+
 ## .NET
 bin/
 obj/

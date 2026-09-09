@@ -1,0 +1,11 @@
+; Rules the compiler enforces so they stop being checklist items nobody remembers.
+; Format: <documentation-comment id>;<message shown at the call site>
+; The message IS the documentation — it arrives at the moment it is needed, so write it that way.
+
+P:System.DateTime.UtcNow;Inject TimeProvider instead. Tests substitute a fake clock fixed at 2026-07-24; a direct clock read makes them depend on the day they run. See .agent/decisions.md#d-08.
+P:System.DateTime.Now;Inject TimeProvider instead, and note this is local time on top of it. See .agent/decisions.md#d-08.
+
+; Only the case-SENSITIVE two-argument overload. The three-argument one with ignoreCase:true is
+; the correct call and stays allowed. This exact overload is what made GET /sales?status=credit
+; answer 500 from the day it shipped: the API rejected the very camelCase spelling it emits.
+M:System.Enum.TryParse``1(System.String,``0@);Use QueryEnum.Parse (Api/Endpoints/QueryEnum.cs), or pass ignoreCase:true. See .agent/findings.md#dt-09.

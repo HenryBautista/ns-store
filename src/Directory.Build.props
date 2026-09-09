@@ -1,0 +1,17 @@
+<Project>
+
+  <!-- Directory.Build.props discovery stops at the first file found walking up, so the repo-root
+       one has to be imported explicitly or src/ would silently lose TargetFramework and the rest. -->
+  <Import Project="$([MSBuild]::GetPathOfFileAbove($(MSBuildThisFileName)$(MSBuildThisFileExtension), $(MSBuildThisFileDirectory)../))" />
+
+  <!-- Scoped to src/ on purpose: production code carries these bans, test code does not need them
+       and should stay free to build fixtures however is clearest. -->
+  <ItemGroup>
+    <PackageReference Include="Microsoft.CodeAnalysis.BannedApiAnalyzers" Version="5.6.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <AdditionalFiles Include="$(MSBuildThisFileDirectory)BannedSymbols.txt" />
+  </ItemGroup>
+
+</Project>

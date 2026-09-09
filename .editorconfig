@@ -1,0 +1,24 @@
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+indent_style = space
+trim_trailing_whitespace = true
+
+[*.{cs,csproj,props,targets,slnx}]
+indent_size = 4
+
+[*.cs]
+# A banned API is a rule that was worth encoding, so it fails rather than scrolls past.
+# TreatWarningsAsErrors already promotes it; stating it here keeps the intent readable and
+# survives anyone lowering that flag.
+dotnet_diagnostic.RS0030.severity = error
+
+[*.{json,yml,yaml,md,js,mjs,ts,tsx}]
+indent_size = 2
+
+[*.md]
+# Trailing double-space is a hard line break in Markdown.
+trim_trailing_whitespace = false
