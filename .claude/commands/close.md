@@ -41,7 +41,7 @@ es prosa:
 
 1. ¿Puede ser un test, una regla o una restricción de tipo? → `tests/NsStore.Architecture.Tests`,
    `src/BannedSymbols.txt`, `.editorconfig`
-2. ¿Puede ser un target del runner? → `justfile`
+2. ¿Puede ser un target del runner? → `Justfile`
 3. ¿Es específico de un módulo? → el `README.md` de ese directorio
 4. ¿Restringe decisiones futuras? → entrada nueva `D-nn` en `.agent/decisions.md`
 5. ¿Nada de lo anterior? → `.agent/findings.md`, con línea de salida

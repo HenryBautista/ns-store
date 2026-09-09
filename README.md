@@ -41,13 +41,29 @@ tests/
 
 Dependency rule: `Api → Application → Domain`, `Infrastructure → Application/Domain`.
 
+## Commands
+
+Every task in this repo goes through [`just`](https://github.com/casey/just), a small task runner.
+`Justfile` at the root is the list of tasks — it is named after the tool, the way `Makefile` is.
+
+```bash
+winget install --id Casey.Just -e   # once per machine; also in brew, apt, cargo, scoop
+
+just          # same as `just check`
+just check    # build + every test + the pending-migration guard. ~16s
+just --list   # every task, with what it does
+```
+
+**`just check` is the definition of done.** CI runs that exact command, so a step that only exists
+in your shell is a step CI does not have — put it in the `Justfile` instead.
+
 ## Running locally
 
 ### 1. Docker Compose (database + API)
 
 ```bash
 cp .env.example .env          # then fill JWT_SIGNING_KEY and SEED_ADMIN_PASSWORD
-docker compose up --build
+just up
 ```
 
 The API listens on `http://localhost:8080`; `/health` reports readiness.
@@ -55,8 +71,8 @@ The API listens on `http://localhost:8080`; `/health` reports readiness.
 ### 2. API from the SDK, database in Docker
 
 ```bash
-docker compose up -d db
-dotnet run --project src/NsStore.Api
+just db     # Postgres only
+just run    # the API on the launchSettings port
 ```
 
 `appsettings.Development.json` points at the Compose database. In Development the OpenAPI document
@@ -81,15 +97,25 @@ separate deployment step instead.
 ### Migrations
 
 ```bash
-dotnet ef migrations add <Name> --project src/NsStore.Infrastructure --startup-project src/NsStore.Api --output-dir Persistence/Migrations
-dotnet ef database update --project src/NsStore.Infrastructure --startup-project src/NsStore.Api
+just migration AddSomething   # create it
+just migrate-db               # apply to the local database
+just schema                   # fail if the model changed without a migration
 ```
+
+`dotnet-ef` is a pinned local tool (`.config/dotnet-tools.json`), so the version cannot drift
+between machines and CI. `just check` runs `just schema`, which is why an entity or
+`IEntityTypeConfiguration` change without a matching migration fails before it reaches CI.
 
 ### Tests
 
 ```bash
-dotnet test
+just test
 ```
+
+Three projects: entity invariants, application services on SQLite in-memory, and
+`NsStore.Architecture.Tests` — the conventions the compiler cannot reach (the layer dependency
+rule, service registration, enum mapping, validator pairing). When one fails, its message is the
+documentation.
 
 ## API surface
 

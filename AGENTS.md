@@ -137,5 +137,5 @@ anonymous. Migrations and seeding run at startup unless `Database__MigrateOnStar
 
 ## Commands
 
-Run `just --list`. Do not invoke `dotnet` directly for anything the justfile already covers — CI
+Run `just --list`. Do not invoke `dotnet` directly for anything the `Justfile` already covers — CI
 runs the same `just check`, so a step that exists only in your shell is a step CI does not have.

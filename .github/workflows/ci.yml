@@ -33,8 +33,8 @@ jobs:
 
       # One command, the same one run locally. build + test + the schema guard that fails here on
       # any entity or EF-configuration change without a matching migration, rather than at startup
-      # on the server. Adding a step here without adding it to the justfile is how CI and the dev
-      # loop drift apart — put it in the justfile.
+      # on the server. Adding a step here without adding it to the Justfile is how CI and the dev
+      # loop drift apart — put it in the Justfile.
       - run: just check
         env:
           CONFIGURATION: Release
